@@ -104,37 +104,32 @@
     </div>
 
     <script type="module">
-        // --- CONFIGURACIÓN DE FIREBASE ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
-             apiKey: "AIzaSyBELxlbkav_9vZcJhSxE1gm0XFGgInfDSU",
-  authDomain: "dif-database.firebaseapp.com",
-  projectId: "dif-database",
-  storageBucket: "dif-database.firebasestorage.app",
-  messagingSenderId: "35662871104",
-  appId: "1:35662871104:web:5061ffc0d01f36654d3da5"
+            apiKey: "AIzaSyBELxlbkav_9vZcJhSxE1gm0XFGgInfDSU",
+            authDomain: "dif-database.firebaseapp.com",
+            projectId: "dif-database",
+            storageBucket: "dif-database.firebasestorage.app",
+            messagingSenderId: "35662871104",
+            appId: "1:35662871104:web:5061ffc0d01f36654d3da5"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Variables de estado
         let catalogo = {};
         let entradas = [];
         let salidas = [];
 
-        // --- CARGA DE DATOS EN TIEMPO REAL ---
         function cargarDatos() {
-            // Escuchar Catálogo
             onSnapshot(collection(db, "catalogo"), (snapshot) => {
                 catalogo = {};
                 snapshot.forEach(doc => { catalogo[doc.data().c] = doc.data().d; });
                 render();
             });
 
-            // Escuchar Movimientos
             onSnapshot(query(collection(db, "movimientos"), orderBy("f", "desc")), (snapshot) => {
                 entradas = []; salidas = [];
                 snapshot.forEach(doc => {
@@ -146,7 +141,6 @@
             });
         }
 
-        // --- ACCIONES ---
         window.agregarCatalogo = async () => {
             const c = document.getElementById('new-cod').value.toUpperCase().trim();
             const d = document.getElementById('new-desc').value.toUpperCase().trim();
@@ -181,23 +175,30 @@
             return inQ - outQ;
         }
 
+        // --- FUNCIÓN RENDER CON ORDENAMIENTO ---
         function render() {
-            const sel = document.getElementById('reg-articulo'); sel.innerHTML = "";
-            for(let c in catalogo) sel.innerHTML += `<option value="${c}">${c} - ${catalogo[c]}</option>`;
+            // Obtener los códigos y ordenarlos alfabéticamente
+            const codigosOrdenados = Object.keys(catalogo).sort();
 
-            const tbody = document.getElementById('tbody-stock'); tbody.innerHTML = "";
-            for(let c in catalogo) {
+            const sel = document.getElementById('reg-articulo'); 
+            sel.innerHTML = "";
+            codigosOrdenados.forEach(c => {
+                sel.innerHTML += `<option value="${c}">${c} - ${catalogo[c]}</option>`;
+            });
+
+            const tbody = document.getElementById('tbody-stock'); 
+            tbody.innerHTML = "";
+            codigosOrdenados.forEach(c => {
                 let inQ = entradas.filter(x => x.c === c).reduce((s, x) => s + (Number(x.q) || 0), 0);
                 let outQ = salidas.filter(x => x.c === c).reduce((s, x) => s + (Number(x.q) || 0), 0);
                 let total = inQ - outQ;
                 tbody.innerHTML += `<tr><td><b>${c}</b></td><td>${catalogo[c]}</td><td class="text-center text-success">${inQ}</td><td class="text-center text-danger">${outQ}</td><td class="text-center fw-bold ${total<=0?'text-danger':'text-primary'}">${total}</td></tr>`;
-            }
+            });
 
             document.getElementById('hist-in').innerHTML = entradas.map(e => `<tr><td>${e.f}</td><td>${e.c}</td><td>${e.q}</td><td class="col-obs">${e.o}</td></tr>`).join('');
             document.getElementById('hist-out').innerHTML = salidas.map(s => `<tr><td>${s.f}</td><td>${s.c}</td><td>${s.q}</td><td class="col-obs">${s.o}</td></tr>`).join('');
         }
 
-        // --- BOTONES EVENTOS ---
         document.getElementById('btn-login').onclick = () => {
             if(document.getElementById('pass').value === '123') {
                 document.getElementById('login-page').classList.remove('active');
@@ -209,7 +210,6 @@
         document.getElementById('btn-guardar').onclick = window.guardarMovimiento;
         document.getElementById('btn-catalogo').onclick = window.agregarCatalogo;
 
-        // Funciones globales para botones onclick del HTML
         window.showTab = (id, el) => {
             document.querySelectorAll('.tab-pane-custom').forEach(t => t.classList.add('d-none'));
             document.getElementById(id).classList.remove('d-none');
