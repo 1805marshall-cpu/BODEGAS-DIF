@@ -12,7 +12,6 @@
         :root { --primary: #6b1d31; --secondary: #b38e5d; --success: #18bc9c; --danger: #e74c3c; --info: #3498db; }
         body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* LOGIN ESTILO DIF */
         #login-page { 
             display: flex; align-items: center; justify-content: center; height: 100vh; 
             background: linear-gradient(135deg, #6b1d31 0%, #3a0f1b 100%); 
@@ -23,7 +22,6 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-top: 10px solid var(--secondary);
         }
 
-        /* SIDEBAR */
         .sidebar { background: var(--primary); min-height: 100vh; color: white; position: fixed; width: 230px; z-index: 1000; border-right: 5px solid var(--secondary); display: flex; flex-direction: column; }
         .content { margin-left: 230px; padding: 35px; width: calc(100% - 230px); }
         .nav-link { color: #f8f9fa; padding: 16px; border: none; background: none; width: 100%; text-align: left; transition: 0.3s; font-size: 0.95rem; }
@@ -33,7 +31,6 @@
         .btn-logout { margin-top: auto; background: rgba(0,0,0,0.3); border: none; color: #ffadad; padding: 20px; width: 100%; font-weight: bold; text-align: center; }
         .btn-logout:hover { background: var(--danger); color: white; }
 
-        /* TABLAS Y ELEMENTOS */
         .table-container { background: white; border-radius: 18px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); margin-bottom: 30px; }
         .img-prod { width: 65px; height: 65px; object-fit: cover; border-radius: 12px; border: 2px solid #eee; background: #fff; }
         
@@ -64,9 +61,10 @@
         <div class="card p-4 shadow-lg border-0" style="width: 500px; border-radius: 25px;">
             <h4 class="fw-bold text-center mb-4">Actualizar Producto</h4>
             <input type="hidden" id="edit-id">
-            <div class="mb-3"><label class="fw-bold small">CÓDIGO:</label><input type="text" id="edit-cod" class="form-control"></div>
+            <div class="mb-3"><label class="fw-bold small">CÓDIGO BODEGA:</label><input type="text" id="edit-bod" class="form-control"></div>
+            <div class="mb-3"><label class="fw-bold small">CÓDIGO SISTEMA:</label><input type="text" id="edit-cod" class="form-control"></div>
             <div class="mb-3"><label class="fw-bold small">DESCRIPCIÓN:</label><input type="text" id="edit-desc" class="form-control"></div>
-            <div class="mb-4"><label class="fw-bold small">CAMBIAR FOTO (Desde PC):</label><input type="file" id="edit-file" class="form-control" accept="image/*"></div>
+            <div class="mb-4"><label class="fw-bold small">CAMBIAR FOTO:</label><input type="file" id="edit-file" class="form-control" accept="image/*"></div>
             <div class="d-flex gap-3">
                 <button class="btn btn-primary w-100 py-2 rounded-pill fw-bold" onclick="guardarEdicion()">GUARDAR</button>
                 <button class="btn btn-light w-100 py-2 rounded-pill" onclick="cerrarModal()">CANCELAR</button>
@@ -99,7 +97,7 @@
                 </div>
 
                 <div class="mb-4 no-print">
-                    <input type="text" id="buscador" class="form-control form-control-lg rounded-pill shadow-sm px-4 border-0" placeholder="🔍 Buscar producto o código..." onkeyup="render()">
+                    <input type="text" id="buscador" class="form-control form-control-lg rounded-pill shadow-sm px-4 border-0" placeholder="🔍 Buscar por bodega, código o descripción..." onkeyup="render()">
                 </div>
 
                 <div id="tab-stock" class="tab-pane-custom">
@@ -109,7 +107,16 @@
                     </div>
                     <div class="table-container">
                         <table class="table table-hover align-middle">
-                            <thead class="table-dark"><tr><th>Foto</th><th>Código</th><th>Descripción</th><th class="text-center">Existencia</th><th class="text-center">Estado</th></tr></thead>
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Cod. Bodega</th>
+                                    <th>Código</th>
+                                    <th>Foto</th>
+                                    <th>Descripción</th>
+                                    <th class="text-center">Existencia</th>
+                                    <th class="text-center">Estado</th>
+                                </tr>
+                            </thead>
                             <tbody id="tbody-stock"></tbody>
                         </table>
                     </div>
@@ -132,7 +139,7 @@
                             <div class="col-md-4"><button class="btn btn-dark w-100 fw-bold" onclick="document.getElementById('corte-mes').value=''; render();">LIMPIAR</button></div>
                         </div>
                     </div>
-                    <div class="table-container"><table class="table table-sm table-striped"><thead><tr><th>Fecha</th><th>Tipo</th><th>Cód</th><th>Descripción</th><th>Cant</th><th>Obs</th></tr></thead><tbody id="tbody-historial"></tbody></table></div>
+                    <div class="table-container"><table class="table table-sm table-striped"><thead><tr><th>Fecha</th><th>Tipo</th><th>Bodega</th><th>Cód</th><th>Descripción</th><th>Cant</th><th>Obs</th></tr></thead><tbody id="tbody-historial"></tbody></table></div>
                 </div>
 
                 <div id="tab-movimiento" class="tab-pane-custom d-none">
@@ -153,12 +160,24 @@
                     <div class="table-container">
                         <h4 class="fw-bold mb-4">Gestión de Productos</h4>
                         <div class="row g-2 mb-5 bg-light p-4 rounded shadow-sm">
-                            <div class="col-md-2"><input type="text" id="new-cod" class="form-control" placeholder="CÓDIGO"></div>
-                            <div class="col-md-5"><input type="text" id="new-desc" class="form-control" placeholder="DESCRIPCIÓN"></div>
+                            <div class="col-md-2"><input type="text" id="new-bod" class="form-control" placeholder="COD. BODEGA"></div>
+                            <div class="col-md-2"><input type="text" id="new-cod" class="form-control" placeholder="CÓDIGO SISTEMA"></div>
+                            <div class="col-md-3"><input type="text" id="new-desc" class="form-control" placeholder="DESCRIPCIÓN"></div>
                             <div class="col-md-3"><input type="file" id="new-file" class="form-control" accept="image/*"></div>
                             <div class="col-md-2"><button id="btn-catalogo" class="btn btn-success w-100 fw-bold">AGREGAR</button></div>
                         </div>
-                        <table class="table align-middle"><thead><tr><th>Foto</th><th>Código</th><th>Descripción</th><th class="text-end">Acciones</th></tr></thead><tbody id="tbody-cat-admin"></tbody></table>
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Cod. Bodega</th>
+                                    <th>Código</th>
+                                    <th>Foto</th>
+                                    <th>Descripción</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-cat-admin"></tbody>
+                        </table>
                     </div>
                 </div>
             </main>
@@ -199,16 +218,23 @@
         function render() {
             const bus = document.getElementById('buscador').value.toUpperCase();
             
-            // STOCK CON ALERTAS
+            // RENDER STOCK ACTUAL (Orden: Bodega, Código, Foto, Descripción...)
             const tS = document.getElementById('tbody-stock'); tS.innerHTML = "";
             catalogoArr.forEach(p => {
-                if(p.c.includes(bus) || p.d.includes(bus)) {
+                if(p.c.includes(bus) || p.d.includes(bus) || (p.cb && p.cb.includes(bus))) {
                     let inQ = movimientos.filter(x => x.c === p.c && x.t === "ENTRADA").reduce((s, x) => s + Number(x.q), 0);
                     let outQ = movimientos.filter(x => x.c === p.c && x.t === "SALIDA").reduce((s, x) => s + Number(x.q), 0);
                     let st = inQ - outQ;
                     let c = st <= 0 ? "stock-critico" : (st <= 5 ? "stock-bajo" : "");
                     let est = st <= 0 ? "🚨 AGOTADO" : (st <= 5 ? "⚠️ BAJO" : "✅ ÓPTIMO");
-                    tS.innerHTML += `<tr class="${c}"><td><img src="${p.img || ''}" class="img-prod shadow-sm"></td><td><b>${p.c}</b></td><td>${p.d}</td><td class="text-center fw-bold fs-5">${st}</td><td class="text-center fw-bold small">${est}</td></tr>`;
+                    tS.innerHTML += `<tr class="${c}">
+                        <td class="fw-bold text-primary">${p.cb || '---'}</td>
+                        <td><b>${p.c}</b></td>
+                        <td><img src="${p.img || ''}" class="img-prod shadow-sm"></td>
+                        <td>${p.d}</td>
+                        <td class="text-center fw-bold fs-5">${st}</td>
+                        <td class="text-center fw-bold small">${est}</td>
+                    </tr>`;
                 }
             });
 
@@ -223,12 +249,31 @@
                     if(q === "1" && parseInt(dM) > 15) ok = false;
                     if(q === "2" && parseInt(dM) < 16) ok = false;
                 }
-                return ok && (m.c.includes(bus) || (catMap[m.c]?.d || "").includes(bus));
-            }).map(m => `<tr><td>${m.f}</td><td><span class="badge ${m.t==='ENTRADA'?'bg-success':'bg-danger'}">${m.t}</span></td><td><b>${m.c}</b></td><td>${catMap[m.c]?.d || 'S/D'}</td><td class="fw-bold">${m.q}</td><td><small>${m.o}</small></td></tr>`).join('');
+                return ok && (m.c.includes(bus) || (catMap[m.c]?.d || "").includes(bus) || (catMap[m.c]?.cb || "").includes(bus));
+            }).map(m => `<tr>
+                <td>${m.f}</td>
+                <td><span class="badge ${m.t==='ENTRADA'?'bg-success':'bg-danger'}">${m.t}</span></td>
+                <td class="small fw-bold">${catMap[m.c]?.cb || '---'}</td>
+                <td><b>${m.c}</b></td>
+                <td>${catMap[m.c]?.d || 'S/D'}</td>
+                <td class="fw-bold">${m.q}</td>
+                <td><small>${m.o}</small></td>
+            </tr>`).join('');
 
-            // ADMIN
-            document.getElementById('tbody-cat-admin').innerHTML = catalogoArr.map(p => `<tr><td><img src="${p.img || ''}" class="img-prod"></td><td><b>${p.c}</b></td><td>${p.d}</td><td class="text-end"><button class="btn btn-info btn-sm text-white fw-bold shadow-sm" onclick="abrirEditar('${p.id}','${p.c}','${p.d}')">✏️ MODIFICAR PRODUCTO/FOTO</button> <button class="btn btn-outline-danger btn-sm ms-2" onclick="borrarProd('${p.id}')">🗑️</button></td></tr>`).join('');
-            document.getElementById('reg-articulo').innerHTML = catalogoArr.sort((a,b)=>a.c.localeCompare(b.c)).map(p => `<option value="${p.c}">${p.c} - ${p.d}</option>`).join('');
+            // RENDER CATÁLOGO ADMIN (Orden: Bodega, Código, Foto, Descripción...)
+            document.getElementById('tbody-cat-admin').innerHTML = catalogoArr.map(p => `<tr>
+                <td class="fw-bold text-primary">${p.cb || '---'}</td>
+                <td><b>${p.c}</b></td>
+                <td><img src="${p.img || ''}" class="img-prod"></td>
+                <td>${p.d}</td>
+                <td class="text-end">
+                    <button class="btn btn-info btn-sm text-white fw-bold shadow-sm" onclick="abrirEditar('${p.id}','${p.c}','${p.d}','${p.cb || ''}')">✏️ EDITAR</button> 
+                    <button class="btn btn-outline-danger btn-sm ms-2" onclick="borrarProd('${p.id}')">🗑️</button>
+                </td>
+            </tr>`).join('');
+            
+            // SELECTOR MOVIMIENTOS
+            document.getElementById('reg-articulo').innerHTML = catalogoArr.sort((a,b)=>a.c.localeCompare(b.c)).map(p => `<option value="${p.c}">[BOD: ${p.cb || '---'}] - ${p.c} - ${p.d}</option>`).join('');
         }
 
         function actualizarGrafica() {
@@ -240,22 +285,34 @@
             myChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: '📥 Entradas', data: dataE, backgroundColor: '#6b1d31' }, { label: '📤 Salidas', data: dataS, backgroundColor: '#b38e5d' }] } });
         }
 
-        // ACCIONES
-        window.abrirEditar = (id, c, d) => { document.getElementById('edit-id').value = id; document.getElementById('edit-cod').value = c; document.getElementById('edit-desc').value = d; document.getElementById('edit-modal').style.display = 'flex'; };
+        window.abrirEditar = (id, c, d, cb) => { 
+            document.getElementById('edit-id').value = id; 
+            document.getElementById('edit-cod').value = c; 
+            document.getElementById('edit-desc').value = d; 
+            document.getElementById('edit-bod').value = cb;
+            document.getElementById('edit-modal').style.display = 'flex'; 
+        };
         window.cerrarModal = () => document.getElementById('edit-modal').style.display = 'none';
+        
         window.guardarEdicion = async () => {
             const id = document.getElementById('edit-id').value;
-            const up = { c: document.getElementById('edit-cod').value.toUpperCase(), d: document.getElementById('edit-desc').value.toUpperCase() };
+            const up = { 
+                c: document.getElementById('edit-cod').value.toUpperCase(), 
+                d: document.getElementById('edit-desc').value.toUpperCase(),
+                cb: document.getElementById('edit-bod').value.toUpperCase()
+            };
             const f = document.getElementById('edit-file').files[0]; if(f) up.img = await toBase64(f);
-            await updateDoc(doc(db, "catalogo", id), up); alert("✔️ Actualizado Correctamente"); cerrarModal();
+            await updateDoc(doc(db, "catalogo", id), up); alert("✔️ Actualizado"); cerrarModal();
         };
 
-        window.cerrarSesion = () => { if(confirm("¿Cerrar el sistema?")) { document.getElementById('main-system').style.display = 'none'; document.getElementById('login-page').style.display = 'flex'; document.getElementById('pass').value = ''; }};
+        window.cerrarSesion = () => { if(confirm("¿Cerrar sesión?")) { document.getElementById('main-system').style.display = 'none'; document.getElementById('login-page').style.display = 'flex'; document.getElementById('pass').value = ''; }};
 
         document.getElementById('btn-catalogo').onclick = async () => {
-            const c = document.getElementById('new-cod').value.toUpperCase().trim(); const d = document.getElementById('new-desc').value.toUpperCase().trim();
+            const c = document.getElementById('new-cod').value.toUpperCase().trim(); 
+            const cb = document.getElementById('new-bod').value.toUpperCase().trim();
+            const d = document.getElementById('new-desc').value.toUpperCase().trim();
             const f = document.getElementById('new-file').files[0]; const img = f ? await toBase64(f) : "";
-            if(c && d) { await addDoc(collection(db, "catalogo"), { c, d, img }); location.reload(); }
+            if(c && d) { await addDoc(collection(db, "catalogo"), { c, cb, d, img }); location.reload(); }
         };
 
         document.getElementById('btn-guardar').onclick = async () => {
