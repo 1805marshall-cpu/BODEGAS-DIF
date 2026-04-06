@@ -40,7 +40,7 @@
         #edit-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 6000; align-items: center; justify-content: center; }
 
         @media print {
-            .no-print, .sidebar, .btn, .nav-link, .corte-panel, #buscador { display: none !important; }
+            .no-print, .sidebar, .btn, .nav-link, .corte-panel, #buscador, .btn-action { display: none !important; }
             .content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
             #header-print { display: block !important; text-align: center; border-bottom: 4px solid var(--primary); margin-bottom: 30px; }
         }
@@ -139,7 +139,23 @@
                             <div class="col-md-4"><button class="btn btn-dark w-100 fw-bold" onclick="document.getElementById('corte-mes').value=''; render();">LIMPIAR</button></div>
                         </div>
                     </div>
-                    <div class="table-container"><table class="table table-sm table-striped"><thead><tr><th>Fecha</th><th>Tipo</th><th>Bodega</th><th>Cód</th><th>Descripción</th><th>Cant</th><th>Obs</th></tr></thead><tbody id="tbody-historial"></tbody></table></div>
+                    <div class="table-container">
+                        <table class="table table-sm table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Bodega</th>
+                                    <th>Cód</th>
+                                    <th>Descripción</th>
+                                    <th>Cant</th>
+                                    <th>Obs</th>
+                                    <th class="text-end no-print">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-historial"></tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div id="tab-movimiento" class="tab-pane-custom d-none">
@@ -209,7 +225,10 @@
                 render();
             });
             onSnapshot(query(collection(db, "movimientos"), orderBy("f", "desc")), (snap) => {
-                movimientos = []; snap.forEach(doc => { movimientos.push(doc.data()); });
+                movimientos = []; 
+                snap.forEach(d => { 
+                    movimientos.push({ id: d.id, ...d.data() }); // Se añadió captura del ID de Firebase
+                });
                 render();
                 if(document.getElementById('tab-graficas').offsetParent !== null) actualizarGrafica();
             });
@@ -218,7 +237,7 @@
         function render() {
             const bus = document.getElementById('buscador').value.toUpperCase();
             
-            // RENDER STOCK ACTUAL (Orden: Bodega, Código, Foto, Descripción...)
+            // STOCK ACTUAL
             const tS = document.getElementById('tbody-stock'); tS.innerHTML = "";
             catalogoArr.forEach(p => {
                 if(p.c.includes(bus) || p.d.includes(bus) || (p.cb && p.cb.includes(bus))) {
@@ -238,7 +257,7 @@
                 }
             });
 
-            // HISTORIAL
+            // HISTORIAL CON BOTONES DE EDICIÓN Y ELIMINACIÓN
             const mes = document.getElementById('corte-mes').value; const q = document.getElementById('corte-q').value;
             const tH = document.getElementById('tbody-historial');
             tH.innerHTML = movimientos.filter(m => {
@@ -258,9 +277,13 @@
                 <td>${catMap[m.c]?.d || 'S/D'}</td>
                 <td class="fw-bold">${m.q}</td>
                 <td><small>${m.o}</small></td>
+                <td class="text-end no-print">
+                    <button class="btn btn-sm btn-outline-primary" onclick="editarMovimiento('${m.id}', '${m.q}', '${m.o}')">✏️</button>
+                    <button class="btn btn-sm btn-outline-danger ms-1" onclick="borrarMovimiento('${m.id}')">🗑️</button>
+                </td>
             </tr>`).join('');
 
-            // RENDER CATÁLOGO ADMIN (Orden: Bodega, Código, Foto, Descripción...)
+            // CATALOGO ADMIN
             document.getElementById('tbody-cat-admin').innerHTML = catalogoArr.map(p => `<tr>
                 <td class="fw-bold text-primary">${p.cb || '---'}</td>
                 <td><b>${p.c}</b></td>
@@ -276,14 +299,26 @@
             document.getElementById('reg-articulo').innerHTML = catalogoArr.sort((a,b)=>a.c.localeCompare(b.c)).map(p => `<option value="${p.c}">[BOD: ${p.cb || '---'}] - ${p.c} - ${p.d}</option>`).join('');
         }
 
-        function actualizarGrafica() {
-            const ctx = document.getElementById('chartComparativo'); if(!ctx) return;
-            const labels = catalogoArr.slice(0, 10).map(p => p.c);
-            const dataE = labels.map(c => movimientos.filter(m => m.c === c && m.t === "ENTRADA").reduce((s, x) => s + Number(x.q), 0));
-            const dataS = labels.map(c => movimientos.filter(m => m.c === c && m.t === "SALIDA").reduce((s, x) => s + Number(x.q), 0));
-            if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: '📥 Entradas', data: dataE, backgroundColor: '#6b1d31' }, { label: '📤 Salidas', data: dataS, backgroundColor: '#b38e5d' }] } });
-        }
+        // --- FUNCIONES DE MOVIMIENTOS ---
+
+        window.borrarMovimiento = async (id) => {
+            if(confirm("¿Eliminar este registro de historial? El stock se recalculará automáticamente.")) {
+                await deleteDoc(doc(db, "movimientos", id));
+            }
+        };
+
+        window.editarMovimiento = async (id, cantActual, obsActual) => {
+            const nuevaCant = prompt("Modificar cantidad:", cantActual);
+            const nuevaObs = prompt("Modificar observación:", obsActual);
+            if (nuevaCant !== null && nuevaObs !== null) {
+                await updateDoc(doc(db, "movimientos", id), {
+                    q: parseInt(nuevaCant),
+                    o: nuevaObs.toUpperCase()
+                });
+            }
+        };
+
+        // --- FUNCIONES DE PRODUCTOS ---
 
         window.abrirEditar = (id, c, d, cb) => { 
             document.getElementById('edit-id').value = id; 
@@ -292,6 +327,7 @@
             document.getElementById('edit-bod').value = cb;
             document.getElementById('edit-modal').style.display = 'flex'; 
         };
+
         window.cerrarModal = () => document.getElementById('edit-modal').style.display = 'none';
         
         window.guardarEdicion = async () => {
@@ -302,8 +338,21 @@
                 cb: document.getElementById('edit-bod').value.toUpperCase()
             };
             const f = document.getElementById('edit-file').files[0]; if(f) up.img = await toBase64(f);
-            await updateDoc(doc(db, "catalogo", id), up); alert("✔️ Actualizado"); cerrarModal();
+            await updateDoc(doc(db, "catalogo", id), up); alert("✔️ Producto Actualizado"); cerrarModal();
         };
+
+        window.borrarProd = async (id) => { if(confirm("¿Borrar producto definitivamente del catálogo?")) await deleteDoc(doc(db, "catalogo", id)); };
+
+        // --- UTILIDADES Y GRAFICAS ---
+
+        function actualizarGrafica() {
+            const ctx = document.getElementById('chartComparativo'); if(!ctx) return;
+            const labels = catalogoArr.slice(0, 10).map(p => p.c);
+            const dataE = labels.map(c => movimientos.filter(m => m.c === c && m.t === "ENTRADA").reduce((s, x) => s + Number(x.q), 0));
+            const dataS = labels.map(c => movimientos.filter(m => m.c === c && m.t === "SALIDA").reduce((s, x) => s + Number(x.q), 0));
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: '📥 Entradas', data: dataE, backgroundColor: '#6b1d31' }, { label: '📤 Salidas', data: dataS, backgroundColor: '#b38e5d' }] } });
+        }
 
         window.cerrarSesion = () => { if(confirm("¿Cerrar sesión?")) { document.getElementById('main-system').style.display = 'none'; document.getElementById('login-page').style.display = 'flex'; document.getElementById('pass').value = ''; }};
 
@@ -312,16 +361,15 @@
             const cb = document.getElementById('new-bod').value.toUpperCase().trim();
             const d = document.getElementById('new-desc').value.toUpperCase().trim();
             const f = document.getElementById('new-file').files[0]; const img = f ? await toBase64(f) : "";
-            if(c && d) { await addDoc(collection(db, "catalogo"), { c, cb, d, img }); location.reload(); }
+            if(c && d) { await addDoc(collection(db, "catalogo"), { c, cb, d, img }); }
         };
 
         document.getElementById('btn-guardar').onclick = async () => {
             const data = { t: document.getElementById('reg-tipo').value, c: document.getElementById('reg-articulo').value, q: parseInt(document.getElementById('reg-cantidad').value), f: document.getElementById('reg-fecha').value, o: document.getElementById('reg-obs').value || "S/O" };
-            if(data.f) { await addDoc(collection(db, "movimientos"), data); alert("✔️ Guardado"); }
+            if(data.f) { await addDoc(collection(db, "movimientos"), data); alert("✔️ Movimiento Guardado"); }
         };
 
         window.imprimir = (tipo) => { document.getElementById('print-fecha').innerText = new Date().toLocaleString(); document.getElementById('print-titulo').innerText = tipo === 'STOCK' ? "REPORTE DE INVENTARIO" : "REPORTE DE CORTE QUINCENAL"; window.print(); };
-        window.borrarProd = async (id) => { if(confirm("¿Borrar definitivamente?")) await deleteDoc(doc(db, "catalogo", id)); };
 
         document.getElementById('btn-login').onclick = () => {
             if(document.getElementById('pass').value === '123') { document.getElementById('login-page').style.display = 'none'; document.getElementById('main-system').style.display = 'block'; document.getElementById('reg-fecha').valueAsDate = new Date(); cargarDatos(); }
