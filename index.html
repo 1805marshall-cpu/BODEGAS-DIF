@@ -173,7 +173,7 @@
                     <label class="form-label" for="username">Usuario Institucional</label>
                     <div class="input-wrapper">
                         <i class="fa-regular fa-user input-icon"></i>
-                        <input type="text" id="username" class="form-control" placeholder="Ej: nombre.apellido" required autocomplete="username">
+                        <input type="text" id="username" class="form-control" placeholder="Ej: juanita.campechano" required autocomplete="username">
                     </div>
                 </div>
                 <div class="form-group">
@@ -222,6 +222,9 @@
             </button>
             <button class="tab-btn" data-tab="tab-agregar">
                 <i class="fa-solid fa-circle-plus"></i> Registrar Producto / Entrada
+            </button>
+            <button class="tab-btn" data-tab="tab-dif-direccion">
+                <i class="fa-solid fa-building-shield"></i> DIF Dirección (Resguardo)
             </button>
             <button class="tab-btn" data-tab="tab-estadisticas">
                 <i class="fa-solid fa-chart-pie"></i> Estadísticas y Gráficas
@@ -289,10 +292,11 @@
                             <input type="text" id="prodName" class="form-control" style="padding-left: 14px;" placeholder="Ej: Despensa básica" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Bodega de Destino</label>
+                            <label class="form-label">Bodega de Destino / Ubicación</label>
                             <select id="prodWarehouse" class="form-control" required>
                                 <option value="Bodega DIF">Bodega DIF</option>
                                 <option value="Bodega Corona">Bodega Corona</option>
+                                <option value="DIF Dirección">DIF Dirección (Resguardo)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -309,6 +313,30 @@
                     </div>
                     <button type="submit" class="btn-action"><i class="fa-solid fa-save"></i> Generar Código y Guardar en BD</button>
                 </form>
+            </div>
+        </section>
+
+        <!-- NUEVA PESTAÑA: DIF DIRECCIÓN (RESGUARDO Y BAJA AUTOMÁTICA) -->
+        <section id="tab-dif-direccion" class="tab-content">
+            <div class="content-card">
+                <h2 class="card-title"><i class="fa-solid fa-building-shield"></i> Inventario Resguardado en DIF Dirección</h2>
+                <p style="color: var(--gray-600); margin-bottom: 16px; font-size: 0.88rem;">Artículos enviados a dirección pendientes de entrega final al ciudadano. Al presionar "Entregar y Dar de Baja", se emitirá el vale de salida definitivo y se descontarán automáticamente del stock.</p>
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Código Inteligente</th>
+                                <th>Artículo / Descripción</th>
+                                <th>Stock Disponible</th>
+                                <th>Departamento</th>
+                                <th style="text-align: center;">Acción de Entrega / Baja</th>
+                            </tr>
+                        </thead>
+                        <tbody id="direcInventoryTableBody">
+                            <tr><td colspan="5" style="text-align: center; color: var(--gray-600);">Cargando inventario de Dirección...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -362,75 +390,88 @@
             </div>
         </section>
 
-<!-- PESTAÑA 4: VALES DE SALIDA -->
-<section id="tab-vales" class="tab-content">
-    <div class="content-card">
-        <h2 class="card-title"><i class="fa-solid fa-file-lines"></i> Emisión de Vales de Salida por Departamento</h2>
-        <form id="voucherForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label">1. Seleccionar Departamento</label>
-                    <select id="valeDeptSelect" class="form-control" required>
-                        <option value="">-- Seleccione Departamento --</option>
-                        <option value="Trabajo Social">Trabajo Social</option>
-                        <option value="Población Vulnerable">Población Vulnerable</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">2. Artículo Disponible</label>
-                    <select id="valeProductSelect" class="form-control">
-                        <option value="">-- Primero seleccione departamento --</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Cantidad a Retirar</label>
-                    <input type="number" id="valeQty" class="form-control" style="padding-left: 14px;" placeholder="Ej: 2" min="1" value="1">
-                </div>
-                <div class="form-group" style="display: flex; align-items: flex-end;">
-                    <button type="button" id="addVoucherItemBtn" class="btn-action" style="background: var(--success); width: 100%; justify-content: center;">
-                        <i class="fa-solid fa-plus"></i> Agregar al Vale
+        <!-- PESTAÑA 4: VALES DE SALIDA -->
+        <section id="tab-vales" class="tab-content">
+            <div class="content-card">
+                <h2 class="card-title"><i class="fa-solid fa-file-lines"></i> Emisión de Vales de Salida por Departamento</h2>
+                <form id="voucherForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">1. Seleccionar Departamento</label>
+                            <select id="valeDeptSelect" class="form-control" required>
+                                <option value="">-- Seleccione Departamento --</option>
+                                <option value="Trabajo Social">Trabajo Social</option>
+                                <option value="Población Vulnerable">Población Vulnerable</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">2. Artículo Disponible</label>
+                            <select id="valeProductSelect" class="form-control">
+                                <option value="">-- Primero seleccione departamento --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cantidad a Retirar</label>
+                            <input type="number" id="valeQty" class="form-control" style="padding-left: 14px;" placeholder="Ej: 2" min="1" value="1">
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: flex-end;">
+                            <button type="button" id="addVoucherItemBtn" class="btn-action" style="background: var(--success); width: 100%; justify-content: center;">
+                                <i class="fa-solid fa-plus"></i> Agregar al Vale
+                            </button>
+                        </div>
+                    </div>
+                    
+                    
+
+                    <!-- Tabla temporal de artículos agregados al vale -->
+                    <div style="margin: 20px 0;">
+                        <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--gray-800);">Artículos en este Vale:</h3>
+                        <div style="overflow-x: auto;">
+                            <table class="data-table" style="font-size: 0.88rem;">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Artículo</th>
+                                        <th>Bodega</th>
+                                        <th>Cantidad</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="voucherItemsTableBody">
+                                    <tr><td colspan="5" style="text-align: center; color: var(--gray-600);">No se han agregado artículos al vale</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Dentro de tu sección <section id="tab-vales" class="tab-content">, en el formulario -->
+                    <div class="form-grid" style="margin-top: 15px; border-top: 1px solid var(--gray-300); padding-top: 15px;">
+                        <div class="form-group">
+                            <label class="form-label">Beneficiario / Solicitante</label>
+                            <input type="text" id="valeBeneficiary" class="form-control" style="padding-left: 14px;" placeholder="Nombre completo u Oficina" required>
+                        </div>
+                        
+                        <!-- NUEVO: Selector de Destino del Vale -->
+                        <div class="form-group">
+                            <label class="form-label"><i class="fa-solid fa-route"></i> Destino del Movimiento</label>
+                            <select id="valeDestinationType" class="form-control" required>
+                                <option value="resguardo_direccion">Enviar a DIF Dirección (Resguardo)</option>
+                                <option value="salida_final">Salida Final / Entrega a Ciudadano</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label for="valeObservation"><i class="fa-solid fa-location-dot"></i> Observación / Motivo:</label>
+                            <input type="text" id="valeObservation" class="form-control" value="Envío de stock para resguardo en oficinas del DIF" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-action" style="margin-top: 15px;">
+                        <i class="fa-solid fa-print"></i> Generar Vale y Enviar a Stock / Dirección
                     </button>
-                </div>
+                </form>
             </div>
-
-            <!-- Tabla temporal de artículos agregados al vale -->
-            <div style="margin: 20px 0;">
-                <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--gray-800);">Artículos en este Vale:</h3>
-                <div style="overflow-x: auto;">
-                    <table class="data-table" style="font-size: 0.88rem;">
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Artículo</th>
-                                <th>Bodega</th>
-                                <th>Cantidad</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody id="voucherItemsTableBody">
-                            <tr><td colspan="5" style="text-align: center; color: var(--gray-600);">No se han agregado artículos al vale</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="form-grid" style="margin-top: 15px; border-top: 1px solid var(--gray-300); padding-top: 15px;">
-                <div class="form-group">
-                    <label class="form-label">Beneficiario / Solicitante</label>
-                    <input type="text" id="valeBeneficiary" class="form-control" style="padding-left: 14px;" placeholder="Nombre completo" required>
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label for="valeObservation" class="form-label"><i class="fa-solid fa-comment-dots"></i> Observación / Destino del Apoyo (Comunidad, Caso o Motivo)</label>
-                    <textarea id="valeObservation" rows="2" class="form-control" placeholder="Ej. Entrega para familias afectadas en la localidad de Tepetapan / Apoyo a adulto mayor en situación de calle..." required></textarea>
-                </div>
-            </div>
-
-            <button type="submit" class="btn-action" style="margin-top: 15px;">
-                <i class="fa-solid fa-print"></i> Generar Vale y Descontar en BD
-            </button>
-        </form>
-    </div>
-</section>
+        </section>
 
         <!-- PESTAÑA 5: HISTORIAL DE VALES -->
         <section id="tab-historial" class="tab-content">
@@ -463,7 +504,7 @@
                                 <th>Artículo</th>
                                 <th>Cant.</th>
                                 <th>Beneficiario</th>
-                                <th>Observación / Destino</th> <!-- Columna nueva -->
+                                <th>Observación / Destino</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -494,6 +535,7 @@
                     <select id="editWarehouse" class="form-control" required>
                         <option value="Bodega DIF">Bodega DIF</option>
                         <option value="Bodega Corona">Bodega Corona</option>
+                        <option value="DIF Dirección">DIF Dirección (Resguardo)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -510,6 +552,40 @@
                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button type="submit" class="btn-action" style="flex: 1; justify-content: center;">Guardar Cambios</button>
                     <button type="button" id="closeEditBtn" class="btn-action" style="flex: 1; justify-content: center; background: var(--gray-300); color: var(--dark);">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE ENTREGA Y BAJA DESDE DIF DIRECCIÓN -->
+    <div id="deliveryModal" class="login-overlay hidden" style="align-items: center;">
+        <div class="login-card" style="max-width: 480px;">
+            <div class="login-header" style="margin-bottom: 20px;">
+                <h2 class="login-title">Entrega y Baja de Stock</h2>
+                <p class="login-subtitle">Emitir vale de salida definitivo al ciudadano</p>
+            </div>
+            <form id="direcCheckoutForm">
+                <input type="hidden" id="modalInventoryId">
+                <div class="form-group">
+                    <label class="form-label">Artículo Seleccionado</label>
+                    <p id="modalItemName" style="margin: 5px 0; font-weight: 600; color: var(--dark);"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nombre del Beneficiario Final (Ciudadano)</label>
+                    <input type="text" id="modalBeneficiary" class="form-control" style="padding-left: 14px;" placeholder="Nombre completo" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Cantidad a Entregar</label>
+                    <input type="number" id="modalDeliverQty" class="form-control" style="padding-left: 14px;" min="1" required>
+                    <small id="modalMaxHelp" style="color: var(--gray-600); display: block; margin-top: 4px;"></small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Observación / Folio de Solicitud</label>
+                    <input type="text" id="modalObservation" class="form-control" style="padding-left: 14px;" value="Entrega final a ciudadano desde DIF Dirección" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-action" style="flex: 1; justify-content: center; background: var(--success);"><i class="fa-solid fa-check"></i> Generar Vale y Dar de Baja</button>
+                    <button type="button" id="closeDeliveryModalBtn" class="btn-action" style="flex: 1; justify-content: center; background: var(--gray-300); color: var(--dark);" onclick="closeDeliveryModal()">Cancelar</button>
                 </div>
             </form>
         </div>
@@ -556,7 +632,8 @@
             <div class="voucher-print-layout" id="voucherContentArea"></div>
         </div>
     </div>
-    <!-- SCRIPT FIREBASE MODULAR Y LÓGICA DEL SISTEMA -->
+</body>
+<!-- SCRIPT FIREBASE MODULAR Y LÓGICA DEL SISTEMA -->
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -645,7 +722,7 @@
 
         function generateSmartCode(dept, warehouse, name) {
             const deptMap = { 'Trabajo Social': 'TS', 'Población Vulnerable': 'PV' };
-            const whMap = { 'Bodega DIF': 'DIF', 'Bodega Corona': 'COR' };
+            const whMap = { 'Bodega DIF': 'DIF', 'Bodega Corona': 'COR', 'Oficina DIF (Resguardo)': 'OFI' };
             const deptCode = deptMap[dept] || 'GEN';
             const whCode = whMap[warehouse] || 'ALM';
             const cleanName = name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase();
@@ -657,23 +734,26 @@
             usuarioActivoActual = username;
             const departamento = userData.dep;
 
-            const tabRegistrarBtn = document.querySelector('.tab-btn[data-tab="tab-registrar"]') || 
-                                    document.querySelector('.tab-btn[data-tab="registrar"]') ||
-                                    Array.from(document.querySelectorAll('.tab-btn')).find(el => el.textContent.includes('Registrar') || el.textContent.includes('Entrada'));
-
+            const tabRegistrarBtn = document.querySelector('.tab-btn[data-tab="tab-agregar"]');
             const inputBeneficiario = document.getElementById('valeBeneficiary');
             const deptSelect = document.getElementById('valeDeptSelect');
+            const inputObs = document.getElementById('valeObservation');
 
             if (inputBeneficiario) {
                 inputBeneficiario.value = username;
             }
 
-            if (departamento === "SOCIAL") {
+            if (inputObs && !inputObs.value) {
+                inputObs.value = "Para resguardo en Oficinas del DIF (Trabajo Social)";
+            }
+
+            // Solo los administradores (ROL GLOBAL) pueden registrar nuevos productos o editar/eliminar
+            if (departamento !== "GLOBAL") {
                 if (tabRegistrarBtn) {
                     tabRegistrarBtn.style.display = 'none';
                 }
                 
-                const contenidoRegistrar = document.getElementById('tab-registrar') || document.getElementById('registrar');
+                const contenidoRegistrar = document.getElementById('tab-agregar');
                 if (contenidoRegistrar && contenidoRegistrar.classList.contains('active')) {
                     switchTab('tab-vales');
                 }
@@ -682,13 +762,21 @@
                     inputBeneficiario.readOnly = true;
                 }
 
-                if (deptSelect) {
-                    deptSelect.innerHTML = '<option value="Trabajo Social">Trabajo Social</option>';
-                    deptSelect.value = 'Trabajo Social';
-                    deptSelect.disabled = true;
+                if (departamento === "SOCIAL") {
+                    if (deptSelect) {
+                        deptSelect.innerHTML = '<option value="Trabajo Social">Trabajo Social</option>';
+                        deptSelect.value = 'Trabajo Social';
+                        deptSelect.disabled = true;
+                    }
+                } else if (departamento === "VULNERABLE") {
+                    if (deptSelect) {
+                        deptSelect.innerHTML = '<option value="Población Vulnerable">Población Vulnerable</option>';
+                        deptSelect.value = 'Población Vulnerable';
+                        deptSelect.disabled = true;
+                    }
                 }
 
-                showToast('Perfil Restringido', 'Modo Trabajo Social: Solo visualización de stock y creación de vales.', 'warning');
+                showToast('Perfil Restringido', `Modo Operativo (${departamento}): Creación de vales y consulta de stock.`, 'warning');
             } else {
                 if (tabRegistrarBtn) {
                     tabRegistrarBtn.style.display = 'inline-block';
@@ -784,16 +872,20 @@
             const end = start + invRowsPerPage;
             const paginatedItems = inventoryCache.slice(start, end);
 
-            const isSocialUser = (usuarioActivoActual === 'monse.plata' || usuarioActivoActual === 'juanita.campechano' || (systemUsers[usuarioActivoActual] && systemUsers[usuarioActivoActual].dep === 'SOCIAL'));
+            const userData = systemUsers[usuarioActivoActual];
+            const isAdmin = (userData && userData.dep === 'GLOBAL');
 
             paginatedItems.forEach((item) => {
-                const badgeClass = item.warehouse === 'Bodega DIF' ? 'badge-dif' : 'badge-corona';
+                let badgeClass = 'badge-dif';
+                if (item.warehouse === 'Bodega Corona') badgeClass = 'badge-corona';
+                else if (item.warehouse === 'Oficina DIF (Resguardo)') badgeClass = 'badge-oficina';
+
                 const isLow = item.qty <= 5;
                 const stockBadge = isLow 
                     ? `<span class="badge-stock-low"><i class="fa-solid fa-triangle-exclamation"></i> ${item.qty} (Bajo)</span>` 
                     : `<span class="badge-stock-ok">${item.qty}</span>`;
 
-                const actionsHtml = isSocialUser 
+                const actionsHtml = !isAdmin 
                     ? `<span style="color: var(--gray-400); font-style: italic; font-size: 0.8rem;">Solo lectura</span>`
                     : `
                         <button class="btn-edit" data-id="${item.id}"><i class="fa-solid fa-pen"></i> Editar</button>
@@ -812,7 +904,7 @@
                 tbody.appendChild(tr);
             });
 
-            if (!isSocialUser) {
+            if (isAdmin) {
                 tbody.querySelectorAll('.btn-edit').forEach(btn => {
                     btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
                 });
@@ -917,7 +1009,7 @@
                     type: 'doughnut',
                     data: {
                         labels: whLabels.length ? whLabels : ['Sin datos'],
-                        datasets: [{ data: whData.length ? whData : [1], backgroundColor: ['#7a1c32', '#f59e0b', '#10b981'], borderWidth: 1 }]
+                        datasets: [{ data: whData.length ? whData : [1], backgroundColor: ['#7a1c32', '#f59e0b', '#10b981', '#6366f1'], borderWidth: 1 }]
                     },
                     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
                 });
@@ -943,7 +1035,6 @@
                 });
             }
 
-            // Salidas por departamento
             const valesDept = {};
             voucherCache.forEach(v => {
                 const dept = v.dept || 'Desconocido';
@@ -1006,22 +1097,22 @@
             const end = start + histRowsPerPage;
             const paginatedVouchers = voucherCache.slice(start, end);
 
-            const isSocialUser = (usuarioActivoActual === 'monse.plata' || usuarioActivoActual === 'juanita.campechano' || (systemUsers[usuarioActivoActual] && systemUsers[usuarioActivoActual].dep === 'SOCIAL'));
+            const userData = systemUsers[usuarioActivoActual];
+            const isAdmin = (userData && userData.dep === 'GLOBAL');
 
             paginatedVouchers.forEach((v) => {
                 let productNames = '';
                 let productQtys = '';
 
                 if (v.items && Array.isArray(v.items)) {
-                    productNames = v.items.map(i => `${i.productName} <small style="color: var(--gray-500);">(${i.code})</small>`).join('<br>');
+                    productNames = v.items.map(i => `${i.productName} <small style="color: var(--gray-500);">(${i.code} - ${i.warehouse})</small>`).join('<br>');
                     productQtys = v.items.map(i => `<strong>${i.qty}</strong>`).join('<br>');
                 } else {
                     productNames = `${v.productName || 'N/A'} <small style="color: var(--gray-500);">(${v.code || ''})</small>`;
                     productQtys = `<strong>${v.qty || 0}</strong>`;
                 }
 
-                // Sin botón de editar, solo Reimprimir y Eliminar/Devolver
-                const actionsHtml = isSocialUser 
+                const actionsHtml = !isAdmin 
                     ? `
                         <div style="display: flex; gap: 4px; justify-content: flex-end; align-items: center;">
                             <button class="btn-print" data-folio="${v.folio}" title="Reimprimir Vale" style="padding: 4px 8px; font-size: 0.75rem;"><i class="fa-solid fa-print"></i></button>
@@ -1053,7 +1144,7 @@
                 btn.addEventListener('click', () => reprintVoucher(btn.getAttribute('data-folio')));
             });
 
-            if (!isSocialUser) {
+            if (isAdmin) {
                 tbody.querySelectorAll('.btn-delete-voucher').forEach(btn => {
                     btn.addEventListener('click', () => deleteVoucherMulti(btn.getAttribute('data-id')));
                 });
@@ -1118,9 +1209,8 @@
             }
         }
 
-        // ==========================================
-        // CONTROLADORES DE FORMULARIOS E INVENTARIO
-        // ==========================================
+       // Asegúrate de pegar esta sección en tu bloque de scripts para corregir el desfase de valores y actualizar en tiempo real la pestaña de DIF Dirección.
+
         const voucherForm = document.getElementById('voucherForm');
         if (voucherForm) {
             voucherForm.addEventListener('submit', async (e) => {
@@ -1128,7 +1218,14 @@
                 const dept = document.getElementById('valeDeptSelect').value;
                 const beneficiaryInput = document.getElementById('valeBeneficiary');
                 const beneficiary = usuarioActivoActual ? usuarioActivoActual : (beneficiaryInput ? beneficiaryInput.value.trim() : '');
-                const observation = document.getElementById('valeObservation').value.trim();
+                
+                // Leemos el selector que agregamos en el HTML con el value correcto "resguardo_direccion"
+                const destinationType = document.getElementById('valeDestinationType') ? document.getElementById('valeDestinationType').value : 'salida_final';
+                const observationInput = document.getElementById('valeObservation').value.trim();
+                
+                const observation = destinationType === 'resguardo_direccion' 
+                    ? `[Enviado a DIF Dirección] ${observationInput}` 
+                    : `[Salida Final] ${observationInput}`;
 
                 if (currentVoucherItems.length === 0) {
                     showToast('Advertencia', 'Debe agregar al menos un artículo a la lista del vale antes de generarlo.', 'warning');
@@ -1137,10 +1234,30 @@
 
                 try {
                     for (const item of currentVoucherItems) {
+                        // 1. Descontar del inventario de origen
                         const invItem = inventoryCache.find(i => i.id === item.inventoryId);
                         if (invItem) {
                             const newQty = invItem.qty - item.qty;
                             await updateDoc(doc(db, 'inventario', item.inventoryId), { qty: newQty });
+                        }
+
+                        // 2. Si se eligió enviar a DIF Dirección, sumar o crear el registro con bodega exactísima "DIF Dirección"
+                        if (destinationType === 'resguardo_direccion') {
+                            const existingDirecItem = inventoryCache.find(i => i.name.toLowerCase() === item.productName.toLowerCase() && i.warehouse === 'DIF Dirección');
+
+                            if (existingDirecItem) {
+                                const updatedDirecQty = existingDirecItem.qty + item.qty;
+                                await updateDoc(doc(db, 'inventario', existingDirecItem.id), { qty: updatedDirecQty });
+                            } else {
+                                const newDirecCode = generateSmartCode(dept, 'DIF Dirección', item.productName);
+                                await addDoc(collection(db, 'inventario'), {
+                                    code: newDirecCode,
+                                    name: item.productName,
+                                    warehouse: 'DIF Dirección',
+                                    qty: item.qty,
+                                    dept: dept
+                                });
+                            }
                         }
                     }
 
@@ -1155,6 +1272,7 @@
                         items: currentVoucherItems,
                         beneficiary,
                         observation,
+                        destinationType,
                         timestamp: serverTimestamp()
                     };
 
@@ -1169,28 +1287,39 @@
                         const inputBeneficiario = document.getElementById('valeBeneficiary');
                         if (inputBeneficiario) inputBeneficiario.value = usuarioActivoActual;
 
+                        const inputObs = document.getElementById('valeObservation');
+                        if (inputObs) inputObs.value = "Envío de stock para resguardo en oficinas del DIF";
+
                         const userObj = systemUsers[usuarioActivoActual];
-                        if (userObj && userObj.dep === "SOCIAL") {
+                        if (userObj && userObj.dep !== "GLOBAL") {
                             if (inputBeneficiario) inputBeneficiario.readOnly = true;
                             const deptSel = document.getElementById('valeDeptSelect');
                             if (deptSel) {
-                                deptSel.value = 'Trabajo Social';
+                                deptSel.value = userObj.dep === 'SOCIAL' ? 'Trabajo Social' : 'Población Vulnerable';
                                 deptSel.disabled = true;
                             }
                         }
                     }
                     filterProductsByDept();
 
-                    showToast('Vale Generado', `Folio ${folio} emitido con éxito y stock descontado.`, 'success');
+                    // Forzar actualización inmediata de la vista de DIF Dirección
+                    if (typeof renderDireccionInventory === 'function') {
+                        renderDireccionInventory();
+                    }
+
+                    const successMessage = destinationType === 'resguardo_direccion' 
+                        ? `Folio ${folio} emitido. Artículos trasladados a DIF Dirección.` 
+                        : `Folio ${folio} emitido con éxito y stock descontado.`;
+
+                    showToast('Vale Generado', successMessage, 'success');
                     displayVoucherModal(voucherData);
 
                 } catch (error) {
-                    console.error("Error al emitir vale múltiple:", error);
+                    console.error("Error al emitir el vale:", error);
                     showToast('Error', 'No se pudo procesar la salida de almacén.', 'error');
                 }
             });
         }
-
         const addItemForm = document.getElementById('addItemForm');
         if (addItemForm) {
             addItemForm.addEventListener('submit', async (e) => {
@@ -1287,7 +1416,7 @@
             filtered.forEach(item => {
                 const opt = document.createElement('option');
                 opt.value = item.id;
-                opt.textContent = `${item.name} [Código: ${item.code}] (Stock: ${item.qty} - ${item.warehouse})`;
+                opt.textContent = `${item.name} [Código: ${item.code}] (Stock: ${item.qty} - Ubicación: ${item.warehouse})`;
                 productSelect.appendChild(opt);
             });
         }
@@ -1297,9 +1426,6 @@
             valeDeptSelect.addEventListener('change', filterProductsByDept);
         }
 
-        // ==========================================
-        // IMPRESIÓN Y MODAL DE VALES
-        // ==========================================
         function displayVoucherModal(v) {
             if (!v) return;
 
@@ -1320,7 +1446,7 @@
                 itemsRowsHTML += `
                     <tr>
                         <td style="border: 1px solid #ccc; padding: 5px; text-align: center;">${i.code || 'N/A'}</td>
-                        <td style="border: 1px solid #ccc; padding: 5px;">${i.productName || 'N/A'} (${i.warehouse || 'Bodega DIF'})</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">${i.productName || 'N/A'} <br><small style="color: #666;">(Origen en stock: ${i.warehouse || 'Bodega DIF'})</small></td>
                         <td style="border: 1px solid #ccc; padding: 5px; text-align: center;"><strong>${i.qty || 0}</strong></td>
                     </tr>
                 `;
@@ -1333,20 +1459,23 @@
                         <span>ORIGINAL - ARCHIVO / COMPROBANTE</span>
                     </div>
                     <img src="${headerLogoUrl}" alt="Logotipo DIF" class="voucher-header-img" onerror="this.style.display='none'">
-                    <div style="text-align: center; margin-bottom: 8px;">
-                        <strong style="font-size: 0.9rem; color: var(--primary);">VALE DE SALIDA MÚLTIPLE (${v.folio || ''})</strong>
+                    <div style="text-align: center; margin-bottom: 6px;">
+                        <strong style="font-size: 0.95rem; color: var(--primary);">VALE DE SALIDA Y DESTINO DE APARATO FUNCIONAL (${v.folio || ''})</strong>
+                    </div>
+                    <div style="background: #fdf2f4; border: 1px solid #fbcfe8; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; font-size: 0.82rem;">
+                        <i class="fa-solid fa-building-shield" style="color: var(--primary);"></i> <strong>Carácter del Movimiento:</strong> Destinado para resguardo y control operativo en Oficinas del DIF Municipal.
                     </div>
                     <div class="voucher-grid" style="margin-bottom: 10px;">
                         <div><strong>Fecha:</strong> ${v.date || ''}</div>
                         <div><strong>Departamento:</strong> ${v.dept || ''}</div>
-                        <div><strong>Beneficiario:</strong> ${v.beneficiary || ''}</div>
-                        <div style="grid-column: span 3;"><strong>Observación / Destino:</strong> ${v.observation || 'Sin observaciones'}</div>
+                        <div><strong>Emitido por:</strong> ${v.beneficiary || ''}</div>
+                        <div style="grid-column: span 3;"><strong>Destino / Observación Específica:</strong> <span style="background: #fffbeb; padding: 2px 6px; border-radius: 4px; border: 1px solid #fef3c7;">${v.observation || 'Sin observaciones'}</span></div>
                     </div>
                     <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 15px;">
                         <thead>
                             <tr style="background: #f3f4f6;">
                                 <th style="border: 1px solid #ccc; padding: 5px;">Código</th>
-                                <th style="border: 1px solid #ccc; padding: 5px;">Artículo / Bodega</th>
+                                <th style="border: 1px solid #ccc; padding: 5px;">Descripción del Aparato Funcional</th>
                                 <th style="border: 1px solid #ccc; padding: 5px;">Cant.</th>
                             </tr>
                         </thead>
@@ -1356,8 +1485,8 @@
                     </table>
                     <img src="${footerLogoUrl}" alt="Slogan Institucional" class="voucher-footer-img" onerror="this.style.display='none'">
                     <div class="voucher-signatures">
-                        <div class="signature-line">Entrega (Almacén)</div>
-                        <div class="signature-line">Recibe (Solicitante)</div>
+                        <div class="signature-line">Entrega / Control Almacén</div>
+                        <div class="signature-line">Recibe (Resguardo Oficinas DIF)</div>
                     </div>
                 </div>
             `;
@@ -1391,9 +1520,6 @@
             });
         }
 
-        // ==========================================
-        // AUTENTICACIÓN Y SESIÓN
-        // ==========================================
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
             loginForm.addEventListener('submit', (e) => {
@@ -1487,9 +1613,6 @@
             }
         });
 
-        // ==========================================
-        // GESTIÓN DE ARTÍCULOS TEMPORALES EN VALES
-        // ==========================================
         const addVoucherItemBtn = document.getElementById('addVoucherItemBtn');
         if (addVoucherItemBtn) {
             addVoucherItemBtn.addEventListener('click', () => {
@@ -1582,6 +1705,156 @@
                 histCurrentPage = 1;
                 renderHistory();
             });
+        }
+        // Renderizar la tabla de la pestaña "DIF Dirección" filtrando solo stock en esa ubicación
+        function renderDireccionInventory() {
+            const tbody = document.getElementById('direcInventoryTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+            const direcItems = inventoryCache.filter(item => item.warehouse === 'DIF Dirección' && item.qty > 0);
+
+            if (direcItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-600);">No hay artículos en resguardo en DIF Dirección</td></tr>`;
+                return;
+            }
+
+            direcItems.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.code || 'S/C'}</strong></td>
+                    <td>${item.name}</td>
+                    <td><span class="badge" style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold;">${item.qty} unids.</span></td>
+                    <td>${item.dept || 'General'}</td>
+                    <td style="text-align: center;">
+                        <button type="button" class="btn btn-primary btn-open-delivery" data-id="${item.id}" style="padding: 6px 12px; font-size: 0.85rem; background: #0284c7; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fa-solid fa-file-export"></i> Entregar y Dar de Baja
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Abrir modal de entrega de dirección
+        window.openDeliveryModal = function(inventoryId) {
+            const item = inventoryCache.find(i => i.id === inventoryId);
+            if (!item) return;
+
+            document.getElementById('modalInventoryId').value = item.id;
+            document.getElementById('modalItemName').textContent = `${item.name} (Código: ${item.code})`;
+            document.getElementById('modalDeliverQty').value = 1;
+            document.getElementById('modalDeliverQty').max = item.qty;
+            document.getElementById('modalMaxHelp').textContent = `Máximo disponible para entregar: ${item.qty}`;
+            document.getElementById('modalBeneficiary').value = '';
+            
+            document.getElementById('deliveryModal').style.display = 'flex';
+        };
+
+        window.closeDeliveryModal = function() {
+            document.getElementById('deliveryModal').style.display = 'none';
+        };
+
+        // Procesar la salida, generar el vale final y descontar de la base de datos automáticamente
+        const direcCheckoutForm = document.getElementById('direcCheckoutForm');
+        if (direcCheckoutForm) {
+            direcCheckoutForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const inventoryId = document.getElementById('modalInventoryId').value;
+                const beneficiary = document.getElementById('modalBeneficiary').value.trim();
+                const deliverQty = parseInt(document.getElementById('modalDeliverQty').value) || 0;
+                const observation = document.getElementById('modalObservation').value.trim();
+
+                const item = inventoryCache.find(i => i.id === inventoryId);
+                if (!item) {
+                    showToast('Error', 'El artículo ya no existe en el inventario.', 'error');
+                    return;
+                }
+
+                if (deliverQty <= 0 || deliverQty > item.qty) {
+                    showToast('Cantidad inválida', `La cantidad debe ser entre 1 y ${item.qty}.`, 'warning');
+                    return;
+                }
+
+                try {
+                    // 1. Descontar las piezas automáticamente del inventario en Firestore
+                    const newQty = item.qty - deliverQty;
+                    await updateDoc(doc(db, 'inventario', inventoryId), { qty: newQty });
+
+                    // 2. Generar el Vale de Salida Oficial
+                    const folioNum = voucherCache.length + 1;
+                    const folio = `SAL-DIR-2026-${String(folioNum).padStart(4, '0')}`;
+                    const currentDate = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+                    const exitVoucher = {
+                        folio,
+                        date: currentDate,
+                        dept: item.dept || 'DIF Dirección',
+                        items: [{
+                            inventoryId: item.id,
+                            code: item.code,
+                            productName: item.name,
+                            warehouse: 'DIF Dirección',
+                            qty: deliverQty
+                        }],
+                        beneficiary: beneficiary,
+                        observation: `Salida de stock y baja desde DIF Dirección: ${observation}`,
+                        timestamp: serverTimestamp()
+                    };
+
+                    const docRef = await addDoc(collection(db, 'vales'), exitVoucher);
+                    exitVoucher.id = docRef.id;
+
+                    // 3. Limpiar y actualizar interfaz
+                    closeDeliveryModal();
+                    renderDireccionInventory();
+                    showToast('Salida Exitosa', `Folio ${folio} generado. Se descontaron ${deliverQty} piezas de DIF Dirección.`, 'success');
+                    
+                    // Mostrar modal del vale impreso
+                    displayVoucherModal(exitVoucher);
+
+                } catch (error) {
+                    console.error("Error al procesar la salida y baja:", error);
+                    showToast('Error', 'No se pudo procesar la baja de stock.', 'error');
+                }
+            });
+        }
+        // Escuchador global para abrir el modal de entrega de dirección sin fallos de ámbito
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-open-delivery');
+            if (btn) {
+                const inventoryId = btn.getAttribute('data-id');
+                const item = inventoryCache.find(i => i.id === inventoryId);
+                
+                if (item) {
+                    document.getElementById('modalInventoryId').value = item.id;
+                    document.getElementById('modalItemName').textContent = `${item.name} (Código: ${item.code})`;
+                    document.getElementById('modalDeliverQty').value = 1;
+                    document.getElementById('modalDeliverQty').max = item.qty;
+                    document.getElementById('modalMaxHelp').textContent = `Máximo disponible para entregar: ${item.qty}`;
+                    document.getElementById('modalBeneficiary').value = '';
+                    
+                    const deliveryModal = document.getElementById('deliveryModal');
+                    if (deliveryModal) {
+                        deliveryModal.classList.remove('hidden');
+                        deliveryModal.style.display = 'flex';
+                    }
+                }
+            }
+        });
+
+        // Asegurar cierre correcto del modal de entrega
+        window.closeDeliveryModal = function() {
+            const deliveryModal = document.getElementById('deliveryModal');
+            if (deliveryModal) {
+                deliveryModal.classList.add('hidden');
+                deliveryModal.style.display = 'none';
+            }
+        };
+
+        const closeDeliveryBtn = document.getElementById('closeDeliveryModalBtn');
+        if (closeDeliveryBtn) {
+            closeDeliveryBtn.addEventListener('click', closeDeliveryModal);
         }
 </script>
 </body>
