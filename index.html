@@ -3,219 +3,563 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DIF 2026-2029 - BODEGA</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Sistema Integral de Bodega e Inventarios - DIF San Andrés Tuxtla</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js para Estadísticas y Gráficas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-<style>
-        :root { --primary: #6b1d31; --secondary: #b38e5d; --success: #18bc9c; --danger: #e74c3c; --info: #3498db; }
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; }
-        
-        /* Menú Hamburguesa */
-        .menu-toggle { display: none; position: fixed; top: 15px; left: 15px; z-index: 9999; cursor: pointer; font-size: 25px; color: var(--primary); background: white; padding: 5px 12px; border-radius: 10px; border: 1px solid #ddd; }
-        
-        #login-page { display: flex; align-items: center; justify-content: center; height: 100vh; background: linear-gradient(135deg, #6b1d31 0%, #3a0f1b 100%); position: fixed; width: 100%; z-index: 5000; }
-        .login-card { width: 90%; max-width: 420px; padding: 40px; background: white; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-top: 10px solid var(--secondary); }
 
-        .sidebar { background: var(--primary); height: 100vh; color: white; position: fixed; width: 230px; z-index: 1000; border-right: 5px solid var(--secondary); display: flex; flex-direction: column; transition: 0.3s; }
-        .content { margin-left: 230px; padding: 25px; width: calc(100% - 230px); box-sizing: border-box; }
-
-        @media (max-width: 768px) {
-            .menu-toggle { display: block; }
-            .sidebar { left: -230px; }
-            .sidebar.active { left: 0; }
-            .content { margin-left: 0 !important; width: 100% !important; padding: 15px; }
-            .table-container { overflow-x: auto; }
+    <style>
+        :root { 
+            --primary: #7a1c32; /* Guinda institucional */
+            --primary-hover: #5e1325; 
+            --primary-light: #fdf2f4; 
+            --success: #10b981; 
+            --error: #ef4444; 
+            --warning: #f59e0b; 
+            --dark: #1e1e24; 
+            --gray-100: #f8fafc; 
+            --gray-200: #e2e8f0; 
+            --gray-300: #cbd5e1; 
+            --gray-600: #475569; 
+            --gray-800: #1e293b; 
+            --border-radius: 12px; 
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        body { background-color: #f1f5f9; color: var(--gray-800); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
-        .nav-link { color: #f8f9fa; padding: 16px; border: none; background: none; width: 100%; text-align: left; transition: 0.3s; }
-        .nav-link:hover { background: rgba(255,255,255,0.15); color: var(--secondary); }
-        .nav-link.active { background-color: var(--secondary) !important; color: white !important; font-weight: bold; }
-        .btn-logout { margin-top: auto; background: rgba(0,0,0,0.3); border: none; color: #ffadad; padding: 20px; width: 100%; font-weight: bold; }
-        .table-container { background: white; border-radius: 18px; padding: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); margin-bottom: 30px; }
-        .img-prod { width: 50px; height: 50px; object-fit: cover; border-radius: 12px; }
-        #edit-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 6000; align-items: center; justify-content: center; }
+        /* NOTIFICACIONES TOASTS */
+        #toastContainer { position: fixed; top: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 12px; pointer-events: none; max-width: 420px; width: calc(100% - 48px); }
+        .toast { pointer-events: auto; display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px; background: #fff; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12); border-left: 5px solid var(--primary); animation: toastSlideIn 0.4s ease forwards; transition: var(--transition); position: relative; overflow: hidden; }
+        .toast.toast-exiting { animation: toastSlideOut 0.3s ease forwards; }
+        @keyframes toastSlideIn { from { opacity: 0; transform: translateX(100%) scale(0.95); } to { opacity: 1; transform: translateX(0) scale(1); } }
+        @keyframes toastSlideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+        .toast-icon { font-size: 1.3rem; margin-top: 2px; }
+        .toast-content { flex-grow: 1; }
+        .toast-title { font-weight: 600; font-size: 0.95rem; color: var(--dark); margin-bottom: 2px; }
+        .toast-message { font-size: 0.85rem; color: var(--gray-600); }
+        .toast.success { border-left-color: var(--success); } .toast.success .toast-icon { color: var(--success); }
+        .toast.error { border-left-color: var(--error); } .toast.error .toast-icon { color: var(--error); }
+        .toast.warning { border-left-color: var(--warning); } .toast.warning .toast-icon { color: var(--warning); }
+
+        /* LOGIN POPUP CON BLUR */
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(30, 30, 36, 0.7); backdrop-filter: blur(12px) brightness(0.85); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; transition: opacity 0.4s ease, visibility 0.4s ease; }
+        .login-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .login-card { background: #fff; width: 100%; max-width: 420px; border-radius: 20px; padding: 36px 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; }
+        .login-header { text-align: center; margin-bottom: 28px; }
+        .login-icon-badge { width: 60px; height: 60px; background: var(--primary-light); color: var(--primary); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 16px; }
+        .login-title { font-size: 1.4rem; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+        .login-subtitle { font-size: 0.88rem; color: var(--gray-600); }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--gray-800); margin-bottom: 8px; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-icon { position: absolute; left: 14px; color: var(--gray-600); font-size: 0.95rem; }
+        .form-control { width: 100%; padding: 12px 14px 12px 42px; border: 1.5px solid var(--gray-200); border-radius: 10px; font-size: 0.95rem; color: var(--dark); background: var(--gray-100); outline: none; transition: var(--transition); }
+        .form-control:focus { background: #fff; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(122, 28, 50, 0.12); }
+        select.form-control { padding-left: 14px; }
+        .btn-submit { width: 100%; padding: 13px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+        .btn-submit:hover { background: var(--primary-hover); }
+
+        /* CABECERA Y NAVEGACIÓN */
+        .app-header { background: #fff; border-bottom: 1px solid var(--gray-200); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-logo-img { max-height: 48px; object-fit: contain; }
+        .brand-text { display: flex; flex-direction: column; }
+        .brand-title { font-size: 0.88rem; font-weight: 700; color: var(--dark); line-height: 1.2; }
+        .brand-subtitle { font-size: 0.72rem; color: var(--gray-600); }
+
+        .user-nav { display: flex; align-items: center; gap: 16px; }
+        .user-badge { display: flex; align-items: center; gap: 10px; background: var(--gray-100); padding: 6px 14px 6px 8px; border-radius: 30px; border: 1px solid var(--gray-200); }
+        .avatar { width: 32px; height: 32px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; }
+        .user-info span { display: block; font-size: 0.85rem; font-weight: 600; }
+        .user-info small { font-size: 0.72rem; color: var(--gray-600); text-transform: uppercase; }
+        .btn-logout { background: #fee2e2; color: var(--error); border: none; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .btn-logout:hover { background: #fca5a5; }
+
+        .tabs-nav-container { background: #fff; border-bottom: 1px solid var(--gray-200); padding: 0 32px; overflow-x: auto; }
+        .tabs-wrapper { display: flex; gap: 8px; max-width: 1200px; margin: 0 auto; white-space: nowrap; }
+        .tab-btn { padding: 16px 20px; border: none; background: transparent; color: var(--gray-600); font-size: 0.92rem; font-weight: 500; cursor: pointer; border-bottom: 3px solid transparent; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; }
+        .tab-btn:hover { color: var(--primary); background: rgba(122, 28, 50, 0.04); }
+        .tab-btn.active { color: var(--primary); font-weight: 600; border-bottom-color: var(--primary); background: var(--primary-light); }
+
+        .main-content { flex-grow: 1; padding: 32px; max-width: 1200px; width: 100%; margin: 0 auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .content-card { background: #fff; border-radius: var(--border-radius); padding: 28px; border: 1px solid var(--gray-200); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 24px; }
+        .card-title { font-size: 1.2rem; font-weight: 700; color: var(--dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 16px; }
+        .btn-action { padding: 10px 18px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; background: var(--primary); color: #fff; display: inline-flex; align-items: center; gap: 8px; transition: var(--transition); }
+        .btn-action:hover { background: var(--primary-hover); }
+        
+        .btn-edit { background: #fdf2f4; color: var(--primary); padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
+        .btn-edit:hover { background: #fce7ec; }
+        .btn-delete { background: #fee2e2; color: #991b1b; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 0.8rem; margin-left: 6px; }
+        .btn-delete:hover { background: #fca5a5; }
+        .btn-print { background: #fdf2f4; color: var(--primary); padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 0.8rem; }
+        .btn-print:hover { background: #fce7ec; }
+        .btn-edit-voucher { background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 0.8rem; margin-left: 6px; }
+        .btn-edit-voucher:hover { background: #fde68a; }
+        .btn-delete-voucher { background: #fee2e2; color: #991b1b; padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; font-size: 0.8rem; margin-left: 6px; }
+        .btn-delete-voucher:hover { background: #fca5a5; }
+
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 16px; text-align: left; font-size: 0.9rem; }
+        .data-table th, .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--gray-200); }
+        .data-table th { background: var(--gray-100); font-weight: 600; color: var(--dark); }
+        .badge-bodega { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .badge-dif { background: #fdf2f4; color: var(--primary); }
+        .badge-corona { background: #fef3c7; color: #92400e; }
+        
+        .badge-stock-low { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-stock-ok { background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        
+        /* TARJETAS KPI */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 24px; }
+        .kpi-card { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid var(--gray-200); border-left: 5px solid var(--primary); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); }
+        .kpi-title { font-size: 0.82rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; margin-bottom: 6px; }
+        .kpi-value { font-size: 1.6rem; font-weight: 700; color: var(--dark); }
+
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 24px; margin-top: 16px; }
+        .chart-container { background: #fafafa; border: 1px solid var(--gray-200); border-radius: 12px; padding: 20px; position: relative; height: 340px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .alert-box-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+        .alert-banner { background: #fff5f5; border-left: 4px solid var(--error); padding: 14px 18px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; color: #7f1d1d; }
+        .alert-banner i { font-size: 1.2rem; color: var(--error); }
+
+        /* MODAL DE VALE E IMPRESIÓN DUAL CON LOGOS */
+        .voucher-modal-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(30, 30, 36, 0.7); backdrop-filter: blur(8px); z-index: 10001; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .voucher-modal-container.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .voucher-box { background: #fff; width: 100%; max-width: 800px; border-radius: 16px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
+        
+        .voucher-print-layout { display: flex; flex-direction: column; gap: 20px; }
+        .voucher-copy { border: 2px dashed var(--gray-300); padding: 18px; border-radius: 10px; position: relative; background: #fafafa; }
+        
+        .voucher-header-img { width: 100%; max-height: 55px; object-fit: contain; margin-bottom: 8px; }
+        .voucher-footer-img { width: 100%; max-height: 55px; object-fit: contain; margin-top: 10px; }
+
+        .voucher-copy-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 10px; }
+        .voucher-copy-header h3 { font-size: 0.95rem; color: var(--dark); font-weight: 700; }
+        .voucher-copy-header span { font-size: 0.75rem; background: var(--primary-light); color: var(--primary); padding: 3px 8px; border-radius: 6px; font-weight: 600; }
+        .voucher-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 0.82rem; margin-bottom: 12px; }
+        .voucher-grid div strong { color: var(--gray-600); }
+        .voucher-signatures { display: flex; justify-content: space-between; margin-top: 20px; text-align: center; font-size: 0.78rem; }
+        .signature-line { width: 40%; border-top: 1px solid var(--dark); padding-top: 4px; }
+
         @media print {
-        /* Ocultar elementos que no deben imprimirse */
-        .no-print, .btn, .sidebar, .menu-toggle, #buscador, .nav-link { display: none !important; }
-        /* Ajustar el contenedor principal */
-        .content { margin-left: 0 !important;   width: 100% !important; padding: 0 !important;}
-        /* Estilo de la tabla para impresión */
-        .table-container { box-shadow: none !important; border: none !important; padding: 0 !important; }
-        table { width: 100%; border-collapse: collapse; }
-    
-    th, td {
-        border: 1px solid #ddd !important;
-        padding: 8px !important;
-    }
-    
-    #header-print {
-        display: block !important;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #6b1d31;
-    }
-}
+            body * { visibility: hidden; }
+            #printableVoucherModal, #printableVoucherModal * { visibility: visible; }
+            #printableVoucherModal { position: absolute; left: 0; top: 0; width: 100%; background: #fff; padding: 0; }
+            .voucher-box { box-shadow: none; max-height: none; padding: 10px; width: 100%; max-width: 100%; }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body>
-
-    <div id="login-page">
-        <div class="login-card text-center">
-            <h1 style="color: var(--primary); font-weight: 900; margin-bottom: 0;">DIF 2026 - 2029</h1>
-            <p style="color: var(--secondary); font-weight: 700; letter-spacing: 2px; margin-bottom: 35px;">BODEGA CENTRAL</p>
-            <input type="password" id="pass" class="form-control form-control-lg text-center rounded-pill mb-4 shadow-sm" placeholder="Contraseña">
-            <button id="btn-login" class="btn btn-lg w-100 rounded-pill fw-bold shadow" style="background: var(--primary); color: white;">ENTRAR</button>
+    <div id="toastContainer"></div>
+    <!-- LOGIN POPUP CON VALIDACIÓN DE USUARIOS INSTITUCIONALES -->
+    <div id="loginModal" class="login-overlay">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon-badge"><i class="fa-solid fa-warehouse"></i></div>
+                <h2 class="login-title">Control de Bodega</h2>
+                <p class="login-subtitle">DIF Municipal San Andrés Tuxtla</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="username">Usuario Institucional</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-user input-icon"></i>
+                        <input type="text" id="username" class="form-control" placeholder="Ej: juanita.campechano" required autocomplete="username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Contraseña</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <span>Iniciar Sesión</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
         </div>
     </div>
 
-    <div id="edit-modal">
-        <div class="card p-4 shadow-lg border-0" style="width: 500px; border-radius: 25px;">
-            <h4 class="fw-bold text-center mb-4">Actualizar Producto</h4>
-            <input type="hidden" id="edit-id">
-            <div class="mb-3"><label class="fw-bold small">CÓDIGO BODEGA:</label><input type="text" id="edit-bod" class="form-control"></div>
-            <div class="mb-3"><label class="fw-bold small">CÓDIGO SISTEMA:</label><input type="text" id="edit-cod" class="form-control"></div>
-            <div class="mb-3"><label class="fw-bold small">DESCRIPCIÓN:</label><input type="text" id="edit-desc" class="form-control"></div>
-            <div class="mb-4"><label class="fw-bold small">CAMBIAR FOTO:</label><input type="file" id="edit-file" class="form-control" accept="image/*"></div>
-            <div class="d-flex gap-3">
-                <button class="btn btn-primary w-100 py-2 rounded-pill fw-bold" onclick="guardarEdicion()">GUARDAR</button>
-                <button class="btn btn-light w-100 py-2 rounded-pill" onclick="cerrarModal()">CANCELAR</button>
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="brand">
+            <img src="Imagen2.png" alt="Logotipo DIF Municipal" class="brand-logo-img">
+            <div class="brand-text">
+                <span class="brand-title">Sistema Municipal para el Desarrollo Integral de la Familia</span>
+                <span class="brand-subtitle">San Andrés Tuxtla</span>
             </div>
         </div>
+        <div class="user-nav">
+            <div class="user-badge" id="userBadge" style="display: none;">
+                <div class="avatar" id="userAvatar">A</div>
+                <div class="user-info">
+                    <span id="userNameDisplay">Almacén</span>
+                    <small id="userDeptDisplay">Administrador</small>
+                </div>
+            </div>
+            <button class="btn-logout" id="logoutBtn" style="display: none;" type="button">
+                <i class="fa-solid fa-right-from-bracket"></i> Salir
+            </button>
+        </div>
+    </header>
+
+    <!-- NAVEGACIÓN DE PESTAÑAS -->
+    <nav class="tabs-nav-container">
+        <div class="tabs-wrapper">
+            <button class="tab-btn active" data-tab="tab-inventario">
+                <i class="fa-solid fa-boxes-packing"></i> Inventario Actual
+            </button>
+            <button class="tab-btn" data-tab="tab-agregar">
+                <i class="fa-solid fa-circle-plus"></i> Registrar Producto / Entrada
+            </button>
+            <button class="tab-btn" data-tab="tab-estadisticas">
+                <i class="fa-solid fa-chart-pie"></i> Estadísticas y Gráficas
+            </button>
+            <button class="tab-btn" data-tab="tab-vales">
+                <i class="fa-solid fa-file-invoice"></i> Vales de Salida
+            </button>
+            <button class="tab-btn" data-tab="tab-historial">
+                <i class="fa-solid fa-clock-rotate-left"></i> Historial de Salidas
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO -->
+    <main class="main-content">
+
+        <!-- PESTAÑA 1: INVENTARIO -->
+        <section id="tab-inventario" class="tab-content active">
+            <div class="content-card">
+                <h2 class="card-title"><i class="fa-solid fa-warehouse"></i> Stock en Almacenes (Base de Datos)</h2>
+                <div style="overflow-x: auto;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+    <div>
+        <label for="inventoryRowsSelect" style="font-size: 0.85rem; font-weight: 500; color: var(--gray-700);">Mostrar: </label>
+        <select id="inventoryRowsSelect" style="padding: 4px 8px; border-radius: 4px; border: 1px solid var(--gray-300);">
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="500">500</option>
+        </select>
+        <span style="font-size: 0.85rem; color: var(--gray-600); margin-left: 5px;">registros por página</span>
     </div>
+</div>
 
-    <div id="main-system" style="display:none;">
-        <div class="d-flex">
-        <div class="menu-toggle no-print" onclick="toggleMenu()" style="position: fixed; top: 15px; left: 15px; z-index: 9999; cursor: pointer; font-size: 25px; color: var(--primary);">☰</div>
-            <nav id="sidebar" class="sidebar no-print">
-                <div class="py-5 text-center">
-                    <h4 class="fw-bold mb-0">SISTEMA DIF</h4>
-                    <span class="badge" style="background: var(--secondary)">BODEGA</span>
-                </div>
-                <div class="nav flex-column">
-                    <button class="nav-link active" onclick="showTab('tab-stock', this)">📊 Stock Actual</button>
-                    <button class="nav-link" onclick="showTab('tab-graficas', this)">📈 Gráficos</button>
-                    <button class="nav-link" onclick="showTab('tab-historial', this)">🔄 Historial / Corte</button>
-                    <button class="nav-link" onclick="showTab('tab-movimiento', this)">➕ Registro Diario</button>
-                    <button class="nav-link" onclick="showTab('tab-catalogo', this)">⚙️ Catálogo / Fotos</button>
-                </div>
-                <button class="btn-logout" onclick="cerrarSesion()">🔒 CERRAR SESIÓN</button>
-            </nav>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Código Inteligente</th>
+                                <th>Artículo / Descripción</th>
+                                <th>Bodega</th>
+                                <th>Stock</th>
+                                <th>Departamento</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody"></tbody>
+                    </table>
 
-            <main class="content">
-                <div id="header-print" style="display:none;">
-                    <h2 style="color:#6b1d31">DIF MUNICIPAL 2026-2029</h2>
-                    <h4 id="print-titulo"></h4>
-                    <p>Fecha de Reporte: <span id="print-fecha"></span></p>
+                    <div id="inventoryPaginationContainer"></div>
                 </div>
+            </div>
+        </section>
 
-                <div class="mb-4 no-print">
-                    <input type="text" id="buscador" class="form-control form-control-lg rounded-pill shadow-sm px-4 border-0" placeholder="🔍 Buscar por bodega, código o descripción..." onkeyup="render()">
-                </div>
-
-                <div id="tab-stock" class="tab-pane-custom">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="fw-bold text-dark m-0">Inventario de Existencias</h3>
-                        <button onclick="imprimir('STOCK')" class="btn btn-danger btn-sm px-4 rounded-pill no-print">🖨️ IMPRIMIR REPORTE</button>
-                    </div>
-                    <div class="table-container">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Cod. Bodega</th>
-                                    <th>Código</th>
-                                    <th>Foto</th>
-                                    <th>Descripción</th>
-                                    <th class="text-center">Existencia</th>
-                                    <th class="text-center">Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-stock"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div id="tab-graficas" class="tab-pane-custom d-none">
-                    <h3 class="fw-bold mb-4">Balance Comparativo</h3>
-                    <div class="table-container"><canvas id="chartComparativo" style="max-height: 450px;"></canvas></div>
-                </div>
-
-                <div id="tab-historial" class="tab-pane-custom d-none">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="fw-bold m-0">Corte de Movimientos</h3>
-                        <button onclick="imprimir('HISTORIAL')" class="btn btn-danger btn-sm px-4 rounded-pill no-print">🖨️ IMPRIMIR CORTE</button>
-                    </div>
-                    <div class="table-container bg-light border-0 no-print">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-md-4"><label class="small fw-bold">Mes:</label><input type="month" id="corte-mes" class="form-control" onchange="render()"></div>
-                            <div class="col-md-4"><label class="small fw-bold">Quincena:</label><select id="corte-q" class="form-select" onchange="render()"><option value="0">Mes Completo</option><option value="1">1ra (01-15)</option><option value="2">2da (16-31)</option></select></div>
-                            <div class="col-md-4"><button class="btn btn-dark w-100 fw-bold" onclick="document.getElementById('corte-mes').value=''; render();">LIMPIAR</button></div>
+        <!-- PESTAÑA 2: AGREGAR / ENTRADAS -->
+        <section id="tab-agregar" class="tab-content">
+            <div class="content-card">
+                <h2 class="card-title"><i class="fa-solid fa-plus-circle"></i> Nuevo Ingreso al Inventario</h2>
+                <form id="addItemForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Nombre / Descripción del Artículo</label>
+                            <input type="text" id="prodName" class="form-control" style="padding-left: 14px;" placeholder="Ej: Despensa básica" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bodega de Destino</label>
+                            <select id="prodWarehouse" class="form-control" required>
+                                <option value="Bodega DIF">Bodega DIF</option>
+                                <option value="Bodega Corona">Bodega Corona</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cantidad Inicial</label>
+                            <input type="number" id="prodQty" class="form-control" style="padding-left: 14px;" placeholder="Ej: 50" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Departamento Asignado</label>
+                            <select id="prodDept" class="form-control" required>
+                                <option value="Trabajo Social">Trabajo Social</option>
+                                <option value="Población Vulnerable">Población Vulnerable</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="table-container">
-                        <table class="table table-sm table-striped align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Tipo</th>
-                                    <th>Bodega</th>
-                                    <th>Cód</th>
-                                    <th>Descripción</th>
-                                    <th>Cant</th>
-                                    <th>Obs</th>
-                                    <th class="text-end no-print">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-historial"></tbody>
-                        </table>
-                    </div>
-                </div>
+                    <button type="submit" class="btn-action"><i class="fa-solid fa-save"></i> Generar Código y Guardar en BD</button>
+                </form>
+            </div>
+        </section>
 
-                <div id="tab-movimiento" class="tab-pane-custom d-none">
-                    <div class="table-container border-start border-primary border-5">
-                        <h4 class="fw-bold mb-4">Entradas y Salidas</h4>
-                        <div class="row g-4">
-                            <div class="col-md-3"><label class="small fw-bold">Operación:</label><select id="reg-tipo" class="form-select"><option value="ENTRADA">📥 ENTRADA</option><option value="SALIDA">📤 SALIDA</option></select></div>
-                            <div class="col-md-3"><label class="small fw-bold">Fecha:</label><input type="date" id="reg-fecha" class="form-control"></div>
-                            <div class="col-md-6"><label class="small fw-bold">Producto:</label><select id="reg-articulo" class="form-select"></select></div>
-                            <div class="col-md-3"><label class="small fw-bold">Cantidad:</label><input type="number" id="reg-cantidad" class="form-control" value="1"></div>
-                            <div class="col-md-9"><label class="small fw-bold">Observaciones:</label><input type="text" id="reg-obs" class="form-control" placeholder="Destino, personal o notas..."></div>
-                            <div class="col-12 text-end"><button id="btn-guardar" class="btn btn-primary px-5 rounded-pill fw-bold">GUARDAR REGISTRO</button></div>
-                        </div>
-                    </div>
+        <!-- PESTAÑA 3: ESTADÍSTICAS Y ALERTAS -->
+        <section id="tab-estadisticas" class="tab-content">
+            <!-- TARJETAS KPI -->
+            <div class="kpi-grid">
+                <div class="kpi-card" style="border-left-color: #3b82f6;">
+                    <div class="kpi-title">Stock Total (Lo que se queda)</div>
+                    <div class="kpi-value" id="kpiTotalStock">0</div>
                 </div>
+                <div class="kpi-card" style="border-left-color: #10b981;">
+                    <div class="kpi-title">Total Vales Emitidos</div>
+                    <div class="kpi-value" id="kpiTotalVales">0</div>
+                </div>
+                <div class="kpi-card" style="border-left-color: #f59e0b;">
+                    <div class="kpi-title">Unidades Entregadas (Salidas)</div>
+                    <div class="kpi-value" id="kpiTotalSalidas">0</div>
+                </div>
+                <div class="kpi-card" style="border-left-color: #ef4444;">
+                    <div class="kpi-title">Alertas de Stock Bajo</div>
+                    <div class="kpi-value" id="kpiTotalAlertas">0</div>
+                </div>
+            </div>
 
-                <div id="tab-catalogo" class="tab-pane-custom d-none">
-                    <div class="table-container">
-                        <h4 class="fw-bold mb-4">Gestión de Productos</h4>
-                        <div class="row g-2 mb-5 bg-light p-4 rounded shadow-sm">
-                            <div class="col-md-2"><input type="text" id="new-bod" class="form-control" placeholder="COD. BODEGA"></div>
-                            <div class="col-md-2"><input type="text" id="new-cod" class="form-control" placeholder="CÓDIGO SISTEMA"></div>
-                            <div class="col-md-3"><input type="text" id="new-desc" class="form-control" placeholder="DESCRIPCIÓN"></div>
-                            <div class="col-md-3"><input type="file" id="new-file" class="form-control" accept="image/*"></div>
-                            <div class="col-md-2"><button id="btn-catalogo" class="btn btn-success w-100 fw-bold">AGREGAR</button></div>
-                        </div>
-                        <table class="table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Cod. Bodega</th>
-                                    <th>Código</th>
-                                    <th>Foto</th>
-                                    <th>Descripción</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-cat-admin"></tbody>
-                        </table>
+            <div class="content-card">
+                <h2 class="card-title"><i class="fa-solid fa-triangle-exclamation"></i> Alertas de Stock Bajo (Umbral ≤ 5 unidades)</h2>
+                <div id="lowStockAlertsContainer" class="alert-box-container"></div>
+            </div>
+
+            <div class="content-card">
+                <h2 class="card-title"><i class="fa-solid fa-chart-column"></i> Indicadores y Gráficas de Almacén</h2>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--gray-800);">Artículos con Mayor Demanda (Más Entregados)</h3>
+                        <canvas id="chartMasEntregados"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--gray-800);">Stock Restante por Bodega (Lo que se queda)</h3>
+                        <canvas id="warehouseChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--gray-800);">Existencias Actuales por Departamento</h3>
+                        <canvas id="deptChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3 style="font-size: 0.95rem; margin-bottom: 12px; color: var(--gray-800);">Distribución de Vales por Departamento</h3>
+                        <canvas id="chartValesDept"></canvas>
                     </div>
                 </div>
-            </main>
+            </div>
+        </section>
+
+<!-- PESTAÑA 4: VALES DE SALIDA -->
+<section id="tab-vales" class="tab-content">
+    <div class="content-card">
+        <h2 class="card-title"><i class="fa-solid fa-file-lines"></i> Emisión de Vales de Salida por Departamento</h2>
+        <form id="voucherForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">1. Seleccionar Departamento</label>
+                    <select id="valeDeptSelect" class="form-control" required>
+                        <option value="">-- Seleccione Departamento --</option>
+                        <option value="Trabajo Social">Trabajo Social</option>
+                        <option value="Población Vulnerable">Población Vulnerable</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">2. Artículo Disponible</label>
+                    <select id="valeProductSelect" class="form-control">
+                        <option value="">-- Primero seleccione departamento --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Cantidad a Retirar</label>
+                    <input type="number" id="valeQty" class="form-control" style="padding-left: 14px;" placeholder="Ej: 2" min="1" value="1">
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <button type="button" id="addVoucherItemBtn" class="btn-action" style="background: var(--success); width: 100%; justify-content: center;">
+                        <i class="fa-solid fa-plus"></i> Agregar al Vale
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabla temporal de artículos agregados al vale -->
+            <div style="margin: 20px 0;">
+                <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--gray-800);">Artículos en este Vale:</h3>
+                <div style="overflow-x: auto;">
+                    <table class="data-table" style="font-size: 0.88rem;">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Artículo</th>
+                                <th>Bodega</th>
+                                <th>Cantidad</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="voucherItemsTableBody">
+                            <tr><td colspan="5" style="text-align: center; color: var(--gray-600);">No se han agregado artículos al vale</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="form-grid" style="margin-top: 15px; border-top: 1px solid var(--gray-300); padding-top: 15px;">
+                <div class="form-group">
+                    <label class="form-label">Beneficiario / Solicitante</label>
+                    <input type="text" id="valeBeneficiary" class="form-control" style="padding-left: 14px;" placeholder="Nombre completo" required>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="valeObservation" class="form-label"><i class="fa-solid fa-comment-dots"></i> Observación / Destino del Apoyo (Comunidad, Caso o Motivo)</label>
+                    <textarea id="valeObservation" rows="2" class="form-control" placeholder="Ej. Entrega para familias afectadas en la localidad de Tepetapan / Apoyo a adulto mayor en situación de calle..." required></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-action" style="margin-top: 15px;">
+                <i class="fa-solid fa-print"></i> Generar Vale y Descontar en BD
+            </button>
+        </form>
+    </div>
+</section>
+
+        <!-- PESTAÑA 5: HISTORIAL DE VALES -->
+        <section id="tab-historial" class="tab-content">
+            <div class="content-card">
+                <h2 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Historial de Salidas (Base de Datos)</h2>
+                <p style="color: var(--gray-600); margin-bottom: 16px; font-size: 0.88rem;">Puede editar la cantidad o eliminar los vales del historial; el inventario se ajustará o devolverá automáticamente.</p>
+                <div style="overflow-x: auto;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+    <div>
+        <label for="historyRowsSelect" style="font-size: 0.85rem; font-weight: 500; color: var(--gray-700);">Mostrar: </label>
+        <select id="historyRowsSelect" style="padding: 4px 8px; border-radius: 4px; border: 1px solid var(--gray-300);">
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="500">500</option>
+        </select>
+        <span style="font-size: 0.85rem; color: var(--gray-600); margin-left: 5px;">registros por página</span>
+    </div>
+</div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Fecha</th>
+                                <th>Departamento</th>
+                                <th>Artículo</th>
+                                <th>Cant.</th>
+                                <th>Beneficiario</th>
+                                <th>Observación / Destino</th> <!-- Columna nueva -->
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody"></tbody>
+                    </table>
+                    <div id="historyPaginationContainer"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL DE EDICIÓN RÁPIDA DE INVENTARIO -->
+    <div id="editModal" class="login-overlay hidden" style="align-items: center;">
+        <div class="login-card" style="max-width: 450px;">
+            <div class="login-header" style="margin-bottom: 20px;">
+                <h2 class="login-title">Editar Artículo</h2>
+                <p class="login-subtitle">Modifica los datos del inventario en la BD</p>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editDocId">
+                <div class="form-group">
+                    <label class="form-label">Nombre del Artículo</label>
+                    <input type="text" id="editName" class="form-control" style="padding-left: 14px;" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bodega</label>
+                    <select id="editWarehouse" class="form-control" required>
+                        <option value="Bodega DIF">Bodega DIF</option>
+                        <option value="Bodega Corona">Bodega Corona</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Stock Actual</label>
+                    <input type="number" id="editQty" class="form-control" style="padding-left: 14px;" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Departamento</label>
+                    <select id="editDept" class="form-control" required>
+                        <option value="Trabajo Social">Trabajo Social</option>
+                        <option value="Población Vulnerable">Población Vulnerable</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-action" style="flex: 1; justify-content: center;">Guardar Cambios</button>
+                    <button type="button" id="closeEditBtn" class="btn-action" style="flex: 1; justify-content: center; background: var(--gray-300); color: var(--dark);">Cancelar</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <script type="module">
+    <!-- MODAL DE EDICIÓN DE VALE -->
+    <div id="editVoucherModal" class="login-overlay hidden" style="align-items: center;">
+        <div class="login-card" style="max-width: 450px;">
+            <div class="login-header" style="margin-bottom: 20px;">
+                <h2 class="login-title">Editar Vale de Salida</h2>
+                <p class="login-subtitle">Modifique la cantidad (ajustará el stock automáticamente)</p>
+            </div>
+            <form id="editVoucherForm">
+                <input type="hidden" id="editVoucherDocId">
+                <input type="hidden" id="editVoucherOldQty">
+                <input type="hidden" id="editVoucherOldInvId">
+                <div class="form-group">
+                    <label class="form-label">Artículo Asociado</label>
+                    <input type="text" id="editVoucherProductDisplay" class="form-control" style="padding-left: 14px;" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nueva Cantidad Retirada</label>
+                    <input type="number" id="editVoucherQty" class="form-control" style="padding-left: 14px;" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Beneficiario / Solicitante</label>
+                    <input type="text" id="editVoucherBeneficiary" class="form-control" style="padding-left: 14px;" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn-action" style="flex: 1; justify-content: center;">Guardar Cambios</button>
+                    <button type="button" id="closeEditVoucherBtn" class="btn-action" style="flex: 1; justify-content: center; background: var(--gray-300); color: var(--dark);">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE IMPRESIÓN DE VALE -->
+    <div id="printableVoucherModal" class="voucher-modal-container hidden">
+        <div class="voucher-box">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;" class="no-print">
+                <button class="btn-action" id="printModalBtn" type="button"><i class="fa-solid fa-print"></i> Imprimir Copias</button>
+                <button class="btn-action" id="closeVoucherBtn" style="background: var(--gray-300); color: var(--dark); margin-left: 10px;" type="button">Cerrar</button>
+            </div>
+            <div class="voucher-print-layout" id="voucherContentArea"></div>
+        </div>
+    </div>
+    <!-- SCRIPT FIREBASE MODULAR Y LÓGICA DEL SISTEMA -->
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBELxlbkav_9vZcJhSxE1gm0XFGgInfDSU",
@@ -228,187 +572,1017 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        let myChart = null; let catalogoArr = []; let catMap = {}; let movimientos = [];
 
-        const toBase64 = f => new Promise((res, rej) => { const r = new FileReader(); r.readAsDataURL(f); r.onload = () => res(r.result); r.onerror = e => rej(e); });
+        // Catálogo de usuarios institucionales autorizado
+        const systemUsers = {
+            "juanita.campechano": { p: "Juanita123..", dep: "SOCIAL" }, 
+            "monse.plata": { p: "Monse123..", dep: "SOCIAL" },
+            "ramon.guapillo": { p: "Fatima20", dep: "VULNERABLE" },
+            "lorena.gonzalez": { p: "logoke.15", dep: "GLOBAL" }, 
+            "angel.vidal": { p: "Angel123..", dep: "GLOBAL" }, 
+            "admin": { p: "admin", dep: "GLOBAL" }
+        };
 
-        function cargarDatos() {
-            onSnapshot(collection(db, "catalogo"), (snap) => {
-                catalogoArr = []; snap.forEach(d => { const item = { id: d.id, ...d.data() }; catalogoArr.push(item); catMap[item.c] = item; });
-                render();
-            });
-            onSnapshot(query(collection(db, "movimientos"), orderBy("f", "desc")), (snap) => {
-                movimientos = []; 
-                snap.forEach(d => { 
-                    movimientos.push({ id: d.id, ...d.data() }); // Se añadió captura del ID de Firebase
-                });
-                render();
-                if(document.getElementById('tab-graficas').offsetParent !== null) actualizarGrafica();
-            });
+        const headerLogoUrl = "logo-header.png";
+        const footerLogoUrl = "slogan.png";
+
+        let inventoryCache = [];
+        let voucherCache = [];
+        let deptChartInstance = null;
+        let warehouseChartInstance = null;
+        let masEntregadosChartInstance = null;
+        let valesDeptChartInstance = null;
+        let usuarioActivoActual = null;
+        let currentVoucherItems = [];
+
+        // ==========================================
+        // VARIABLES GLOBALES DE PAGINACIÓN
+        // ==========================================
+        let invCurrentPage = 1;
+        let invRowsPerPage = 10;
+        let histCurrentPage = 1;
+        let histRowsPerPage = 10;
+
+        function showToast(title, message, type = 'success', duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const icons = { success: 'fa-solid fa-circle-check', error: 'fa-solid fa-circle-xmark', warning: 'fa-solid fa-triangle-exclamation' };
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="${icons[type]} toast-icon"></i>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('toast-exiting');
+                toast.addEventListener('animationend', () => toast.remove());
+            }, duration);
         }
 
-        function render() {
-            const bus = document.getElementById('buscador').value.toUpperCase();
-            
-            // STOCK ACTUAL
-            const tS = document.getElementById('tbody-stock'); tS.innerHTML = "";
-            catalogoArr.forEach(p => {
-                if(p.c.includes(bus) || p.d.includes(bus) || (p.cb && p.cb.includes(bus))) {
-                    let inQ = movimientos.filter(x => x.c === p.c && x.t === "ENTRADA").reduce((s, x) => s + Number(x.q), 0);
-                    let outQ = movimientos.filter(x => x.c === p.c && x.t === "SALIDA").reduce((s, x) => s + Number(x.q), 0);
-                    let st = inQ - outQ;
-                    let c = st <= 0 ? "stock-critico" : (st <= 5 ? "stock-bajo" : "");
-                    let est = st <= 0 ? "🚨 AGOTADO" : (st <= 5 ? "⚠️ BAJO" : "✅ ÓPTIMO");
-                    tS.innerHTML += `<tr class="${c}">
-                        <td class="fw-bold text-primary">${p.cb || '---'}</td>
-                        <td><b>${p.c}</b></td>
-                        <td><img src="${p.img || ''}" class="img-prod shadow-sm"></td>
-                        <td>${p.d}</td>
-                        <td class="text-center fw-bold fs-5">${st}</td>
-                        <td class="text-center fw-bold small">${est}</td>
-                    </tr>`;
-                }
-            });
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            // HISTORIAL CON BOTONES DE EDICIÓN Y ELIMINACIÓN
-            const mes = document.getElementById('corte-mes').value; const q = document.getElementById('corte-q').value;
-            const tH = document.getElementById('tbody-historial');
-            tH.innerHTML = movimientos.filter(m => {
-                let ok = true;
-                if(mes) {
-                    const [y, mm] = mes.split('-'); const [ym, mmM, dM] = m.f.split('-');
-                    if(ym !== y || mmM !== mm) ok = false;
-                    if(q === "1" && parseInt(dM) > 15) ok = false;
-                    if(q === "2" && parseInt(dM) < 16) ok = false;
-                }
-                return ok && (m.c.includes(bus) || (catMap[m.c]?.d || "").includes(bus) || (catMap[m.c]?.cb || "").includes(bus));
-            }).map(m => `<tr>
-                <td>${m.f}</td>
-                <td><span class="badge ${m.t==='ENTRADA'?'bg-success':'bg-danger'}">${m.t}</span></td>
-                <td class="small fw-bold">${catMap[m.c]?.cb || '---'}</td>
-                <td><b>${m.c}</b></td>
-                <td>${catMap[m.c]?.d || 'S/D'}</td>
-                <td class="fw-bold">${m.q}</td>
-                <td><small>${m.o}</small></td>
-                <td class="text-end no-print">
-                    <button class="btn btn-sm btn-outline-primary" onclick="editarMovimiento('${m.id}', '${m.q}', '${m.o}')">✏️</button>
-                    <button class="btn btn-sm btn-outline-danger ms-1" onclick="borrarMovimiento('${m.id}')">🗑️</button>
-                </td>
-            </tr>`).join('');
+            const selectedBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+            if (selectedBtn) selectedBtn.classList.add('active');
 
-            // CATALOGO ADMIN
-            document.getElementById('tbody-cat-admin').innerHTML = catalogoArr.map(p => `<tr>
-                <td class="fw-bold text-primary">${p.cb || '---'}</td>
-                <td><b>${p.c}</b></td>
-                <td><img src="${p.img || ''}" class="img-prod"></td>
-                <td>${p.d}</td>
-                <td class="text-end">
-                    <button class="btn btn-info btn-sm text-white fw-bold shadow-sm" onclick="abrirEditar('${p.id}','${p.c}','${p.d}','${p.cb || ''}')">✏️ EDITAR</button> 
-                    <button class="btn btn-outline-danger btn-sm ms-2" onclick="borrarProd('${p.id}')">🗑️</button>
-                </td>
-            </tr>`).join('');
-            
-            // SELECTOR MOVIMIENTOS
-            document.getElementById('reg-articulo').innerHTML = catalogoArr.sort((a,b)=>a.c.localeCompare(b.c)).map(p => `<option value="${p.c}">[BOD: ${p.cb || '---'}] - ${p.c} - ${p.d}</option>`).join('');
-        }
+            const selectedContent = document.getElementById(tabId);
+            if (selectedContent) selectedContent.classList.add('active');
 
-        // --- FUNCIONES DE MOVIMIENTOS ---
-
-        window.borrarMovimiento = async (id) => {
-            if(confirm("¿Eliminar este registro de historial? El stock se recalculará automáticamente.")) {
-                await deleteDoc(doc(db, "movimientos", id));
+            if (tabId === 'tab-estadisticas') {
+                updateKPIs();
+                renderCharts();
             }
-        };
-
-        window.editarMovimiento = async (id, cantActual, obsActual) => {
-            const nuevaCant = prompt("Modificar cantidad:", cantActual);
-            const nuevaObs = prompt("Modificar observación:", obsActual);
-            if (nuevaCant !== null && nuevaObs !== null) {
-                await updateDoc(doc(db, "movimientos", id), {
-                    q: parseInt(nuevaCant),
-                    o: nuevaObs.toUpperCase()
-                });
-            }
-        };
-
-        // --- FUNCIONES DE PRODUCTOS ---
-
-        window.abrirEditar = (id, c, d, cb) => { 
-            document.getElementById('edit-id').value = id; 
-            document.getElementById('edit-cod').value = c; 
-            document.getElementById('edit-desc').value = d; 
-            document.getElementById('edit-bod').value = cb;
-            document.getElementById('edit-modal').style.display = 'flex'; 
-        };
-
-        window.cerrarModal = () => document.getElementById('edit-modal').style.display = 'none';
-        
-        window.guardarEdicion = async () => {
-            const id = document.getElementById('edit-id').value;
-            const up = { 
-                c: document.getElementById('edit-cod').value.toUpperCase(), 
-                d: document.getElementById('edit-desc').value.toUpperCase(),
-                cb: document.getElementById('edit-bod').value.toUpperCase()
-            };
-            const f = document.getElementById('edit-file').files[0]; if(f) up.img = await toBase64(f);
-            await updateDoc(doc(db, "catalogo", id), up); alert("✔️ Producto Actualizado"); cerrarModal();
-        };
-
-        window.borrarProd = async (id) => { if(confirm("¿Borrar producto definitivamente del catálogo?")) await deleteDoc(doc(db, "catalogo", id)); };
-
-        // --- UTILIDADES Y GRAFICAS ---
-
-        function actualizarGrafica() {
-            const ctx = document.getElementById('chartComparativo'); if(!ctx) return;
-            const labels = catalogoArr.slice(0, 10).map(p => p.c);
-            const dataE = labels.map(c => movimientos.filter(m => m.c === c && m.t === "ENTRADA").reduce((s, x) => s + Number(x.q), 0));
-            const dataS = labels.map(c => movimientos.filter(m => m.c === c && m.t === "SALIDA").reduce((s, x) => s + Number(x.q), 0));
-            if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: '📥 Entradas', data: dataE, backgroundColor: '#6b1d31' }, { label: '📤 Salidas', data: dataS, backgroundColor: '#b38e5d' }] } });
         }
 
-        window.cerrarSesion = () => { if(confirm("¿Cerrar sesión?")) { document.getElementById('main-system').style.display = 'none'; document.getElementById('login-page').style.display = 'flex'; document.getElementById('pass').value = ''; }};
-
-        document.getElementById('btn-catalogo').onclick = async () => {
-            const c = document.getElementById('new-cod').value.toUpperCase().trim(); 
-            const cb = document.getElementById('new-bod').value.toUpperCase().trim();
-            const d = document.getElementById('new-desc').value.toUpperCase().trim();
-            const f = document.getElementById('new-file').files[0]; const img = f ? await toBase64(f) : "";
-            if(c && d) { await addDoc(collection(db, "catalogo"), { c, cb, d, img }); }
-        };
-
-        document.getElementById('btn-guardar').onclick = async () => {
-            const data = { t: document.getElementById('reg-tipo').value, c: document.getElementById('reg-articulo').value, q: parseInt(document.getElementById('reg-cantidad').value), f: document.getElementById('reg-fecha').value, o: document.getElementById('reg-obs').value || "S/O" };
-            if(data.f) { await addDoc(collection(db, "movimientos"), data); alert("✔️ Movimiento Guardado"); }
-        };
-
-        window.imprimir = (tipo) => { document.getElementById('print-fecha').innerText = new Date().toLocaleString(); document.getElementById('print-titulo').innerText = tipo === 'STOCK' ? "REPORTE DE INVENTARIO" : "REPORTE DE CORTE QUINCENAL"; window.print(); };
-
-        document.getElementById('btn-login').onclick = () => {
-            if(document.getElementById('pass').value === '123') { document.getElementById('login-page').style.display = 'none'; document.getElementById('main-system').style.display = 'block'; document.getElementById('reg-fecha').valueAsDate = new Date(); cargarDatos(); }
-        };
-
-        window.showTab = (id, el) => {
-            document.querySelectorAll('.tab-pane-custom').forEach(t => t.classList.add('d-none'));
-            document.getElementById(id).classList.remove('d-none');
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active')); el.classList.add('active');
-            if(id === 'tab-graficas') setTimeout(actualizarGrafica, 100);
-        };
-        window.render = render;
-
-window.toggleMenu = () => document.getElementById('sidebar').classList.toggle('active');
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => { if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active'); });
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
         });
 
-// Opcional: Cerrar menú al hacer clic en un link (para mejor experiencia)
-document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-        if(window.innerWidth <= 768) {
-            document.getElementById('sidebar').classList.remove('active');
+        function generateSmartCode(dept, warehouse, name) {
+            const deptMap = { 'Trabajo Social': 'TS', 'Población Vulnerable': 'PV' };
+            const whMap = { 'Bodega DIF': 'DIF', 'Bodega Corona': 'COR' };
+            const deptCode = deptMap[dept] || 'GEN';
+            const whCode = whMap[warehouse] || 'ALM';
+            const cleanName = name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase();
+            const randomNum = Math.floor(100 + Math.random() * 900);
+            return `${deptCode}-${whCode}-${cleanName}-${randomNum}`;
         }
-    });
-});
-    </script>
+
+        function aplicarRestriccionesUsuario(username, userData) {
+            usuarioActivoActual = username;
+            const departamento = userData.dep;
+
+            const tabRegistrarBtn = document.querySelector('.tab-btn[data-tab="tab-registrar"]') || 
+                                    document.querySelector('.tab-btn[data-tab="registrar"]') ||
+                                    Array.from(document.querySelectorAll('.tab-btn')).find(el => el.textContent.includes('Registrar') || el.textContent.includes('Entrada'));
+
+            const inputBeneficiario = document.getElementById('valeBeneficiary');
+            const deptSelect = document.getElementById('valeDeptSelect');
+
+            if (inputBeneficiario) {
+                inputBeneficiario.value = username;
+            }
+
+            if (departamento === "SOCIAL") {
+                if (tabRegistrarBtn) {
+                    tabRegistrarBtn.style.display = 'none';
+                }
+                
+                const contenidoRegistrar = document.getElementById('tab-registrar') || document.getElementById('registrar');
+                if (contenidoRegistrar && contenidoRegistrar.classList.contains('active')) {
+                    switchTab('tab-vales');
+                }
+
+                if (inputBeneficiario) {
+                    inputBeneficiario.readOnly = true;
+                }
+
+                if (deptSelect) {
+                    deptSelect.innerHTML = '<option value="Trabajo Social">Trabajo Social</option>';
+                    deptSelect.value = 'Trabajo Social';
+                    deptSelect.disabled = true;
+                }
+
+                showToast('Perfil Restringido', 'Modo Trabajo Social: Solo visualización de stock y creación de vales.', 'warning');
+            } else {
+                if (tabRegistrarBtn) {
+                    tabRegistrarBtn.style.display = 'inline-block';
+                }
+                if (inputBeneficiario) {
+                    inputBeneficiario.readOnly = false;
+                }
+                if (deptSelect) {
+                    deptSelect.disabled = false;
+                    deptSelect.innerHTML = `
+                        <option value="">-- Seleccione Departamento --</option>
+                        <option value="Trabajo Social">Trabajo Social</option>
+                        <option value="Población Vulnerable">Población Vulnerable</option>
+                    `;
+                }
+            }
+        }
+
+        function initFirestoreListeners() {
+            onSnapshot(collection(db, 'inventario'), (snapshot) => {
+                inventoryCache = [];
+                snapshot.forEach((docSnap) => {
+                    inventoryCache.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderInventory();
+                filterProductsByDept();
+                renderStockAlerts();
+                const statsTab = document.getElementById('tab-estadisticas');
+                if (statsTab && statsTab.classList.contains('active')) {
+                    updateKPIs();
+                    renderCharts();
+                }
+            });
+
+            const qVales = query(collection(db, 'vales'), orderBy('timestamp', 'desc'));
+            onSnapshot(qVales, (snapshot) => {
+                voucherCache = [];
+                snapshot.forEach((docSnap) => {
+                    voucherCache.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderHistory();
+                const statsTab = document.getElementById('tab-estadisticas');
+                if (statsTab && statsTab.classList.contains('active')) {
+                    updateKPIs();
+                    renderCharts();
+                }
+            });
+        }
+
+        function updateKPIs() {
+            const totalStock = inventoryCache.reduce((acc, item) => acc + (item.qty || 0), 0);
+            const totalVales = voucherCache.length;
+            
+            const totalSalidas = voucherCache.reduce((acc, v) => {
+                let voucherQty = 0;
+                if (v.items && Array.isArray(v.items)) {
+                    voucherQty = v.items.reduce((sum, item) => sum + (item.qty || 0), 0);
+                } else {
+                    voucherQty = v.qty || 0;
+                }
+                return acc + voucherQty;
+            }, 0);
+
+            const totalAlertas = inventoryCache.filter(item => (item.qty || 0) <= 5).length;
+
+            const kpiStock = document.getElementById('kpiTotalStock');
+            const kpiVales = document.getElementById('kpiTotalVales');
+            const kpiSalidas = document.getElementById('kpiTotalSalidas');
+            const kpiAlertas = document.getElementById('kpiTotalAlertas');
+
+            if (kpiStock) kpiStock.innerText = totalStock;
+            if (kpiVales) kpiVales.innerText = totalVales;
+            if (kpiSalidas) kpiSalidas.innerText = totalSalidas;
+            if (kpiAlertas) kpiAlertas.innerText = totalAlertas;
+        }
+
+        function renderInventory() {
+            const tbody = document.getElementById('inventoryTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            if (inventoryCache.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-600);">No hay artículos registrados en la base de datos.</td></tr>`;
+                renderInventoryPagination(0);
+                return;
+            }
+
+            const totalRows = inventoryCache.length;
+            const totalPages = Math.ceil(totalRows / invRowsPerPage) || 1;
+            if (invCurrentPage > totalPages) invCurrentPage = totalPages;
+
+            const start = (invCurrentPage - 1) * invRowsPerPage;
+            const end = start + invRowsPerPage;
+            const paginatedItems = inventoryCache.slice(start, end);
+
+            const isSocialUser = (usuarioActivoActual === 'monse.plata' || usuarioActivoActual === 'juanita.campechano' || (systemUsers[usuarioActivoActual] && systemUsers[usuarioActivoActual].dep === 'SOCIAL'));
+
+            paginatedItems.forEach((item) => {
+                const badgeClass = item.warehouse === 'Bodega DIF' ? 'badge-dif' : 'badge-corona';
+                const isLow = item.qty <= 5;
+                const stockBadge = isLow 
+                    ? `<span class="badge-stock-low"><i class="fa-solid fa-triangle-exclamation"></i> ${item.qty} (Bajo)</span>` 
+                    : `<span class="badge-stock-ok">${item.qty}</span>`;
+
+                const actionsHtml = isSocialUser 
+                    ? `<span style="color: var(--gray-400); font-style: italic; font-size: 0.8rem;">Solo lectura</span>`
+                    : `
+                        <button class="btn-edit" data-id="${item.id}"><i class="fa-solid fa-pen"></i> Editar</button>
+                        <button class="btn-delete" data-id="${item.id}" data-name="${item.name}"><i class="fa-solid fa-trash"></i> Eliminar</button>
+                      `;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.code}</strong></td>
+                    <td>${item.name}</td>
+                    <td><span class="badge-bodega ${badgeClass}">${item.warehouse}</span></td>
+                    <td>${stockBadge}</td>
+                    <td>${item.dept}</td>
+                    <td>${actionsHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (!isSocialUser) {
+                tbody.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
+                });
+                tbody.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.addEventListener('click', () => deleteItem(btn.getAttribute('data-id'), btn.getAttribute('data-name')));
+                });
+            }
+
+            renderInventoryPagination(totalPages);
+        }
+
+        function renderInventoryPagination(totalPages) {
+            const container = document.getElementById('inventoryPaginationContainer');
+            if (!container) return;
+
+            const btnStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-300, #cbd5e1); background: #fff; color: var(--gray-700); cursor: pointer; transition: all 0.2s;';
+            const btnDisabledStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-200, #e2e8f0); background: var(--gray-100, #f1f5f9); color: var(--gray-400, #94a3b8); cursor: not-allowed; opacity: 0.7;';
+
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; font-size: 0.85rem; color: var(--gray-700); border-top: 1px solid var(--gray-200, #e2e8f0); margin-top: 8px;">
+                    <span>Mostrando página <strong>${invCurrentPage}</strong> de <strong>${totalPages || 1}</strong> (Total: ${inventoryCache.length} registros)</span>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" id="invPrevBtn" style="${invCurrentPage === 1 ? btnDisabledStyle : btnStyle}">Anterior</button>
+                        <button type="button" id="invNextBtn" style="${invCurrentPage >= totalPages ? btnDisabledStyle : btnStyle}">Siguiente</button>
+                    </div>
+                </div>
+            `;
+
+            const prevBtn = document.getElementById('invPrevBtn');
+            const nextBtn = document.getElementById('invNextBtn');
+
+            if (prevBtn) prevBtn.onclick = () => { if (invCurrentPage > 1) { invCurrentPage--; renderInventory(); } };
+            if (nextBtn) nextBtn.onclick = () => { if (invCurrentPage < totalPages) { invCurrentPage++; renderInventory(); } };
+        }
+
+        function renderStockAlerts() {
+            const container = document.getElementById('lowStockAlertsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            const lowStockItems = inventoryCache.filter(item => item.qty <= 5);
+
+            if (lowStockItems.length === 0) {
+                container.innerHTML = `<p style="color: var(--success); font-size: 0.9rem; font-weight: 500;"><i class="fa-solid fa-circle-check"></i> Todos los niveles de stock se encuentran óptimos (por encima de 5 unidades).</p>`;
+                return;
+            }
+
+            lowStockItems.forEach(item => {
+                const banner = document.createElement('div');
+                banner.className = 'alert-banner';
+                banner.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <div><strong>${item.name}</strong> (${item.code}) en <strong>${item.warehouse}</strong> (${item.dept}) tiene un stock crítico de <strong>${item.qty} unidades</strong>.</div>
+                    </div>
+                    <span class="badge-stock-low">Atención Requerida</span>
+                `;
+                container.appendChild(banner);
+            });
+        }
+
+        function renderCharts() {
+            const productDemands = {};
+            voucherCache.forEach(v => {
+                if (v.items && Array.isArray(v.items)) {
+                    v.items.forEach(i => {
+                        const prod = i.productName || 'Desconocido';
+                        productDemands[prod] = (productDemands[prod] || 0) + (i.qty || 0);
+                    });
+                } else {
+                    const prod = v.productName || 'Desconocido';
+                    productDemands[prod] = (productDemands[prod] || 0) + (v.qty || 0);
+                }
+            });
+            const sortedProducts = Object.entries(productDemands).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const prodLabels = sortedProducts.map(p => p[0]);
+            const prodData = sortedProducts.map(p => p[1]);
+
+            const ctxMasEntregados = document.getElementById('chartMasEntregados');
+            if (ctxMasEntregados) {
+                if (masEntregadosChartInstance) masEntregadosChartInstance.destroy();
+                masEntregadosChartInstance = new Chart(ctxMasEntregados.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: prodLabels.length ? prodLabels : ['Sin registros'],
+                        datasets: [{ label: 'Unidades Entregadas', data: prodData.length ? prodData : [0], backgroundColor: '#7a1c32', borderRadius: 6 }]
+                    },
+                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+                });
+            }
+
+            const whTotals = {};
+            inventoryCache.forEach(item => {
+                whTotals[item.warehouse] = (whTotals[item.warehouse] || 0) + item.qty;
+            });
+            const whLabels = Object.keys(whTotals);
+            const whData = Object.values(whTotals);
+
+            const ctxWh = document.getElementById('warehouseChart');
+            if (ctxWh) {
+                if (warehouseChartInstance) warehouseChartInstance.destroy();
+                warehouseChartInstance = new Chart(ctxWh.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: whLabels.length ? whLabels : ['Sin datos'],
+                        datasets: [{ data: whData.length ? whData : [1], backgroundColor: ['#7a1c32', '#f59e0b', '#10b981'], borderWidth: 1 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
+
+            const deptTotals = {};
+            inventoryCache.forEach(item => {
+                deptTotals[item.dept] = (deptTotals[item.dept] || 0) + item.qty;
+            });
+            const deptLabels = Object.keys(deptTotals);
+            const deptData = Object.values(deptTotals);
+
+            const ctxDept = document.getElementById('deptChart');
+            if (ctxDept) {
+                if (deptChartInstance) deptChartInstance.destroy();
+                deptChartInstance = new Chart(ctxDept.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: deptLabels.length ? deptLabels : ['Sin datos'],
+                        datasets: [{ label: 'Stock en Almacén', data: deptData.length ? deptData : [0], backgroundColor: '#10b981', borderRadius: 6 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                });
+            }
+
+            // Salidas por departamento
+            const valesDept = {};
+            voucherCache.forEach(v => {
+                const dept = v.dept || 'Desconocido';
+                let totalQtyInVoucher = 0;
+                if (v.items && Array.isArray(v.items)) {
+                    totalQtyInVoucher = v.items.reduce((sum, item) => sum + (item.qty || 0), 0);
+                } else {
+                    totalQtyInVoucher = v.qty || 0;
+                }
+                valesDept[dept] = (valesDept[dept] || 0) + totalQtyInVoucher;
+            });
+            const vDeptLabels = Object.keys(valesDept);
+            const vDeptData = Object.values(valesDept);
+
+            const ctxValesDept = document.getElementById('chartValesDept');
+            if (ctxValesDept) {
+                if (valesDeptChartInstance) valesDeptChartInstance.destroy();
+                valesDeptChartInstance = new Chart(ctxValesDept.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: vDeptLabels.length ? vDeptLabels : ['Sin datos'],
+                        datasets: [{ label: 'Unidades Salientes', data: vDeptData.length ? vDeptData : [1], backgroundColor: ['#7a1c32', '#f59e0b', '#6366f1', '#10b981'] }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { position: 'bottom' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        let value = context.raw || 0;
+                                        return `${label}: ${value} unidades entregadas`;
+                                    }
+                                }
+                            }
+                        } 
+                    }
+                });
+            }
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('historyTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            if (voucherCache.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray-600); padding: 20px;">No hay vales emitidos en la base de datos.</td></tr>`;
+                renderHistoryPagination(0);
+                return;
+            }
+
+            const totalRows = voucherCache.length;
+            const totalPages = Math.ceil(totalRows / histRowsPerPage) || 1;
+            if (histCurrentPage > totalPages) histCurrentPage = totalPages;
+
+            const start = (histCurrentPage - 1) * histRowsPerPage;
+            const end = start + histRowsPerPage;
+            const paginatedVouchers = voucherCache.slice(start, end);
+
+            const isSocialUser = (usuarioActivoActual === 'monse.plata' || usuarioActivoActual === 'juanita.campechano' || (systemUsers[usuarioActivoActual] && systemUsers[usuarioActivoActual].dep === 'SOCIAL'));
+
+            paginatedVouchers.forEach((v) => {
+                let productNames = '';
+                let productQtys = '';
+
+                if (v.items && Array.isArray(v.items)) {
+                    productNames = v.items.map(i => `${i.productName} <small style="color: var(--gray-500);">(${i.code})</small>`).join('<br>');
+                    productQtys = v.items.map(i => `<strong>${i.qty}</strong>`).join('<br>');
+                } else {
+                    productNames = `${v.productName || 'N/A'} <small style="color: var(--gray-500);">(${v.code || ''})</small>`;
+                    productQtys = `<strong>${v.qty || 0}</strong>`;
+                }
+
+                // Sin botón de editar, solo Reimprimir y Eliminar/Devolver
+                const actionsHtml = isSocialUser 
+                    ? `
+                        <div style="display: flex; gap: 4px; justify-content: flex-end; align-items: center;">
+                            <button class="btn-print" data-folio="${v.folio}" title="Reimprimir Vale" style="padding: 4px 8px; font-size: 0.75rem;"><i class="fa-solid fa-print"></i></button>
+                        </div>
+                      `
+                    : `
+                        <div style="display: flex; gap: 4px; justify-content: flex-end; align-items: center;">
+                            <button class="btn-print" data-folio="${v.folio}" title="Reimprimir Vale" style="padding: 4px 8px; font-size: 0.75rem;"><i class="fa-solid fa-print"></i></button>
+                            <button class="btn-delete-voucher" data-id="${v.id}" data-folio="${v.folio}" title="Eliminar y Devolver" style="padding: 4px 8px; font-size: 0.75rem; background: #fee2e2; color: #dc2626;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                      `;
+
+                const tr = document.createElement('tr');
+                tr.style.fontSize = '0.85rem';
+                tr.innerHTML = `
+                    <td style="white-space: nowrap;"><strong>${v.folio}</strong></td>
+                    <td style="white-space: nowrap; color: var(--gray-600);">${v.date}</td>
+                    <td><span style="background: var(--gray-100); padding: 2px 6px; border-radius: 4px; font-weight: 500;">${v.dept}</span></td>
+                    <td style="min-width: 180px; line-height: 1.4;">${productNames}</td>
+                    <td style="text-align: center; vertical-align: middle; line-height: 1.4;">${productQtys}</td>
+                    <td>${v.beneficiary}</td>
+                    <td style="color: var(--gray-700); max-width: 200px; word-break: break-word;">${v.observation || '<span style="color: var(--gray-400); font-style: italic;">Sin observación</span>'}</td>
+                    <td style="white-space: nowrap; text-align: right;">${actionsHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            tbody.querySelectorAll('.btn-print').forEach(btn => {
+                btn.addEventListener('click', () => reprintVoucher(btn.getAttribute('data-folio')));
+            });
+
+            if (!isSocialUser) {
+                tbody.querySelectorAll('.btn-delete-voucher').forEach(btn => {
+                    btn.addEventListener('click', () => deleteVoucherMulti(btn.getAttribute('data-id')));
+                });
+            }
+
+            renderHistoryPagination(totalPages);
+        }
+
+        function renderHistoryPagination(totalPages) {
+            const container = document.getElementById('historyPaginationContainer');
+            if (!container) return;
+
+            const btnStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-300, #cbd5e1); background: #fff; color: var(--gray-700); cursor: pointer; transition: all 0.2s;';
+            const btnDisabledStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-200, #e2e8f0); background: var(--gray-100, #f1f5f9); color: var(--gray-400, #94a3b8); cursor: not-allowed; opacity: 0.7;';
+
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; font-size: 0.85rem; color: var(--gray-700); border-top: 1px solid var(--gray-200, #e2e8f0); margin-top: 8px;">
+                    <span>Mostrando página <strong>${histCurrentPage}</strong> de <strong>${totalPages || 1}</strong> (Total: ${voucherCache.length} registros)</span>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" id="histPrevBtn" style="${histCurrentPage === 1 ? btnDisabledStyle : btnStyle}">Anterior</button>
+                        <button type="button" id="histNextBtn" style="${histCurrentPage >= totalPages ? btnDisabledStyle : btnStyle}">Siguiente</button>
+                    </div>
+                </div>
+            `;
+
+            const prevBtn = document.getElementById('histPrevBtn');
+            const nextBtn = document.getElementById('histNextBtn');
+
+            if (prevBtn) prevBtn.onclick = () => { if (histCurrentPage > 1) { histCurrentPage--; renderHistory(); } };
+            if (nextBtn) nextBtn.onclick = () => { if (histCurrentPage < totalPages) { histCurrentPage++; renderHistory(); } };
+        }
+
+        async function deleteVoucherMulti(voucherId) {
+            const v = voucherCache.find(item => item.id === voucherId);
+            if (!v) return;
+
+            if (confirm(`¿Está seguro de eliminar el vale ${v.folio}?\nSe devolverán las unidades de todos sus artículos al inventario.`)) {
+                try {
+                    const itemsToReturn = v.items || [{ inventoryId: v.inventoryId, code: v.code, qty: v.qty, productName: v.productName }];
+
+                    for (const item of itemsToReturn) {
+                        let targetInvId = item.inventoryId;
+                        let invItem = inventoryCache.find(i => i.id === targetInvId);
+
+                        if (!invItem && item.code) {
+                            invItem = inventoryCache.find(i => i.code === item.code);
+                            if (invItem) targetInvId = invItem.id;
+                        }
+
+                        if (invItem && targetInvId) {
+                            const newQty = invItem.qty + (item.qty || 0);
+                            await updateDoc(doc(db, 'inventario', targetInvId), { qty: newQty });
+                        }
+                    }
+
+                    await deleteDoc(doc(db, 'vales', voucherId));
+                    showToast('Vale Eliminado', 'Se eliminó el vale y se restableció el stock en el inventario.', 'success');
+                } catch (error) {
+                    console.error("Error al eliminar vale múltiple:", error);
+                    showToast('Error', 'No se pudo procesar la devolución del inventario.', 'error');
+                }
+            }
+        }
+
+        // ==========================================
+        // CONTROLADORES DE FORMULARIOS E INVENTARIO
+        // ==========================================
+        const voucherForm = document.getElementById('voucherForm');
+        if (voucherForm) {
+            voucherForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const dept = document.getElementById('valeDeptSelect').value;
+                const beneficiaryInput = document.getElementById('valeBeneficiary');
+                const beneficiary = usuarioActivoActual ? usuarioActivoActual : (beneficiaryInput ? beneficiaryInput.value.trim() : '');
+                const observation = document.getElementById('valeObservation').value.trim();
+
+                if (currentVoucherItems.length === 0) {
+                    showToast('Advertencia', 'Debe agregar al menos un artículo a la lista del vale antes de generarlo.', 'warning');
+                    return;
+                }
+
+                try {
+                    for (const item of currentVoucherItems) {
+                        const invItem = inventoryCache.find(i => i.id === item.inventoryId);
+                        if (invItem) {
+                            const newQty = invItem.qty - item.qty;
+                            await updateDoc(doc(db, 'inventario', item.inventoryId), { qty: newQty });
+                        }
+                    }
+
+                    const folioNum = voucherCache.length + 1;
+                    const folio = `VALE-DIF-2026-${String(folioNum).padStart(4, '0')}`;
+                    const currentDate = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+                    const voucherData = {
+                        folio,
+                        date: currentDate,
+                        dept,
+                        items: currentVoucherItems,
+                        beneficiary,
+                        observation,
+                        timestamp: serverTimestamp()
+                    };
+
+                    const docRef = await addDoc(collection(db, 'vales'), voucherData);
+                    voucherData.id = docRef.id;
+
+                    currentVoucherItems = [];
+                    renderVoucherItemsTable();
+                    voucherForm.reset();
+
+                    if (usuarioActivoActual) {
+                        const inputBeneficiario = document.getElementById('valeBeneficiary');
+                        if (inputBeneficiario) inputBeneficiario.value = usuarioActivoActual;
+
+                        const userObj = systemUsers[usuarioActivoActual];
+                        if (userObj && userObj.dep === "SOCIAL") {
+                            if (inputBeneficiario) inputBeneficiario.readOnly = true;
+                            const deptSel = document.getElementById('valeDeptSelect');
+                            if (deptSel) {
+                                deptSel.value = 'Trabajo Social';
+                                deptSel.disabled = true;
+                            }
+                        }
+                    }
+                    filterProductsByDept();
+
+                    showToast('Vale Generado', `Folio ${folio} emitido con éxito y stock descontado.`, 'success');
+                    displayVoucherModal(voucherData);
+
+                } catch (error) {
+                    console.error("Error al emitir vale múltiple:", error);
+                    showToast('Error', 'No se pudo procesar la salida de almacén.', 'error');
+                }
+            });
+        }
+
+        const addItemForm = document.getElementById('addItemForm');
+        if (addItemForm) {
+            addItemForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('prodName').value.trim();
+                const warehouse = document.getElementById('prodWarehouse').value;
+                const qty = parseInt(document.getElementById('prodQty').value);
+                const dept = document.getElementById('prodDept').value;
+                const code = generateSmartCode(dept, warehouse, name);
+
+                try {
+                    await addDoc(collection(db, 'inventario'), { code, name, warehouse, qty, dept });
+                    addItemForm.reset();
+                    switchTab('tab-inventario');
+                    showToast('Guardado en BD', `Artículo registrado con código: ${code}`);
+                } catch (error) {
+                    showToast('Error', 'No se pudo guardar el artículo.', 'error');
+                }
+            });
+        }
+
+        function openEditModal(id) {
+            const item = inventoryCache.find(i => i.id === id);
+            if (!item) return;
+            document.getElementById('editDocId').value = item.id;
+            document.getElementById('editName').value = item.name;
+            document.getElementById('editWarehouse').value = item.warehouse;
+            document.getElementById('editQty').value = item.qty;
+            document.getElementById('editDept').value = item.dept;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        const closeEditBtn = document.getElementById('closeEditBtn');
+        if (closeEditBtn) {
+            closeEditBtn.addEventListener('click', () => {
+                document.getElementById('editModal').classList.add('hidden');
+            });
+        }
+
+        const editForm = document.getElementById('editForm');
+        if (editForm) {
+            editForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+                const id = document.getElementById('editDocId').value;
+                const name = document.getElementById('editName').value.trim();
+                const warehouse = document.getElementById('editWarehouse').value;
+                const qty = parseInt(document.getElementById('editQty').value);
+                const dept = document.getElementById('editDept').value;
+                const code = generateSmartCode(dept, warehouse, name);
+
+                try {
+                    await updateDoc(doc(db, 'inventario', id), { name, warehouse, qty, dept, code });
+                    document.getElementById('editModal').classList.add('hidden');
+                    showToast('Actualizado', 'Los cambios se guardaron en la base de datos.');
+                } catch (error) {
+                    console.error("Error al actualizar:", error);
+                    showToast('Error', 'No se pudo actualizar el registro.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Guardar Cambios';
+                }
+            };
+        }
+
+        async function deleteItem(id, name) {
+            if (confirm(`¿Está seguro de eliminar "${name}" de la base de datos?`)) {
+                try {
+                    await deleteDoc(doc(db, 'inventario', id));
+                    showToast('Eliminado', `Se eliminó "${name}" de la BD.`, 'warning');
+                } catch (error) {
+                    showToast('Error', 'No se pudo eliminar el registro.', 'error');
+                }
+            }
+        }
+
+        function filterProductsByDept() {
+            const deptSelect = document.getElementById('valeDeptSelect');
+            const productSelect = document.getElementById('valeProductSelect');
+            if (!deptSelect || !productSelect) return;
+
+            const selectedDept = deptSelect.value;
+            productSelect.innerHTML = '<option value="">-- Seleccione un artículo --</option>';
+
+            const filtered = inventoryCache.filter(item => item.dept === selectedDept && item.qty > 0);
+            if (filtered.length === 0) {
+                productSelect.innerHTML = '<option value="">No hay stock disponible en este departamento</option>';
+                return;
+            }
+
+            filtered.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.id;
+                opt.textContent = `${item.name} [Código: ${item.code}] (Stock: ${item.qty} - ${item.warehouse})`;
+                productSelect.appendChild(opt);
+            });
+        }
+
+        const valeDeptSelect = document.getElementById('valeDeptSelect');
+        if (valeDeptSelect) {
+            valeDeptSelect.addEventListener('change', filterProductsByDept);
+        }
+
+        // ==========================================
+        // IMPRESIÓN Y MODAL DE VALES
+        // ==========================================
+        function displayVoucherModal(v) {
+            if (!v) return;
+
+            let itemsToPrint = [];
+            if (v.items && Array.isArray(v.items) && v.items.length > 0) {
+                itemsToPrint = v.items;
+            } else {
+                itemsToPrint = [{
+                    code: v.code || 'N/A',
+                    productName: v.productName || 'N/A',
+                    warehouse: v.warehouse || 'Bodega DIF',
+                    qty: v.qty || 0
+                }];
+            }
+
+            let itemsRowsHTML = '';
+            itemsToPrint.forEach(i => {
+                itemsRowsHTML += `
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 5px; text-align: center;">${i.code || 'N/A'}</td>
+                        <td style="border: 1px solid #ccc; padding: 5px;">${i.productName || 'N/A'} (${i.warehouse || 'Bodega DIF'})</td>
+                        <td style="border: 1px solid #ccc; padding: 5px; text-align: center;"><strong>${i.qty || 0}</strong></td>
+                    </tr>
+                `;
+            });
+
+            const voucherHTMLTemplate = `
+                <div class="voucher-copy">
+                    <div class="voucher-copy-header">
+                        <h3>SISTEMA DIF MUNICIPAL SAN ANDRÉS TUXTLA</h3>
+                        <span>ORIGINAL - ARCHIVO / COMPROBANTE</span>
+                    </div>
+                    <img src="${headerLogoUrl}" alt="Logotipo DIF" class="voucher-header-img" onerror="this.style.display='none'">
+                    <div style="text-align: center; margin-bottom: 8px;">
+                        <strong style="font-size: 0.9rem; color: var(--primary);">VALE DE SALIDA MÚLTIPLE (${v.folio || ''})</strong>
+                    </div>
+                    <div class="voucher-grid" style="margin-bottom: 10px;">
+                        <div><strong>Fecha:</strong> ${v.date || ''}</div>
+                        <div><strong>Departamento:</strong> ${v.dept || ''}</div>
+                        <div><strong>Beneficiario:</strong> ${v.beneficiary || ''}</div>
+                        <div style="grid-column: span 3;"><strong>Observación / Destino:</strong> ${v.observation || 'Sin observaciones'}</div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 15px;">
+                        <thead>
+                            <tr style="background: #f3f4f6;">
+                                <th style="border: 1px solid #ccc; padding: 5px;">Código</th>
+                                <th style="border: 1px solid #ccc; padding: 5px;">Artículo / Bodega</th>
+                                <th style="border: 1px solid #ccc; padding: 5px;">Cant.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsRowsHTML}
+                        </tbody>
+                    </table>
+                    <img src="${footerLogoUrl}" alt="Slogan Institucional" class="voucher-footer-img" onerror="this.style.display='none'">
+                    <div class="voucher-signatures">
+                        <div class="signature-line">Entrega (Almacén)</div>
+                        <div class="signature-line">Recibe (Solicitante)</div>
+                    </div>
+                </div>
+            `;
+
+            const container = document.getElementById('voucherContentArea');
+            if (container) {
+                container.innerHTML = voucherHTMLTemplate + `<div style="margin: 20px 0; border-top: 2px dashed #9ca3af;"></div>` + voucherHTMLTemplate.replace('ORIGINAL - ARCHIVO / COMPROBANTE', 'COPIA - CONTROL DEPARTAMENTAL');
+            }
+
+            const modal = document.getElementById('printableVoucherModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function reprintVoucher(folio) {
+            const v = voucherCache.find(item => item.folio === folio);
+            if (v) displayVoucherModal(v);
+        }
+
+        const printModalBtn = document.getElementById('printModalBtn');
+        if (printModalBtn) {
+            printModalBtn.addEventListener('click', () => window.print());
+        }
+
+        const closeVoucherBtn = document.getElementById('closeVoucherBtn');
+        if (closeVoucherBtn) {
+            closeVoucherBtn.addEventListener('click', () => {
+                document.getElementById('printableVoucherModal').classList.add('hidden');
+                switchTab('tab-historial');
+            });
+        }
+
+        // ==========================================
+        // AUTENTICACIÓN Y SESIÓN
+        // ==========================================
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const userInput = document.getElementById('username').value.trim().toLowerCase();
+                const passInput = document.getElementById('password').value;
+
+                if (systemUsers[userInput] && systemUsers[userInput].p === passInput) {
+                    const userData = systemUsers[userInput];
+                    sessionStorage.setItem('usuario', userInput);
+                    sessionStorage.setItem('departamento', userData.dep);
+
+                    document.getElementById('loginModal').classList.add('hidden');
+                    document.getElementById('userBadge').style.display = 'flex';
+                    document.getElementById('logoutBtn').style.display = 'flex';
+                    document.getElementById('userNameDisplay').innerText = userInput;
+                    document.getElementById('userDeptDisplay').innerText = `Rol: ${userData.dep}`;
+                    document.getElementById('userAvatar').innerText = userInput.charAt(0).toUpperCase();
+
+                    aplicarRestriccionesUsuario(userInput, userData);
+
+                    if (userData.dep === 'SOCIAL') {
+                        const deptSelect = document.getElementById('valeDeptSelect');
+                        if (deptSelect) {
+                            deptSelect.value = 'Trabajo Social';
+                            filterProductsByDept();
+                        }
+                    } else if (userData.dep === 'VULNERABLE') {
+                        const deptSelect = document.getElementById('valeDeptSelect');
+                        if (deptSelect) {
+                            deptSelect.value = 'Población Vulnerable';
+                            filterProductsByDept();
+                        }
+                    }
+
+                    switchTab('tab-inventario');
+                    showToast('Sesión Iniciada', `Bienvenido al sistema DIF, ${userInput}.`);
+                } else {
+                    showToast('Error de Acceso', 'Usuario o contraseña incorrectos.', 'error');
+                }
+            });
+        }
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                sessionStorage.clear();
+                location.reload(); 
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initFirestoreListeners();
+            
+            const savedUser = sessionStorage.getItem('usuario');
+            if (savedUser && systemUsers[savedUser]) {
+                const userData = systemUsers[savedUser];
+                const loginModal = document.getElementById('loginModal');
+                if (loginModal) loginModal.classList.add('hidden');
+                
+                const userBadge = document.getElementById('userBadge');
+                if (userBadge) userBadge.style.display = 'flex';
+
+                const logoutBtnEl = document.getElementById('logoutBtn');
+                if (logoutBtnEl) logoutBtnEl.style.display = 'flex';
+
+                const userNameDisplay = document.getElementById('userNameDisplay');
+                if (userNameDisplay) userNameDisplay.innerText = savedUser;
+
+                const userDeptDisplay = document.getElementById('userDeptDisplay');
+                if (userDeptDisplay) userDeptDisplay.innerText = `Rol: ${userData.dep}`;
+
+                const userAvatar = document.getElementById('userAvatar');
+                if (userAvatar) userAvatar.innerText = savedUser.charAt(0).toUpperCase();
+
+                aplicarRestriccionesUsuario(savedUser, userData);
+
+                if (userData.dep === 'SOCIAL') {
+                    const deptSelect = document.getElementById('valeDeptSelect');
+                    if (deptSelect) {
+                        deptSelect.value = 'Trabajo Social';
+                        filterProductsByDept();
+                    }
+                } else if (userData.dep === 'VULNERABLE') {
+                    const deptSelect = document.getElementById('valeDeptSelect');
+                    if (deptSelect) {
+                        deptSelect.value = 'Población Vulnerable';
+                        filterProductsByDept();
+                    }
+                }
+            }
+        });
+
+        // ==========================================
+        // GESTIÓN DE ARTÍCULOS TEMPORALES EN VALES
+        // ==========================================
+        const addVoucherItemBtn = document.getElementById('addVoucherItemBtn');
+        if (addVoucherItemBtn) {
+            addVoucherItemBtn.addEventListener('click', () => {
+                const prodId = document.getElementById('valeProductSelect').value;
+                const qtyRequested = parseInt(document.getElementById('valeQty').value) || 0;
+
+                if (!prodId) {
+                    showToast('Advertencia', 'Seleccione un artículo válido.', 'warning');
+                    return;
+                }
+
+                if (qtyRequested <= 0) {
+                    showToast('Advertencia', 'Ingrese una cantidad válida mayor a 0.', 'warning');
+                    return;
+                }
+
+                const invItem = inventoryCache.find(i => i.id === prodId);
+                if (!invItem) {
+                    showToast('Error', 'El artículo seleccionado ya no existe.', 'error');
+                    return;
+                }
+
+                const existingInCart = currentVoucherItems.filter(i => i.inventoryId === prodId).reduce((sum, i) => sum + i.qty, 0);
+                const totalRequested = qtyRequested + existingInCart;
+
+                if (totalRequested > invItem.qty) {
+                    showToast('Stock Insuficiente', `Stock disponible: ${invItem.qty}. Ya agregaste ${existingInCart} en este vale.`, 'error');
+                    return;
+                }
+
+                currentVoucherItems.push({
+                    inventoryId: invItem.id,
+                    code: invItem.code,
+                    productName: invItem.name,
+                    warehouse: invItem.warehouse,
+                    qty: qtyRequested
+                });
+
+                renderVoucherItemsTable();
+                document.getElementById('valeQty').value = 1;
+                showToast('Artículo Agregado', `${invItem.name} añadido al vale temporal.`, 'success');
+            });
+        }
+
+        function renderVoucherItemsTable() {
+            const tbody = document.getElementById('voucherItemsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (currentVoucherItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-600);">No se han agregado artículos al vale</td></tr>`;
+                return;
+            }
+
+            currentVoucherItems.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.code}</strong></td>
+                    <td>${item.productName}</td>
+                    <td>${item.warehouse}</td>
+                    <td><strong>${item.qty}</strong></td>
+                    <td>
+                        <button type="button" class="btn-delete" onclick="removeVoucherItem(${index})" style="padding: 4px 8px; font-size: 0.8rem;">
+                            <i class="fa-solid fa-trash"></i> Quitar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.removeVoucherItem = function(index) {
+            currentVoucherItems.splice(index, 1);
+            renderVoucherItemsTable();
+        };
+
+        const invRowsSelect = document.getElementById('inventoryRowsSelect');
+        if (invRowsSelect) {
+            invRowsSelect.addEventListener('change', (e) => {
+                invRowsPerPage = parseInt(e.target.value);
+                invCurrentPage = 1;
+                renderInventory();
+            });
+        }
+
+        const histRowsSelect = document.getElementById('historyRowsSelect');
+        if (histRowsSelect) {
+            histRowsSelect.addEventListener('change', (e) => {
+                histRowsPerPage = parseInt(e.target.value);
+                histCurrentPage = 1;
+                renderHistory();
+            });
+        }
+</script>
 </body>
 </html>
