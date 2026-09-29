@@ -263,15 +263,19 @@
                         <span style="font-size: 0.85rem; color: var(--gray-600); margin-left: 5px;">registros por página</span>
                     </div>
 
-                    <div style="display: flex; gap: 10px; align-items: center; flex: 1; justify-content: flex-end; max-width: 450px;">
+                    <div style="display: flex; gap: 10px; align-items: center; width: 100%;">
+                        <!-- Buscador con Icono Integrado -->
                         <div style="position: relative; flex: 1;">
                             <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400);"></i>
-                            <input type="text" id="inventorySearchInput" placeholder="Filtrar por código, artículo..." style="width: 100%; padding: 8px 12px 8px 35px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.85rem;">
+                            <input type="text" id="inventorySearchInput" placeholder="Filtrar por código, artículo, bodega o departamento..." style="width: 100%; padding: 8px 12px 8px 35px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.85rem; outline: none;">
                         </div>
-                        <button type="button" id="printFilteredBtn" class="btn" style="background: var(--primary); color: white; padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; border: none; white-space: nowrap;">
-                            <i class="fa-solid fa-print"></i> Imprimir Filtrado
+
+                        <!-- Botón de Impresión de Reporte Filtrado -->
+                        <button type="button" id="printFilteredBtn" class="btn" style="background: var(--gray-100, #f1f5f9); border: 1px solid var(--gray-300, #cbd5e1); color: var(--gray-700, #334155); padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                            <i class="fa-solid fa-print"></i> Imprimir Reporte
                         </button>
                     </div>
+
                 </div>
 
                 <div style="overflow-x: auto;">
@@ -644,7 +648,7 @@
 <!-- SCRIPT FIREBASE MODULAR Y LÓGICA DEL SISTEMA -->
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBELxlbkav_9vZcJhSxE1gm0XFGgInfDSU",
@@ -687,7 +691,7 @@
         let invRowsPerPage = 10;
         let histCurrentPage = 1;
         let histRowsPerPage = 10;
-        let inventorySearchQuery = ''; // <--- NUEVA LÍNEA AQUÍ
+        let inventorySearchQuery = '';
 
         function showToast(title, message, type = 'success', duration = 4000) {
             const container = document.getElementById('toastContainer');
@@ -731,7 +735,7 @@
 
         function generateSmartCode(dept, warehouse, name) {
             const deptMap = { 'Trabajo Social': 'TS', 'Población Vulnerable': 'PV' };
-            const whMap = { 'Bodega DIF': 'DIF', 'Bodega Corona': 'COR', 'Oficina DIF (Resguardo)': 'OFI' };
+            const whMap = { 'Bodega DIF': 'DIF', 'Bodega Corona': 'COR', 'Oficina DIF (Resguardo)': 'OFI', 'DIF Dirección': 'DIR' };
             const deptCode = deptMap[dept] || 'GEN';
             const whCode = whMap[warehouse] || 'ALM';
             const cleanName = name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase();
@@ -756,7 +760,6 @@
                 inputObs.value = "Para resguardo en Oficinas del DIF (Trabajo Social)";
             }
 
-            // Solo los administradores (ROL GLOBAL) pueden registrar nuevos productos o editar/eliminar
             if (departamento !== "GLOBAL") {
                 if (tabRegistrarBtn) {
                     tabRegistrarBtn.style.display = 'none';
@@ -804,7 +807,7 @@
             }
         }
 
-function initFirestoreListeners() {
+        function initFirestoreListeners() {
             onSnapshot(collection(db, 'inventario'), (snapshot) => {
                 inventoryCache = [];
                 snapshot.forEach((docSnap) => {
@@ -814,7 +817,6 @@ function initFirestoreListeners() {
                 filterProductsByDept();
                 renderStockAlerts();
                 
-                // <-- ASEGÚRATE DE LLAMAR AQUÍ A LA VISTA DE DIRECCIÓN
                 if (typeof renderDireccionInventory === 'function') {
                     renderDireccionInventory();
                 }
@@ -826,13 +828,18 @@ function initFirestoreListeners() {
                 }
             });
 
-            const qVales = query(collection(db, 'vales'), orderBy('timestamp', 'desc'));
-            onSnapshot(qVales, (snapshot) => {
+            const valesRef = collection(db, 'vales');
+            onSnapshot(valesRef, (snapshot) => {
                 voucherCache = [];
-                snapshot.forEach((docSnap) => {
-                    voucherCache.push({ id: docSnap.id, ...docSnap.data() });
+                snapshot.forEach((doc) => {
+                    voucherCache.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
                 });
                 renderHistory();
+            }, (error) => {
+                console.error("Error crítico al conectar con la colección de vales:", error);
             });
         }
 
@@ -1088,7 +1095,7 @@ function initFirestoreListeners() {
             }
         }
 
-let currentFilteredVouchers = [];
+        let currentFilteredVouchers = [];
 
         function renderHistory() {
             const tbody = document.getElementById('historyTableBody');
@@ -1102,11 +1109,9 @@ let currentFilteredVouchers = [];
                 return;
             }
 
-            // Capturar el valor del input de búsqueda de forma segura
             const searchInput = document.getElementById('historySearchInput');
             const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-            // Filtrar en tiempo real por todos los campos
             currentFilteredVouchers = voucherCache.filter(v => {
                 if (!searchTerm) return true;
 
@@ -1193,7 +1198,6 @@ let currentFilteredVouchers = [];
             renderHistoryPagination(totalPages);
         }
 
-        // Enlazar el evento de filtrado de manera segura al cargar el DOM o mediante delegación
         document.addEventListener('input', (e) => {
             if (e.target && e.target.id === 'historySearchInput') {
                 histCurrentPage = 1;
@@ -1210,7 +1214,8 @@ let currentFilteredVouchers = [];
 
             container.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; font-size: 0.85rem; color: var(--gray-700); border-top: 1px solid var(--gray-200, #e2e8f0); margin-top: 8px;">
-                    <span>Mostrando página <strong>${histCurrentPage}</strong> de <strong>${totalPages || 1}</strong> (Total: ${currentFilteredVouchers.length} filtrados de ${voucherCache.length})</span>                    <div style="display: flex; gap: 8px;">
+                    <span>Mostrando página <strong>${histCurrentPage}</strong> de <strong>${totalPages || 1}</strong> (Total: ${currentFilteredVouchers.length} filtrados de ${voucherCache.length})</span>
+                    <div style="display: flex; gap: 8px;">
                         <button type="button" id="histPrevBtn" style="${histCurrentPage === 1 ? btnDisabledStyle : btnStyle}">Anterior</button>
                         <button type="button" id="histNextBtn" style="${histCurrentPage >= totalPages ? btnDisabledStyle : btnStyle}">Siguiente</button>
                     </div>
@@ -1256,78 +1261,149 @@ let currentFilteredVouchers = [];
             }
         }
 
-       // Asegúrate de pegar esta sección en tu bloque de scripts para corregir el desfase de valores y actualizar en tiempo real la pestaña de DIF Dirección.
-
+        // =========================================================================
+        // EMISIÓN DE VALES CON TRANSACCIÓN CORREGIDA (LECTURAS PRIMERO, LUEGO ESCRITURAS)
+        // =========================================================================
         const voucherForm = document.getElementById('voucherForm');
         if (voucherForm) {
             voucherForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const dept = document.getElementById('valeDeptSelect').value;
-                const beneficiaryInput = document.getElementById('valeBeneficiary');
-                const beneficiary = usuarioActivoActual ? usuarioActivoActual : (beneficiaryInput ? beneficiaryInput.value.trim() : '');
                 
-                // Leemos el selector que agregamos en el HTML con el value correcto "resguardo_direccion"
-                const destinationType = document.getElementById('valeDestinationType') ? document.getElementById('valeDestinationType').value : 'salida_final';
-                const observationInput = document.getElementById('valeObservation').value.trim();
-                
-                const observation = destinationType === 'resguardo_direccion' 
-                    ? `[Enviado a DIF Dirección] ${observationInput}` 
-                    : `[Salida Final] ${observationInput}`;
-
                 if (currentVoucherItems.length === 0) {
                     showToast('Advertencia', 'Debe agregar al menos un artículo a la lista del vale antes de generarlo.', 'warning');
                     return;
                 }
 
+                const deptSelect = document.getElementById('valeDeptSelect');
+                const dept = deptSelect ? deptSelect.value : '';
+                
+                const beneficiaryInput = document.getElementById('valeBeneficiary');
+                const beneficiary = beneficiaryInput ? beneficiaryInput.value.trim() : (usuarioActivoActual || 'Atención Ciudadana');
+                
+                const destinationTypeEl = document.getElementById('valeDestinationType');
+                const destinationType = destinationTypeEl ? destinationTypeEl.value : 'salida_final';
+                
+                const observationEl = document.getElementById('valeObservation');
+                const observationInput = observationEl ? observationEl.value.trim() : '';
+                
+                const observation = destinationType === 'resguardo_direccion' 
+                    ? `[Enviado a DIF Dirección] ${observationInput}` 
+                    : `[Salida Final] ${observationInput}`;
+
+                const btnSubmit = voucherForm.querySelector('button[type="submit"]');
+                if (btnSubmit) {
+                    btnSubmit.disabled = true;
+                    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
+                }
+
                 try {
-                    for (const item of currentVoucherItems) {
-                        // 1. Descontar del inventario de origen
-                        const invItem = inventoryCache.find(i => i.id === item.inventoryId);
-                        if (invItem) {
-                            const newQty = invItem.qty - item.qty;
-                            await updateDoc(doc(db, 'inventario', item.inventoryId), { qty: newQty });
+                    const currentLoggedUser = usuarioActivoActual || 'Administrador';
+                    const currentDate = new Date().toLocaleDateString('es-MX', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+
+                    // Ejecución atómica garantizando estrictamente LECTURAS primero y ESCRITURAS después
+                    await runTransaction(db, async (transaction) => {
+                        // -------------------------------------------------------------
+                        // FASE 1: TODAS LAS LECTURAS (READS)
+                        // -------------------------------------------------------------
+                        const itemSnapshots = [];
+                        for (const item of currentVoucherItems) {
+                            const invRef = doc(db, 'inventario', item.inventoryId);
+                            const invSnap = await transaction.get(invRef);
+
+                            if (!invSnap.exists()) {
+                                throw new Error(`El artículo "${item.productName}" ya no existe en el inventario.`);
+                            }
+
+                            const stockActual = invSnap.data().qty || 0;
+                            if (stockActual < item.qty) {
+                                throw new Error(`Stock insuficiente para "${item.productName}". Disponible: ${stockActual}`);
+                            }
+
+                            itemSnapshots.push({
+                                ref: invRef,
+                                currentStock: stockActual,
+                                itemData: item
+                            });
                         }
 
-                        // 2. Si se eligió enviar a DIF Dirección, sumar o crear el registro con bodega exactísima "DIF Dirección"
+                        // Si el destino es "resguardo_direccion", leemos el ítem de destino también antes de escribir
+                        const direcReadOperations = [];
                         if (destinationType === 'resguardo_direccion') {
-                            const existingDirecItem = inventoryCache.find(i => 
-                                i.name.toLowerCase().trim() === item.productName.toLowerCase().trim() && 
-                                i.warehouse && i.warehouse.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === "dif direccion"
-                            );
+                            for (const item of currentVoucherItems) {
+                                const existingDirecItem = inventoryCache.find(i => 
+                                    i.name.toLowerCase().trim() === item.productName.toLowerCase().trim() && 
+                                    i.warehouse && i.warehouse.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === "dif direccion"
+                                );
 
-                            if (existingDirecItem) {
-                                const updatedDirecQty = Number(existingDirecItem.qty) + Number(item.qty);
-                                await updateDoc(doc(db, 'inventario', existingDirecItem.id), { 
-                                    qty: updatedDirecQty,
-                                    lastUpdatedBy: currentLoggedUser // <-- RASTREAR QUIÉN LO ACTUALIZÓ
-                                });
-                            } else {
-                                const newDirecCode = generateSmartCode(dept, 'DIF Dirección', item.productName);
-                                await addDoc(collection(db, 'inventario'), {
-                                    code: newDirecCode,
-                                    name: item.productName,
-                                    warehouse: 'DIF Dirección',
-                                    qty: Number(item.qty),
-                                    dept: dept,
-                                    createdBy: currentLoggedUser // <-- RASTREAR QUIÉN LO CREÓ
-                                });
+                                if (existingDirecItem) {
+                                    const direcRef = doc(db, 'inventario', existingDirecItem.id);
+                                    const direcSnap = await transaction.get(direcRef);
+                                    direcReadOperations.push({
+                                        exists: true,
+                                        ref: direcRef,
+                                        currentQty: direcSnap.exists() ? (direcSnap.data().qty || 0) : 0,
+                                        itemData: item
+                                    });
+                                } else {
+                                    direcReadOperations.push({
+                                        exists: false,
+                                        itemData: item
+                                    });
+                                }
                             }
                         }
-                    }
 
+                        // -------------------------------------------------------------
+                        // FASE 2: TODAS LAS ESCRITURAS (WRITES)
+                        // -------------------------------------------------------------
+                        // 1. Descontar stock de los artículos de origen
+                        for (const readData of itemSnapshots) {
+                            transaction.update(readData.ref, { 
+                                qty: readData.currentStock - readData.itemData.qty 
+                            });
+                        }
+
+                        // 2. Incrementar o crear stock en DIF Dirección
+                        if (destinationType === 'resguardo_direccion') {
+                            for (const direcData of direcReadOperations) {
+                                if (direcData.exists) {
+                                    transaction.update(direcData.ref, { 
+                                        qty: direcData.currentQty + Number(direcData.itemData.qty),
+                                        lastUpdatedBy: currentLoggedUser 
+                                    });
+                                } else {
+                                    const newDirecRef = doc(collection(db, 'inventario'));
+                                    const newDirecCode = generateSmartCode(dept, 'DIF Dirección', direcData.itemData.productName);
+                                    transaction.set(newDirecRef, {
+                                        code: newDirecCode,
+                                        name: direcData.itemData.productName,
+                                        warehouse: 'DIF Dirección',
+                                        qty: Number(direcData.itemData.qty),
+                                        dept: dept || 'Trabajo Social',
+                                        createdBy: currentLoggedUser
+                                    });
+                                }
+                            }
+                        }
+                    });
+
+                    // Generar folio e insertar documento del Vale
                     const folioNum = voucherCache.length + 1;
                     const folio = `VALE-DIF-2026-${String(folioNum).padStart(4, '0')}`;
-                    const currentLoggedUser = typeof usuarioActivoActual !== 'undefined' ? usuarioActivoActual : 'Administrador';
 
                     const voucherData = {
                         folio,
                         date: currentDate,
-                        dept,
+                        dept: dept || 'Trabajo Social',
                         items: currentVoucherItems,
                         beneficiary,
                         observation,
                         destinationType,
-                        createdBy: currentLoggedUser, // <-- GUARDAMOS QUÉ USUARIO HIZO EL VALE
+                        createdBy: currentLoggedUser,
                         timestamp: serverTimestamp()
                     };
 
@@ -1348,16 +1424,14 @@ let currentFilteredVouchers = [];
                         const userObj = systemUsers[usuarioActivoActual];
                         if (userObj && userObj.dep !== "GLOBAL") {
                             if (inputBeneficiario) inputBeneficiario.readOnly = true;
-                            const deptSel = document.getElementById('valeDeptSelect');
-                            if (deptSel) {
-                                deptSel.value = userObj.dep === 'SOCIAL' ? 'Trabajo Social' : 'Población Vulnerable';
-                                deptSel.disabled = true;
+                            if (deptSelect) {
+                                deptSelect.value = userObj.dep === 'SOCIAL' ? 'Trabajo Social' : 'Población Vulnerable';
+                                deptSelect.disabled = true;
                             }
                         }
                     }
                     filterProductsByDept();
 
-                    // Forzar actualización inmediata de la vista de DIF Dirección
                     if (typeof renderDireccionInventory === 'function') {
                         renderDireccionInventory();
                     }
@@ -1371,10 +1445,16 @@ let currentFilteredVouchers = [];
 
                 } catch (error) {
                     console.error("Error al emitir el vale:", error);
-                    showToast('Error', 'No se pudo procesar la salida de almacén.', 'error');
+                    showToast('Error', error.message || 'No se pudo procesar la salida de almacén.', 'error');
+                } finally {
+                    if (btnSubmit) {
+                        btnSubmit.disabled = false;
+                        btnSubmit.innerHTML = 'Generar Vale y Enviar a Stock / Dirección';
+                    }
                 }
             });
         }
+
         const addItemForm = document.getElementById('addItemForm');
         if (addItemForm) {
             addItemForm.addEventListener('submit', async (e) => {
@@ -1431,8 +1511,26 @@ let currentFilteredVouchers = [];
 
                 try {
                     await updateDoc(doc(db, 'inventario', id), { name, warehouse, qty, dept, code });
+                    
                     document.getElementById('editModal').classList.add('hidden');
                     showToast('Actualizado', 'Los cambios se guardaron en la base de datos.');
+
+                    if (typeof renderDireccionInventory === 'function') {
+                        renderDireccionInventory();
+                    }
+
+                    const searchInput = document.getElementById('inventorySearchInput');
+                    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+                    if (typeof renderInventoryFiltered === 'function') {
+                        renderInventoryFiltered(searchTerm);
+                    } else if (typeof renderInventory === 'function') {
+                        renderInventory();
+                    }
+
+                    if (typeof renderCharts === 'function') {
+                        renderCharts();
+                    }
+
                 } catch (error) {
                     console.error("Error al actualizar:", error);
                     showToast('Error', 'No se pudo actualizar el registro.', 'error');
@@ -1442,12 +1540,18 @@ let currentFilteredVouchers = [];
                 }
             };
         }
+
         async function deleteItem(id, name) {
             if (confirm(`¿Está seguro de eliminar "${name}" de la base de datos?`)) {
                 try {
                     await deleteDoc(doc(db, 'inventario', id));
                     showToast('Eliminado', `Se eliminó "${name}" de la BD.`, 'warning');
+                    
+                    if (typeof renderDireccionInventory === 'function') {
+                        renderDireccionInventory();
+                    }
                 } catch (error) {
+                    console.error("Error al eliminar:", error);
                     showToast('Error', 'No se pudo eliminar el registro.', 'error');
                 }
             }
@@ -1760,7 +1864,8 @@ let currentFilteredVouchers = [];
                 renderHistory();
             });
         }
-function renderDireccionInventory() {
+
+        function renderDireccionInventory() {
             const tbody = document.getElementById('direcInventoryTableBody');
             if (!tbody) return;
 
@@ -1777,9 +1882,25 @@ function renderDireccionInventory() {
                 return;
             }
 
+            const userData = systemUsers[usuarioActivoActual];
+            const isAdmin = (userData && userData.dep === 'GLOBAL');
+
             direcItems.forEach(item => {
                 const tr = document.createElement('tr');
                 const userCreator = item.createdBy || item.lastUpdatedBy || 'Institucional';
+
+                const actionsHtml = !isAdmin 
+                    ? `<button type="button" class="btn btn-primary btn-open-delivery" data-id="${item.id}" style="padding: 6px 12px; font-size: 0.85rem; background: #0284c7; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        <i class="fa-solid fa-file-export"></i> Entregar y Dar de Baja
+                       </button>`
+                    : `<div style="display: flex; gap: 6px; justify-content: center;">
+                        <button type="button" class="btn-edit btn-edit-direc" data-id="${item.id}" style="padding: 6px 10px; font-size: 0.82rem;">
+                            <i class="fa-solid fa-pen"></i> Editar
+                        </button>
+                        <button type="button" class="btn btn-primary btn-open-delivery" data-id="${item.id}" style="padding: 6px 12px; font-size: 0.85rem; background: #0284c7; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fa-solid fa-file-export"></i> Entregar
+                        </button>
+                       </div>`;
 
                 tr.innerHTML = `
                     <td><strong>${item.code || 'S/C'}</strong></td>
@@ -1787,17 +1908,18 @@ function renderDireccionInventory() {
                     <td><span class="badge" style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold;">${item.qty} unids.</span></td>
                     <td>${item.dept || 'General'}</td>
                     <td><span style="font-size: 0.82rem; color: var(--gray-700); background: #f1f5f9; padding: 3px 8px; border-radius: 12px;"><i class="fa-solid fa-user-shield"></i> ${userCreator}</span></td>
-                    <td style="text-align: center;">
-                        <button type="button" class="btn btn-primary btn-open-delivery" data-id="${item.id}" style="padding: 6px 12px; font-size: 0.85rem; background: #0284c7; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                            <i class="fa-solid fa-file-export"></i> Entregar y Dar de Baja
-                        </button>
-                    </td>
+                    <td style="text-align: center;">${actionsHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            if (isAdmin) {
+                tbody.querySelectorAll('.btn-edit-direc').forEach(btn => {
+                    btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
+                });
+            }
         }
 
-        // Abrir modal de entrega de dirección
         window.openDeliveryModal = function(inventoryId) {
             const item = inventoryCache.find(i => i.id === inventoryId);
             if (!item) return;
@@ -1816,15 +1938,14 @@ function renderDireccionInventory() {
             document.getElementById('deliveryModal').style.display = 'none';
         };
 
-        // Procesar la salida, generar el vale final y descontar de la base de datos automáticamente
         const direcCheckoutForm = document.getElementById('direcCheckoutForm');
         if (direcCheckoutForm) {
             direcCheckoutForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const inventoryId = document.getElementById('modalInventoryId').value;
-                const beneficiary = document.getElementById('modalBeneficiary').value.trim();
-                const deliverQty = parseInt(document.getElementById('modalDeliverQty').value) || 0;
-                const observation = document.getElementById('modalObservation').value.trim();
+                const inventoryId = document.getElementById('modalInventoryId')?.value;
+                const beneficiary = document.getElementById('modalBeneficiary')?.value.trim() || '';
+                const deliverQty = parseInt(document.getElementById('modalDeliverQty')?.value) || 0;
+                const observation = document.getElementById('modalObservation')?.value.trim() || '';
 
                 const item = inventoryCache.find(i => i.id === inventoryId);
                 if (!item) {
@@ -1837,50 +1958,70 @@ function renderDireccionInventory() {
                     return;
                 }
 
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
+                }
+
                 try {
-                    // 1. Descontar las piezas automáticamente del inventario en Firestore
                     const newQty = item.qty - deliverQty;
                     await updateDoc(doc(db, 'inventario', inventoryId), { qty: newQty });
+                    item.qty = newQty;
 
-                    // 2. Generar el Vale de Salida Oficial
-                    const folioNum = voucherCache.length + 1;
+                    const folioNum = typeof voucherCache !== 'undefined' ? voucherCache.length + 1 : 1;
                     const folio = `SAL-DIR-2026-${String(folioNum).padStart(4, '0')}`;
-                    const currentDate = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                    const currentDate = new Date().toLocaleDateString('es-MX', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
 
                     const exitVoucher = {
-                        folio,
+                        folio: folio,
                         date: currentDate,
                         dept: item.dept || 'DIF Dirección',
                         items: [{
-                            inventoryId: item.id,
-                            code: item.code,
-                            productName: item.name,
-                            warehouse: 'DIF Dirección',
+                            inventoryId: item.id || '',
+                            code: item.code || 'S/C',
+                            productName: item.name || 'Sin descripción',
+                            warehouse: item.warehouse || 'DIF Dirección',
                             qty: deliverQty
                         }],
-                        beneficiary: beneficiary,
-                        observation: `Salida de stock y baja desde DIF Dirección: ${observation}`,
+                        beneficiary: beneficiary || 'Atención Ciudadana',
+                        observation: observation ? `Salida de stock y baja desde DIF Dirección: ${observation}` : 'Salida de stock desde DIF Dirección',
                         timestamp: serverTimestamp()
                     };
 
                     const docRef = await addDoc(collection(db, 'vales'), exitVoucher);
                     exitVoucher.id = docRef.id;
 
-                    // 3. Limpiar y actualizar interfaz
+                    if (typeof voucherCache !== 'undefined') {
+                        voucherCache.unshift(exitVoucher);
+                    }
+
                     closeDeliveryModal();
-                    renderDireccionInventory();
+                    if (typeof renderDireccionInventory === 'function') renderDireccionInventory();
+                    if (typeof renderInventory === 'function') renderInventory();
+
                     showToast('Salida Exitosa', `Folio ${folio} generado. Se descontaron ${deliverQty} piezas de DIF Dirección.`, 'success');
                     
-                    // Mostrar modal del vale impreso
-                    displayVoucherModal(exitVoucher);
+                    if (typeof displayVoucherModal === 'function') {
+                        displayVoucherModal(exitVoucher);
+                    }
 
                 } catch (error) {
                     console.error("Error al procesar la salida y baja:", error);
                     showToast('Error', 'No se pudo procesar la baja de stock.', 'error');
+                } finally {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Entregar y Dar de Baja';
+                    }
                 }
             });
         }
-        // Escuchador global para abrir el modal de entrega de dirección sin fallos de ámbito
+
         document.addEventListener('click', (e) => {
             const btn = e.target.closest('.btn-open-delivery');
             if (btn) {
@@ -1888,12 +2029,20 @@ function renderDireccionInventory() {
                 const item = inventoryCache.find(i => i.id === inventoryId);
                 
                 if (item) {
-                    document.getElementById('modalInventoryId').value = item.id;
-                    document.getElementById('modalItemName').textContent = `${item.name} (Código: ${item.code})`;
-                    document.getElementById('modalDeliverQty').value = 1;
-                    document.getElementById('modalDeliverQty').max = item.qty;
-                    document.getElementById('modalMaxHelp').textContent = `Máximo disponible para entregar: ${item.qty}`;
-                    document.getElementById('modalBeneficiary').value = '';
+                    const modalInvId = document.getElementById('modalInventoryId');
+                    const modalItemName = document.getElementById('modalItemName');
+                    const modalDeliverQty = document.getElementById('modalDeliverQty');
+                    const modalMaxHelp = document.getElementById('modalMaxHelp');
+                    const modalBeneficiary = document.getElementById('modalBeneficiary');
+
+                    if (modalInvId) modalInvId.value = item.id;
+                    if (modalItemName) modalItemName.textContent = `${item.name} (Código: ${item.code})`;
+                    if (modalDeliverQty) {
+                        modalDeliverQty.value = 1;
+                        modalDeliverQty.max = item.qty;
+                    }
+                    if (modalMaxHelp) modalMaxHelp.textContent = `Máximo disponible para entregar: ${item.qty}`;
+                    if (modalBeneficiary) modalBeneficiary.value = '';
                     
                     const deliveryModal = document.getElementById('deliveryModal');
                     if (deliveryModal) {
@@ -1904,7 +2053,6 @@ function renderDireccionInventory() {
             }
         });
 
-        // Asegurar cierre correcto del modal de entrega
         window.closeDeliveryModal = function() {
             const deliveryModal = document.getElementById('deliveryModal');
             if (deliveryModal) {
@@ -1917,283 +2065,257 @@ function renderDireccionInventory() {
         if (closeDeliveryBtn) {
             closeDeliveryBtn.addEventListener('click', closeDeliveryModal);
         }
-        // --- FILTRO UNIVERSAL PARA TODAS LAS PESTAÑAS ---
-document.addEventListener('input', (e) => {
-    if (e.target && e.target.id === 'globalSearchInput') {
-        const term = e.target.value.toLowerCase().trim();
-        
-        // Descubrir qué pestaña está activa actualmente
-        const activeSection = document.querySelector('main.main-content section.tab-content.active');
-        if (!activeSection) return;
-        
-        const activeTabId = activeSection.id;
 
-        // Redirigir la búsqueda según la pestaña activa
-        if (activeTabId === 'tab-inventario') {
-            // Filtrar tabla de Inventario General
-            const rows = document.querySelectorAll('#inventoryTableBody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(term) ? '' : 'none';
+        document.addEventListener('input', (e) => {
+            if (e.target && e.target.id === 'globalSearchInput') {
+                const term = e.target.value.toLowerCase().trim();
+                const activeSection = document.querySelector('main.main-content section.tab-content.active');
+                if (!activeSection) return;
+                
+                const activeTabId = activeSection.id;
+
+                if (activeTabId === 'tab-inventario') {
+                    const rows = document.querySelectorAll('#inventoryTableBody tr');
+                    rows.forEach(row => {
+                        row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+                    });
+                } 
+                else if (activeTabId === 'tab-dif-direccion') {
+                    const rows = document.querySelectorAll('#direcInventoryTableBody tr');
+                    rows.forEach(row => {
+                        row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+                    });
+                } 
+                else if (activeTabId === 'tab-historial') {
+                    if (typeof histCurrentPage !== 'undefined' && typeof renderHistory === 'function') {
+                        histCurrentPage = 1;
+                        renderHistory();
+                    } else {
+                        const rows = document.querySelectorAll('#historyTableBody tr');
+                        rows.forEach(row => {
+                            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+                        });
+                    }
+                }
+            }
+        });
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const globalInput = document.getElementById('globalSearchInput');
+                if (globalInput) {
+                    globalInput.value = '';
+                    document.querySelectorAll('#inventoryTableBody tr, #direcInventoryTableBody tr, #historyTableBody tr').forEach(r => r.style.display = '');
+                }
             });
-        } 
-        else if (activeTabId === 'tab-dif-direccion') {
-            // Filtrar tabla de DIF Dirección
-            const rows = document.querySelectorAll('#direcInventoryTableBody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(term) ? '' : 'none';
-            });
-        } 
-        else if (activeTabId === 'tab-historial') {
-            // Si estás en historial, puedes aprovechar tu función existente o filtrar visualmente
-            if (typeof histCurrentPage !== 'undefined') {
-                histCurrentPage = 1;
-                renderHistory(); // Usa tu renderizado con paginación existente si aplica
-            } else {
-                const rows = document.querySelectorAll('#historyTableBody tr');
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(term) ? '' : 'none';
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const inventorySearchInput = document.getElementById('inventorySearchInput');
+            
+            if (inventorySearchInput) {
+                inventorySearchInput.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase().trim();
+                    
+                    const activeSection = document.querySelector('main.main-content section.tab-content.active');
+                    if (!activeSection) return;
+
+                    if (activeSection.id === 'tab-inventario') {
+                        invCurrentPage = 1;
+                        renderInventoryFiltered(searchTerm);
+                    } else if (activeSection.id === 'tab-dif-direccion') {
+                        filterTableRows('direcInventoryTableBody', searchTerm);
+                    } else if (activeSection.id === 'tab-historial') {
+                        histCurrentPage = 1;
+                        renderHistory();
+                    }
                 });
             }
-        }
-    }
-});
 
-// Limpiar el buscador automáticamente al cambiar de pestaña para evitar confusiones
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const globalInput = document.getElementById('globalSearchInput');
-        if (globalInput) {
-            globalInput.value = '';
-            // Restablecer visibilidad de filas en las tablas al cambiar de pestaña
-            document.querySelectorAll('#inventoryTableBody tr, #direcInventoryTableBody tr, #historyTableBody tr').forEach(r => r.style.display = '');
-        }
-    });
-});
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (inventorySearchInput) {
+                        inventorySearchInput.value = '';
+                        renderInventory();
+                        document.querySelectorAll('#direcInventoryTableBody tr').forEach(r => r.style.display = '');
+                    }
+                });
+            });
+        });
 
-// --- SISTEMA DE BÚSQUEDA GLOBAL Y FILTRADO EN TIEMPO REAL ---
-document.addEventListener('DOMContentLoaded', () => {
-    const inventorySearchInput = document.getElementById('inventorySearchInput');
-    
-    if (inventorySearchInput) {
-        inventorySearchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
+        function renderInventoryFiltered(searchTerm) {
+            const tbody = document.getElementById('inventoryTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
             
-            // Si estamos en la pestaña de inventario, filtramos el inventario cacheado
-            const activeSection = document.querySelector('main.main-content section.tab-content.active');
-            if (!activeSection) return;
+            const filteredItems = inventoryCache.filter(item => {
+                if (!searchTerm) return true;
+                const codeMatch = (item.code || '').toLowerCase().includes(searchTerm);
+                const nameMatch = (item.name || '').toLowerCase().includes(searchTerm);
+                const warehouseMatch = (item.warehouse || '').toLowerCase().includes(searchTerm);
+                const deptMatch = (item.dept || '').toLowerCase().includes(searchTerm);
+                return codeMatch || nameMatch || warehouseMatch || deptMatch;
+            });
 
-            if (activeSection.id === 'tab-inventario') {
-                invCurrentPage = 1;
-                renderInventoryFiltered(searchTerm);
-            } else if (activeSection.id === 'tab-dif-direccion') {
-                // Filtro rápido por DOM para DIF Dirección
-                filterTableRows('direcInventoryTableBody', searchTerm);
-            } else if (activeSection.id === 'tab-historial') {
-                // El historial ya tiene su propia lógica, pero podemos forzar la búsqueda si aplica
-                histCurrentPage = 1;
-                renderHistory();
+            if (filteredItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-600);">No se encontraron artículos que coincidan con la búsqueda.</td></tr>`;
+                renderInventoryPagination(0);
+                return;
             }
-        });
-    }
 
-    // Limpiar o adaptar el input al cambiar de pestaña
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (inventorySearchInput) {
-                inventorySearchInput.value = '';
-                // Restaurar vistas al cambiar de pestaña
-                renderInventory();
-                document.querySelectorAll('#direcInventoryTableBody tr').forEach(r => r.style.display = '');
+            const totalRows = filteredItems.length;
+            const totalPages = Math.ceil(totalRows / invRowsPerPage) || 1;
+            if (invCurrentPage > totalPages) invCurrentPage = totalPages;
+
+            const start = (invCurrentPage - 1) * invRowsPerPage;
+            const end = start + invRowsPerPage;
+            const paginatedItems = filteredItems.slice(start, end);
+
+            const userData = systemUsers[usuarioActivoActual];
+            const isAdmin = (userData && userData.dep === 'GLOBAL');
+
+            paginatedItems.forEach((item) => {
+                let badgeClass = 'badge-dif';
+                if (item.warehouse === 'Bodega Corona') badgeClass = 'badge-corona';
+                else if (item.warehouse === 'Oficina DIF (Resguardo)') badgeClass = 'badge-oficina';
+
+                const isLow = item.qty <= 5;
+                const stockBadge = isLow 
+                    ? `<span class="badge-stock-low"><i class="fa-solid fa-triangle-exclamation"></i> ${item.qty} (Bajo)</span>` 
+                    : `<span class="badge-stock-ok">${item.qty}</span>`;
+
+                const actionsHtml = !isAdmin 
+                    ? `<span style="color: var(--gray-400); font-style: italic; font-size: 0.8rem;">Solo lectura</span>`
+                    : `
+                        <button class="btn-edit" data-id="${item.id}"><i class="fa-solid fa-pen"></i> Editar</button>
+                        <button class="btn-delete" data-id="${item.id}" data-name="${item.name}"><i class="fa-solid fa-trash"></i> Eliminar</button>
+                    `;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.code}</strong></td>
+                    <td>${item.name}</td>
+                    <td><span class="badge-bodega ${badgeClass}">${item.warehouse}</span></td>
+                    <td>${stockBadge}</td>
+                    <td>${item.dept}</td>
+                    <td>${actionsHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (isAdmin) {
+                tbody.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
+                });
+                tbody.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.addEventListener('click', () => deleteItem(btn.getAttribute('data-id'), btn.getAttribute('data-name')));
+                });
             }
-        });
-    });
-});
 
-// Función auxiliar para renderizar el inventario con filtro aplicado
-function renderInventoryFiltered(searchTerm) {
-    const tbody = document.getElementById('inventoryTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    
-    const filteredItems = inventoryCache.filter(item => {
-        if (!searchTerm) return true;
-        const codeMatch = (item.code || '').toLowerCase().includes(searchTerm);
-        const nameMatch = (item.name || '').toLowerCase().includes(searchTerm);
-        const warehouseMatch = (item.warehouse || '').toLowerCase().includes(searchTerm);
-        const deptMatch = (item.dept || '').toLowerCase().includes(searchTerm);
-        return codeMatch || nameMatch || warehouseMatch || deptMatch;
-    });
-
-    if (filteredItems.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-600);">No se encontraron artículos que coincidan con la búsqueda.</td></tr>`;
-        renderInventoryPagination(0);
-        return;
-    }
-
-    const totalRows = filteredItems.length;
-    const totalPages = Math.ceil(totalRows / invRowsPerPage) || 1;
-    if (invCurrentPage > totalPages) invCurrentPage = totalPages;
-
-    const start = (invCurrentPage - 1) * invRowsPerPage;
-    const end = start + invRowsPerPage;
-    const paginatedItems = filteredItems.slice(start, end);
-
-    const userData = systemUsers[usuarioActivoActual];
-    const isAdmin = (userData && userData.dep === 'GLOBAL');
-
-    paginatedItems.forEach((item) => {
-        let badgeClass = 'badge-dif';
-        if (item.warehouse === 'Bodega Corona') badgeClass = 'badge-corona';
-        else if (item.warehouse === 'Oficina DIF (Resguardo)') badgeClass = 'badge-oficina';
-
-        const isLow = item.qty <= 5;
-        const stockBadge = isLow 
-            ? `<span class="badge-stock-low"><i class="fa-solid fa-triangle-exclamation"></i> ${item.qty} (Bajo)</span>` 
-            : `<span class="badge-stock-ok">${item.qty}</span>`;
-
-        const actionsHtml = !isAdmin 
-            ? `<span style="color: var(--gray-400); font-style: italic; font-size: 0.8rem;">Solo lectura</span>`
-            : `
-                <button class="btn-edit" data-id="${item.id}"><i class="fa-solid fa-pen"></i> Editar</button>
-                <button class="btn-delete" data-id="${item.id}" data-name="${item.name}"><i class="fa-solid fa-trash"></i> Eliminar</button>
-              `;
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><strong>${item.code}</strong></td>
-            <td>${item.name}</td>
-            <td><span class="badge-bodega ${badgeClass}">${item.warehouse}</span></td>
-            <td>${stockBadge}</td>
-            <td>${item.dept}</td>
-            <td>${actionsHtml}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    if (isAdmin) {
-        tbody.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
-        });
-        tbody.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', () => deleteItem(btn.getAttribute('data-id'), btn.getAttribute('data-name')));
-        });
-    }
-
-    renderInventoryPagination(totalPages);
-}
-
-// Función auxiliar rápida para filtrar tablas estáticas (como DIF Dirección)
-function filterTableRows(tbodyId, searchTerm) {
-    const rows = document.querySelectorAll(`#${tbodyId} tr`);
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm) ? '' : 'none';
-    });
-}
-
-// ==========================================
-// FUNCIÓN PARA IMPRIMIR EL INVENTARIO FILTRADO (Versión segura sin pop-ups bloqueados)
-// ==========================================
-function printFilteredInventory() {
-    const searchInput = document.getElementById('inventorySearchInput');
-    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-    
-    const itemsToPrint = inventoryCache.filter(item => {
-        if (!searchTerm) return true;
-        const codeMatch = (item.code || '').toLowerCase().includes(searchTerm);
-        const nameMatch = (item.name || '').toLowerCase().includes(searchTerm);
-        const warehouseMatch = (item.warehouse || '').toLowerCase().includes(searchTerm);
-        const deptMatch = (item.dept || '').toLowerCase().includes(searchTerm);
-        return codeMatch || nameMatch || warehouseMatch || deptMatch;
-    });
-
-    if (itemsToPrint.length === 0) {
-        if (typeof showToast === 'function') {
-            showToast('Advertencia', 'No hay registros filtrados para imprimir.', 'warning');
-        } else {
-            alert('No hay registros filtrados para imprimir.');
+            renderInventoryPagination(totalPages);
         }
-        return;
-    }
 
-    let rowsHTML = '';
-    itemsToPrint.forEach(item => {
-        rowsHTML += `
-            <tr>
-                <td><strong>${item.code || ''}</strong></td>
-                <td>${item.name || ''}</td>
-                <td>${item.warehouse || ''}</td>
-                <td style="text-align: center;">${item.qty || 0}</td>
-                <td>${item.dept || ''}</td>
-            </tr>
-        `;
-    });
+        function filterTableRows(tbodyId, searchTerm) {
+            const rows = document.querySelectorAll(`#${tbodyId} tr`);
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
 
-    // Crear una ventana flotante de manera segura asegurando el foco
-    let printWindow = window.open('', '_blank', 'width=800,height=600');
-    if (!printWindow) {
-        alert('Por favor, permita las ventanas emergentes (pop-ups) para poder imprimir el reporte.');
-        return;
-    }
+        function printFilteredInventory() {
+            const searchInput = document.getElementById('inventorySearchInput');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            
+            const itemsToPrint = inventoryCache.filter(item => {
+                if (!searchTerm) return true;
+                const codeMatch = (item.code || '').toLowerCase().includes(searchTerm);
+                const nameMatch = (item.name || '').toLowerCase().includes(searchTerm);
+                const warehouseMatch = (item.warehouse || '').toLowerCase().includes(searchTerm);
+                const deptMatch = (item.dept || '').toLowerCase().includes(searchTerm);
+                return codeMatch || nameMatch || warehouseMatch || deptMatch;
+            });
 
-    let htmlContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Reporte de Inventario Filtrado - DIF Municipal</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-                h2 { text-align: center; color: #7a1c32; margin-bottom: 5px; font-size: 1.2rem; }
-                p { text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 20px; }
-                table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-                th { background: #f3f4f6; border: 1px solid #cbd5e1; padding: 8px; text-align: left; color: #334155; }
-                td { border: 1px solid #cbd5e1; padding: 6px; }
-            </style>
-        </head>
-        <body>
-            <h2>SISTEMA DIF MUNICIPAL — REPORTE DE INVENTARIO FILTRADO</h2>
-            <p>Criterio de búsqueda: "<strong>${searchTerm || 'Todos los registros'}</strong>" — Fecha: ${new Date().toLocaleDateString('es-MX')}</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Código</th>
-                        <th>Artículo / Descripción</th>
-                        <th>Bodega</th>
-                        <th style="text-align: center;">Stock</th>
-                        <th>Departamento</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${rowsHTML}
-                </tbody>
-            </table>
-            <script>
-                window.onload = function() {
-                    window.print();
-                    setTimeout(() => window.close(), 500);
+            if (itemsToPrint.length === 0) {
+                if (typeof showToast === 'function') {
+                    showToast('Advertencia', 'No hay registros filtrados para imprimir.', 'warning');
+                } else {
+                    alert('No hay registros filtrados para imprimir.');
                 }
-            <\/script>
-        </body>
-        </html>
-    `;
+                return;
+            }
 
-    printWindow.document.open();
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
-}
+            let rowsHTML = '';
+            itemsToPrint.forEach(item => {
+                rowsHTML += `
+                    <tr>
+                        <td><strong>${item.code || ''}</strong></td>
+                        <td>${item.name || ''}</td>
+                        <td>${item.warehouse || ''}</td>
+                        <td style="text-align: center;">${item.qty || 0}</td>
+                        <td>${item.dept || ''}</td>
+                    </tr>
+                `;
+            });
 
-// Vincular el botón de manera segura al cargar el DOM
-document.addEventListener('DOMContentLoaded', () => {
-    const printFilteredBtn = document.getElementById('printFilteredBtn');
-    if (printFilteredBtn) {
-        printFilteredBtn.addEventListener('click', printFilteredInventory);
-    }
-});
+            let printWindow = window.open('', '_blank', 'width=800,height=600');
+            if (!printWindow) {
+                alert('Por favor, permita las ventanas emergentes (pop-ups) para poder imprimir el reporte.');
+                return;
+            }
 
+            let htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Reporte de Inventario Filtrado - DIF Municipal</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+                        h2 { text-align: center; color: #7a1c32; margin-bottom: 5px; font-size: 1.2rem; }
+                        p { text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 20px; }
+                        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+                        th { background: #f3f4f6; border: 1px solid #cbd5e1; padding: 8px; text-align: left; color: #334155; }
+                        td { border: 1px solid #cbd5e1; padding: 6px; }
+                    </style>
+                </head>
+                <body>
+                    2.0 — REPORTE DE INVENTARIO FILTRADO</h2>
+                    <p>Criterio de búsqueda: "<strong>${searchTerm || 'Todos los registros'}</strong>" — Fecha: ${new Date().toLocaleDateString('es-MX')}</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Artículo / Descripción</th>
+                                <th>Bodega</th>
+                                <th style="text-align: center;">Stock</th>
+                                <th>Departamento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHTML}
+                        </tbody>
+                    </table>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            setTimeout(() => window.close(), 500);
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `;
 
-</script>
-</body>
-</html>
+            printWindow.document.open();
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const printFilteredBtn = document.getElementById('printFilteredBtn');
+            if (printFilteredBtn) {
+                printFilteredBtn.addEventListener('click', printFilteredInventory);
+            }
+        });
+    </script>
+    </body>
+    </html>
