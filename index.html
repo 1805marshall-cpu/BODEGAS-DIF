@@ -149,6 +149,85 @@
         .voucher-signatures { display: flex; justify-content: space-between; margin-top: 20px; text-align: center; font-size: 0.78rem; }
         .signature-line { width: 40%; border-top: 1px solid var(--dark); padding-top: 4px; }
 
+/* Zona de Carga de Archivos */
+.upload-area {
+    border: 2px dashed var(--gray-300, #cbd5e1);
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: var(--gray-100, #f8fafc);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+}
+
+.upload-area:hover {
+    border-color: var(--success, #10b981);
+    background-color: #f0fdf4;
+}
+
+.upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-text {
+    font-size: 0.85rem;
+    color: var(--dark, #334155);
+    margin: 0;
+}
+
+.upload-hint {
+    font-size: 0.75rem;
+    color: var(--gray-500, #64748b);
+    margin-top: 2px;
+}
+
+/* Vista previa de la foto seleccionada */
+.preview-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.preview-container img {
+    max-height: 150px;
+    width: auto;
+    border-radius: 6px;
+    object-fit: cover;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.remove-btn {
+    position: absolute;
+    top: -10px;
+    right: calc(50% - 85px);
+    background: #ef4444;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: transform 0.15s ease;
+}
+
+.remove-btn:hover {
+    transform: scale(1.1);
+}
+
+
+
         @media print {
             body * { visibility: hidden; }
             #printableVoucherModal, #printableVoucherModal * { visibility: visible; }
@@ -569,39 +648,70 @@
         </div>
     </div>
 
-    <!-- MODAL DE ENTREGA Y BAJA DESDE DIF DIRECCIÓN -->
-    <div id="deliveryModal" class="login-overlay hidden" style="align-items: center;">
-        <div class="login-card" style="max-width: 480px;">
-            <div class="login-header" style="margin-bottom: 20px;">
-                <h2 class="login-title">Entrega y Baja de Stock</h2>
-                <p class="login-subtitle">Emitir vale de salida definitivo al ciudadano</p>
-            </div>
-            <form id="direcCheckoutForm">
-                <input type="hidden" id="modalInventoryId">
-                <div class="form-group">
-                    <label class="form-label">Artículo Seleccionado</label>
-                    <p id="modalItemName" style="margin: 5px 0; font-weight: 600; color: var(--dark);"></p>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="modalBeneficiary">Nombre del Beneficiario Final (Ciudadano)</label>
-                    <input type="text" id="modalBeneficiary" class="form-control" style="padding-left: 14px;" placeholder="Nombre completo" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="modalDeliverQty">Cantidad a Entregar</label>
-                    <input type="number" id="modalDeliverQty" class="form-control" style="padding-left: 14px;" min="1" required>
-                    <small id="modalMaxHelp" style="color: var(--gray-600); display: block; margin-top: 4px;"></small>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="modalObservation">Observación / Folio de Solicitud</label>
-                    <input type="text" id="modalObservation" class="form-control" style="padding-left: 14px;" value="Entrega final a ciudadano desde DIF Dirección" required>
-                </div>
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button type="submit" class="btn-action" style="flex: 1; justify-content: center; background: var(--success);"><i class="fa-solid fa-check"></i> Generar Vale y Dar de Baja</button>
-                    <button type="button" id="closeDeliveryModalBtn" class="btn-action" style="flex: 1; justify-content: center; background: var(--gray-300); color: var(--dark);" onclick="closeDeliveryModal()">Cancelar</button>
-                </div>
-            </form>
+<!-- MODAL DE ENTREGA Y BAJA DESDE DIF DIRECCIÓN -->
+<div id="deliveryModal" class="login-overlay hidden" style="align-items: center;">
+    <div class="login-card" style="max-width: 480px; width: 100%;">
+        <div class="login-header" style="margin-bottom: 20px;">
+            <h2 class="login-title">Entrega y Baja de Stock</h2>
+            <p class="login-subtitle">Emitir vale de salida definitivo al ciudadano</p>
         </div>
+        <form id="direcCheckoutForm">
+            <input type="hidden" id="modalInventoryId">
+            
+            <div class="form-group">
+                <label class="form-label">Artículo Seleccionado</label>
+                <p id="modalItemName" style="margin: 5px 0; font-weight: 600; color: var(--dark);"></p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="modalBeneficiary">Nombre del Beneficiario Final (Ciudadano)</label>
+                <input type="text" id="modalBeneficiary" class="form-control" style="padding-left: 14px;" placeholder="Nombre completo" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="modalDeliverQty">Cantidad a Entregar</label>
+                <input type="number" id="modalDeliverQty" class="form-control" style="padding-left: 14px;" min="1" required>
+                <small id="modalMaxHelp" style="color: var(--gray-600); display: block; margin-top: 4px;"></small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="modalObservation">Observación / Folio de Solicitud</label>
+                <input type="text" id="modalObservation" class="form-control" style="padding-left: 14px;" value="Entrega final a ciudadano desde DIF Dirección" required>
+            </div>
+
+            <!-- Campo Fecha de Entrega -->
+            <div class="form-group">
+                <label class="form-label" for="modalFechaEntrega">Fecha de Entrega</label>
+                <input type="date" id="modalFechaEntrega" class="form-control" style="padding-left: 14px;" required>
+            </div>
+
+            <!-- Campo Evidencia Fotográfica -->
+            <div class="form-group">
+                <label class="form-label">Evidencia Fotográfica</label>
+                <div class="upload-area" onclick="document.getElementById('evidenciaFoto').click()">
+                    <input type="file" id="evidenciaFoto" accept="image/*" style="display: none;" onchange="previewImagen(event)" />
+                    
+                    <div id="uploadContent" class="upload-content">
+                        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.8rem; color: var(--gray-500); margin-bottom: 6px;"></i>
+                        <p class="upload-text"><strong>Haz clic aquí</strong> para adjuntar evidencia</p>
+                        <span class="upload-hint">Formatos soportados: PNG, JPG o WEBP</span>
+                    </div>
+
+                    <div id="imagePreviewContainer" class="preview-container" style="display: none;">
+                        <img id="imagePreview" src="" alt="Vista previa de evidencia" />
+                        <button type="button" class="remove-btn" onclick="quitarImagen(event)" title="Quitar foto">&times;</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="submit" class="btn-action" style="flex: 1; justify-content: center; background: var(--success);"><i class="fa-solid fa-check"></i> Generar Vale y Dar de Baja</button>
+                <button type="button" id="closeDeliveryModalBtn" class="btn-action" style="flex: 1; justify-content: center; background: var(--gray-300); color: var(--dark);" onclick="closeDeliveryModal()">Cancelar</button>
+            </div>
+        </form>
     </div>
+</div>
+
 
     <!-- MODAL DE EDICIÓN DE VALE -->
     <div id="editVoucherModal" class="login-overlay hidden" style="align-items: center;">
@@ -646,1676 +756,1115 @@
     </div>
 </body>
 <!-- SCRIPT FIREBASE MODULAR Y LÓGICA DEL SISTEMA -->
+<!-- SCRIPT FIREBASE MODULAR Y LÓGICA DEL SISTEMA -->
+<!-- SCRIPT FIREBASE MODULAR Y LÓGICA DEL SISTEMA -->
 <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBELxlbkav_9vZcJhSxE1gm0XFGgInfDSU",
-            authDomain: "dif-database.firebaseapp.com",
-            projectId: "dif-database",
-            storageBucket: "dif-database.firebasestorage.app",
-            messagingSenderId: "35662871104",
-            appId: "1:35662871104:web:5061ffc0d01f36654d3da5"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyBELxlbkav_9vZcJhSxE1gm0XFGgInfDSU",
+        authDomain: "dif-database.firebaseapp.com",
+        projectId: "dif-database",
+        storageBucket: "dif-database.firebasestorage.app",
+        messagingSenderId: "35662871104",
+        appId: "1:35662871104:web:5061ffc0d01f36654d3da5"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // Catálogo de usuarios institucionales autorizado
-        const systemUsers = {
-            "juanita.campechano": { p: "Juanita123..", dep: "SOCIAL" }, 
-            "monse.plata": { p: "Monse123..", dep: "SOCIAL" },
-            "ramon.guapillo": { p: "Fatima20", dep: "VULNERABLE" },
-            "lorena.gonzalez": { p: "logoke.15", dep: "GLOBAL" }, 
-            "angel.vidal": { p: "Angel123..", dep: "GLOBAL" }, 
-            "admin": { p: "admin", dep: "GLOBAL" }
-        };
+    // Catálogo de usuarios institucionales autorizado
+    const systemUsers = {
+        "juanita.campechano": { p: "Juanita123..", dep: "SOCIAL" }, 
+        "monse.plata": { p: "Monse123..", dep: "SOCIAL" },
+        "ramon.guapillo": { p: "Fatima20", dep: "VULNERABLE" },
+        "lorena.gonzalez": { p: "logoke.15", dep: "GLOBAL" }, 
+        "angel.vidal": { p: "Angel123..", dep: "GLOBAL" }, 
+        "admin": { p: "admin", dep: "GLOBAL" }
+    };
 
-        const headerLogoUrl = "logo-header.png";
-        const footerLogoUrl = "slogan.png";
+    let inventoryCache = [];
+    let voucherCache = [];
+    let deptChartInstance = null;
+    let warehouseChartInstance = null;
+    let masEntregadosChartInstance = null;
+    let valesDeptChartInstance = null;
+    let usuarioActivoActual = null;
+    let currentVoucherItems = [];
 
-        let inventoryCache = [];
-        let voucherCache = [];
-        let deptChartInstance = null;
-        let warehouseChartInstance = null;
-        let masEntregadosChartInstance = null;
-        let valesDeptChartInstance = null;
-        let usuarioActivoActual = null;
-        let currentVoucherItems = [];
+    // Variables de paginación
+    let invCurrentPage = 1;
+    let invRowsPerPage = 10;
+    let histCurrentPage = 1;
+    let histRowsPerPage = 10;
 
-        // ==========================================
-        // VARIABLES GLOBALES DE PAGINACIÓN
-        // ==========================================
-        let invCurrentPage = 1;
-        let invRowsPerPage = 10;
-        let histCurrentPage = 1;
-        let histRowsPerPage = 10;
-        let inventorySearchQuery = '';
+    function showToast(title, message, type = 'success', duration = 4000) {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const icons = { success: 'fa-solid fa-circle-check', error: 'fa-solid fa-circle-xmark', warning: 'fa-solid fa-triangle-exclamation' };
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <i class="${icons[type]} toast-icon"></i>
+            <div class="toast-content">
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.add('toast-exiting');
+            toast.addEventListener('animationend', () => toast.remove());
+        }, duration);
+    }
 
-        function showToast(title, message, type = 'success', duration = 4000) {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
-            const icons = { success: 'fa-solid fa-circle-check', error: 'fa-solid fa-circle-xmark', warning: 'fa-solid fa-triangle-exclamation' };
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <i class="${icons[type]} toast-icon"></i>
-                <div class="toast-content">
-                    <div class="toast-title">${title}</div>
-                    <div class="toast-message">${message}</div>
-                </div>
-            `;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.add('toast-exiting');
-                toast.addEventListener('animationend', () => toast.remove());
-            }, duration);
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        const selectedBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+        if (selectedBtn) selectedBtn.classList.add('active');
+
+        const selectedContent = document.getElementById(tabId);
+        if (selectedContent) selectedContent.classList.add('active');
+
+        if (tabId === 'tab-estadisticas') {
+            updateKPIs();
+            renderCharts();
+        }
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+    });
+
+    function generateSmartCode(dept, warehouse, name) {
+        const deptMap = { 'Trabajo Social': 'TS', 'Población Vulnerable': 'PV' };
+        const whMap = { 'Bodega DIF': 'DIF', 'Bodega Corona': 'COR', 'Oficina DIF (Resguardo)': 'OFI', 'DIF Dirección': 'DIR' };
+        const deptCode = deptMap[dept] || 'GEN';
+        const whCode = whMap[warehouse] || 'ALM';
+        const cleanName = name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase();
+        const randomNum = Math.floor(100 + Math.random() * 900);
+        return `${deptCode}-${whCode}-${cleanName}-${randomNum}`;
+    }
+
+    function aplicarRestriccionesUsuario(username, userData) {
+        usuarioActivoActual = username;
+        const departamento = userData.dep;
+
+        const tabRegistrarBtn = document.querySelector('.tab-btn[data-tab="tab-agregar"]');
+        const inputBeneficiario = document.getElementById('valeBeneficiary');
+        const deptSelect = document.getElementById('valeDeptSelect');
+        const inputObs = document.getElementById('valeObservation');
+
+        if (inputBeneficiario) {
+            inputBeneficiario.value = username;
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        if (inputObs && !inputObs.value) {
+            inputObs.value = "Para resguardo en Oficinas del DIF (Trabajo Social)";
+        }
 
-            const selectedBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
-            if (selectedBtn) selectedBtn.classList.add('active');
+        if (departamento !== "GLOBAL") {
+            if (tabRegistrarBtn) {
+                tabRegistrarBtn.style.display = 'none';
+            }
+            
+            const contenidoRegistrar = document.getElementById('tab-agregar');
+            if (contenidoRegistrar && contenidoRegistrar.classList.contains('active')) {
+                switchTab('tab-vales');
+            }
 
-            const selectedContent = document.getElementById(tabId);
-            if (selectedContent) selectedContent.classList.add('active');
+            if (inputBeneficiario) {
+                inputBeneficiario.readOnly = true;
+            }
 
-            if (tabId === 'tab-estadisticas') {
+            if (departamento === "SOCIAL") {
+                if (deptSelect) {
+                    deptSelect.innerHTML = '<option value="Trabajo Social">Trabajo Social</option>';
+                    deptSelect.value = 'Trabajo Social';
+                    deptSelect.disabled = true;
+                }
+            } else if (departamento === "VULNERABLE") {
+                if (deptSelect) {
+                    deptSelect.innerHTML = '<option value="Población Vulnerable">Población Vulnerable</option>';
+                    deptSelect.value = 'Población Vulnerable';
+                    deptSelect.disabled = true;
+                }
+            }
+
+            showToast('Perfil Restringido', `Modo Operativo (${departamento}): Creación de vales y consulta de stock.`, 'warning');
+        } else {
+            if (tabRegistrarBtn) {
+                tabRegistrarBtn.style.display = 'inline-block';
+            }
+            if (inputBeneficiario) {
+                inputBeneficiario.readOnly = false;
+            }
+            if (deptSelect) {
+                deptSelect.disabled = false;
+                deptSelect.innerHTML = `
+                    <option value="">-- Seleccione Departamento --</option>
+                    <option value="Trabajo Social">Trabajo Social</option>
+                    <option value="Población Vulnerable">Población Vulnerable</option>
+                `;
+            }
+        }
+    }
+
+    function initFirestoreListeners() {
+        onSnapshot(collection(db, 'inventario'), (snapshot) => {
+            inventoryCache = [];
+            snapshot.forEach((docSnap) => {
+                inventoryCache.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            renderInventory();
+            filterProductsByDept();
+            renderStockAlerts();
+            renderDireccionInventory();
+
+            const statsTab = document.getElementById('tab-estadisticas');
+            if (statsTab && statsTab.classList.contains('active')) {
                 updateKPIs();
                 renderCharts();
             }
-        }
-
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
         });
 
-        function generateSmartCode(dept, warehouse, name) {
-            const deptMap = { 'Trabajo Social': 'TS', 'Población Vulnerable': 'PV' };
-            const whMap = { 'Bodega DIF': 'DIF', 'Bodega Corona': 'COR', 'Oficina DIF (Resguardo)': 'OFI', 'DIF Dirección': 'DIR' };
-            const deptCode = deptMap[dept] || 'GEN';
-            const whCode = whMap[warehouse] || 'ALM';
-            const cleanName = name.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase();
-            const randomNum = Math.floor(100 + Math.random() * 900);
-            return `${deptCode}-${whCode}-${cleanName}-${randomNum}`;
-        }
+        const valesRef = collection(db, 'vales');
+        onSnapshot(valesRef, (snapshot) => {
+            voucherCache = [];
+            snapshot.forEach((doc) => {
+                voucherCache.push({ id: doc.id, ...doc.data() });
+            });
+            renderHistory();
+        }, (error) => {
+            console.error("Error al conectar con la colección de vales:", error);
+        });
+    }
 
-        function aplicarRestriccionesUsuario(username, userData) {
-            usuarioActivoActual = username;
-            const departamento = userData.dep;
-
-            const tabRegistrarBtn = document.querySelector('.tab-btn[data-tab="tab-agregar"]');
-            const inputBeneficiario = document.getElementById('valeBeneficiary');
-            const deptSelect = document.getElementById('valeDeptSelect');
-            const inputObs = document.getElementById('valeObservation');
-
-            if (inputBeneficiario) {
-                inputBeneficiario.value = username;
-            }
-
-            if (inputObs && !inputObs.value) {
-                inputObs.value = "Para resguardo en Oficinas del DIF (Trabajo Social)";
-            }
-
-            if (departamento !== "GLOBAL") {
-                if (tabRegistrarBtn) {
-                    tabRegistrarBtn.style.display = 'none';
-                }
-                
-                const contenidoRegistrar = document.getElementById('tab-agregar');
-                if (contenidoRegistrar && contenidoRegistrar.classList.contains('active')) {
-                    switchTab('tab-vales');
-                }
-
-                if (inputBeneficiario) {
-                    inputBeneficiario.readOnly = true;
-                }
-
-                if (departamento === "SOCIAL") {
-                    if (deptSelect) {
-                        deptSelect.innerHTML = '<option value="Trabajo Social">Trabajo Social</option>';
-                        deptSelect.value = 'Trabajo Social';
-                        deptSelect.disabled = true;
-                    }
-                } else if (departamento === "VULNERABLE") {
-                    if (deptSelect) {
-                        deptSelect.innerHTML = '<option value="Población Vulnerable">Población Vulnerable</option>';
-                        deptSelect.value = 'Población Vulnerable';
-                        deptSelect.disabled = true;
-                    }
-                }
-
-                showToast('Perfil Restringido', `Modo Operativo (${departamento}): Creación de vales y consulta de stock.`, 'warning');
+    function updateKPIs() {
+        const totalStock = inventoryCache.reduce((acc, item) => acc + (item.qty || 0), 0);
+        const totalVales = voucherCache.length;
+        
+        const totalSalidas = voucherCache.reduce((acc, v) => {
+            let voucherQty = 0;
+            if (v.items && Array.isArray(v.items)) {
+                voucherQty = v.items.reduce((sum, item) => sum + (item.qty || 0), 0);
             } else {
-                if (tabRegistrarBtn) {
-                    tabRegistrarBtn.style.display = 'inline-block';
-                }
-                if (inputBeneficiario) {
-                    inputBeneficiario.readOnly = false;
-                }
-                if (deptSelect) {
-                    deptSelect.disabled = false;
-                    deptSelect.innerHTML = `
-                        <option value="">-- Seleccione Departamento --</option>
-                        <option value="Trabajo Social">Trabajo Social</option>
-                        <option value="Población Vulnerable">Población Vulnerable</option>
-                    `;
-                }
+                voucherQty = v.qty || 0;
             }
+            return acc + voucherQty;
+        }, 0);
+
+        const totalAlertas = inventoryCache.filter(item => (item.qty || 0) <= 5).length;
+
+        const kpiStock = document.getElementById('kpiTotalStock');
+        const kpiVales = document.getElementById('kpiTotalVales');
+        const kpiSalidas = document.getElementById('kpiTotalSalidas');
+        const kpiAlertas = document.getElementById('kpiTotalAlertas');
+
+        if (kpiStock) kpiStock.innerText = totalStock;
+        if (kpiVales) kpiVales.innerText = totalVales;
+        if (kpiSalidas) kpiSalidas.innerText = totalSalidas;
+        if (kpiAlertas) kpiAlertas.innerText = totalAlertas;
+    }
+
+    function renderInventory() {
+        const tbody = document.getElementById('inventoryTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        const searchInput = document.getElementById('inventorySearchInput');
+        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        const filteredInventory = inventoryCache.filter(item => {
+            if (!searchTerm) return true;
+            return (item.code || '').toLowerCase().includes(searchTerm) ||
+                   (item.name || '').toLowerCase().includes(searchTerm) ||
+                   (item.warehouse || '').toLowerCase().includes(searchTerm) ||
+                   (item.dept || '').toLowerCase().includes(searchTerm);
+        });
+        
+        if (filteredInventory.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-600);">No se encontraron artículos en la base de datos.</td></tr>`;
+            renderInventoryPagination(0, 0);
+            return;
         }
 
-        function initFirestoreListeners() {
-            onSnapshot(collection(db, 'inventario'), (snapshot) => {
-                inventoryCache = [];
-                snapshot.forEach((docSnap) => {
-                    inventoryCache.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                renderInventory();
-                filterProductsByDept();
-                renderStockAlerts();
-                
-                if (typeof renderDireccionInventory === 'function') {
-                    renderDireccionInventory();
-                }
+        const totalRows = filteredInventory.length;
+        const totalPages = Math.ceil(totalRows / invRowsPerPage) || 1;
+        if (invCurrentPage > totalPages) invCurrentPage = totalPages;
 
-                const statsTab = document.getElementById('tab-estadisticas');
-                if (statsTab && statsTab.classList.contains('active')) {
-                    updateKPIs();
-                    renderCharts();
-                }
-            });
+        const start = (invCurrentPage - 1) * invRowsPerPage;
+        const end = start + invRowsPerPage;
+        const paginatedItems = filteredInventory.slice(start, end);
 
-            const valesRef = collection(db, 'vales');
-            onSnapshot(valesRef, (snapshot) => {
-                voucherCache = [];
-                snapshot.forEach((doc) => {
-                    voucherCache.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
-                renderHistory();
-            }, (error) => {
-                console.error("Error crítico al conectar con la colección de vales:", error);
-            });
-        }
+        const userData = systemUsers[usuarioActivoActual];
+        const isAdmin = (userData && userData.dep === 'GLOBAL');
 
-        function updateKPIs() {
-            const totalStock = inventoryCache.reduce((acc, item) => acc + (item.qty || 0), 0);
-            const totalVales = voucherCache.length;
-            
-            const totalSalidas = voucherCache.reduce((acc, v) => {
-                let voucherQty = 0;
-                if (v.items && Array.isArray(v.items)) {
-                    voucherQty = v.items.reduce((sum, item) => sum + (item.qty || 0), 0);
-                } else {
-                    voucherQty = v.qty || 0;
-                }
-                return acc + voucherQty;
-            }, 0);
+        paginatedItems.forEach((item) => {
+            let badgeClass = 'badge-dif';
+            if (item.warehouse === 'Bodega Corona') badgeClass = 'badge-corona';
 
-            const totalAlertas = inventoryCache.filter(item => (item.qty || 0) <= 5).length;
+            const isLow = item.qty <= 5;
+            const stockBadge = isLow 
+                ? `<span class="badge-stock-low"><i class="fa-solid fa-triangle-exclamation"></i> ${item.qty} (Bajo)</span>` 
+                : `<span class="badge-stock-ok">${item.qty}</span>`;
 
-            const kpiStock = document.getElementById('kpiTotalStock');
-            const kpiVales = document.getElementById('kpiTotalVales');
-            const kpiSalidas = document.getElementById('kpiTotalSalidas');
-            const kpiAlertas = document.getElementById('kpiTotalAlertas');
+            const actionsHtml = !isAdmin 
+                ? `<span style="color: var(--gray-400); font-style: italic; font-size: 0.8rem;">Solo lectura</span>`
+                : `
+                    <button class="btn-edit" data-id="${item.id}"><i class="fa-solid fa-pen"></i> Editar</button>
+                    <button class="btn-delete" data-id="${item.id}" data-name="${item.name}"><i class="fa-solid fa-trash"></i> Eliminar</button>
+                  `;
 
-            if (kpiStock) kpiStock.innerText = totalStock;
-            if (kpiVales) kpiVales.innerText = totalVales;
-            if (kpiSalidas) kpiSalidas.innerText = totalSalidas;
-            if (kpiAlertas) kpiAlertas.innerText = totalAlertas;
-        }
-
-        function renderInventory() {
-            const tbody = document.getElementById('inventoryTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            
-            if (inventoryCache.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-600);">No hay artículos registrados en la base de datos.</td></tr>`;
-                renderInventoryPagination(0);
-                return;
-            }
-
-            const totalRows = inventoryCache.length;
-            const totalPages = Math.ceil(totalRows / invRowsPerPage) || 1;
-            if (invCurrentPage > totalPages) invCurrentPage = totalPages;
-
-            const start = (invCurrentPage - 1) * invRowsPerPage;
-            const end = start + invRowsPerPage;
-            const paginatedItems = inventoryCache.slice(start, end);
-
-            const userData = systemUsers[usuarioActivoActual];
-            const isAdmin = (userData && userData.dep === 'GLOBAL');
-
-            paginatedItems.forEach((item) => {
-                let badgeClass = 'badge-dif';
-                if (item.warehouse === 'Bodega Corona') badgeClass = 'badge-corona';
-                else if (item.warehouse === 'Oficina DIF (Resguardo)') badgeClass = 'badge-oficina';
-
-                const isLow = item.qty <= 5;
-                const stockBadge = isLow 
-                    ? `<span class="badge-stock-low"><i class="fa-solid fa-triangle-exclamation"></i> ${item.qty} (Bajo)</span>` 
-                    : `<span class="badge-stock-ok">${item.qty}</span>`;
-
-                const actionsHtml = !isAdmin 
-                    ? `<span style="color: var(--gray-400); font-style: italic; font-size: 0.8rem;">Solo lectura</span>`
-                    : `
-                        <button class="btn-edit" data-id="${item.id}"><i class="fa-solid fa-pen"></i> Editar</button>
-                        <button class="btn-delete" data-id="${item.id}" data-name="${item.name}"><i class="fa-solid fa-trash"></i> Eliminar</button>
-                      `;
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${item.code}</strong></td>
-                    <td>${item.name}</td>
-                    <td><span class="badge-bodega ${badgeClass}">${item.warehouse}</span></td>
-                    <td>${stockBadge}</td>
-                    <td>${item.dept}</td>
-                    <td>${actionsHtml}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            if (isAdmin) {
-                tbody.querySelectorAll('.btn-edit').forEach(btn => {
-                    btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
-                });
-                tbody.querySelectorAll('.btn-delete').forEach(btn => {
-                    btn.addEventListener('click', () => deleteItem(btn.getAttribute('data-id'), btn.getAttribute('data-name')));
-                });
-            }
-
-            renderInventoryPagination(totalPages);
-        }
-
-        function renderInventoryPagination(totalPages) {
-            const container = document.getElementById('inventoryPaginationContainer');
-            if (!container) return;
-
-            const btnStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-300, #cbd5e1); background: #fff; color: var(--gray-700); cursor: pointer; transition: all 0.2s;';
-            const btnDisabledStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-200, #e2e8f0); background: var(--gray-100, #f1f5f9); color: var(--gray-400, #94a3b8); cursor: not-allowed; opacity: 0.7;';
-
-            container.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; font-size: 0.85rem; color: var(--gray-700); border-top: 1px solid var(--gray-200, #e2e8f0); margin-top: 8px;">
-                    <span>Mostrando página <strong>${invCurrentPage}</strong> de <strong>${totalPages || 1}</strong> (Total: ${inventoryCache.length} registros)</span>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" id="invPrevBtn" style="${invCurrentPage === 1 ? btnDisabledStyle : btnStyle}">Anterior</button>
-                        <button type="button" id="invNextBtn" style="${invCurrentPage >= totalPages ? btnDisabledStyle : btnStyle}">Siguiente</button>
-                    </div>
-                </div>
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${item.code || 'S/C'}</strong></td>
+                <td>${item.name}</td>
+                <td><span class="badge-bodega ${badgeClass}">${item.warehouse}</span></td>
+                <td>${stockBadge}</td>
+                <td>${item.dept}</td>
+                <td>${actionsHtml}</td>
             `;
-
-            const prevBtn = document.getElementById('invPrevBtn');
-            const nextBtn = document.getElementById('invNextBtn');
-
-            if (prevBtn) prevBtn.onclick = () => { if (invCurrentPage > 1) { invCurrentPage--; renderInventory(); } };
-            if (nextBtn) nextBtn.onclick = () => { if (invCurrentPage < totalPages) { invCurrentPage++; renderInventory(); } };
-        }
-
-        function renderStockAlerts() {
-            const container = document.getElementById('lowStockAlertsContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            const lowStockItems = inventoryCache.filter(item => item.qty <= 5);
-
-            if (lowStockItems.length === 0) {
-                container.innerHTML = `<p style="color: var(--success); font-size: 0.9rem; font-weight: 500;"><i class="fa-solid fa-circle-check"></i> Todos los niveles de stock se encuentran óptimos (por encima de 5 unidades).</p>`;
-                return;
-            }
-
-            lowStockItems.forEach(item => {
-                const banner = document.createElement('div');
-                banner.className = 'alert-banner';
-                banner.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <div><strong>${item.name}</strong> (${item.code}) en <strong>${item.warehouse}</strong> (${item.dept}) tiene un stock crítico de <strong>${item.qty} unidades</strong>.</div>
-                    </div>
-                    <span class="badge-stock-low">Atención Requerida</span>
-                `;
-                container.appendChild(banner);
-            });
-        }
-
-        function renderCharts() {
-            const productDemands = {};
-            voucherCache.forEach(v => {
-                if (v.items && Array.isArray(v.items)) {
-                    v.items.forEach(i => {
-                        const prod = i.productName || 'Desconocido';
-                        productDemands[prod] = (productDemands[prod] || 0) + (i.qty || 0);
-                    });
-                } else {
-                    const prod = v.productName || 'Desconocido';
-                    productDemands[prod] = (productDemands[prod] || 0) + (v.qty || 0);
-                }
-            });
-            const sortedProducts = Object.entries(productDemands).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            const prodLabels = sortedProducts.map(p => p[0]);
-            const prodData = sortedProducts.map(p => p[1]);
-
-            const ctxMasEntregados = document.getElementById('chartMasEntregados');
-            if (ctxMasEntregados) {
-                if (masEntregadosChartInstance) masEntregadosChartInstance.destroy();
-                masEntregadosChartInstance = new Chart(ctxMasEntregados.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: prodLabels.length ? prodLabels : ['Sin registros'],
-                        datasets: [{ label: 'Unidades Entregadas', data: prodData.length ? prodData : [0], backgroundColor: '#7a1c32', borderRadius: 6 }]
-                    },
-                    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
-                });
-            }
-
-            const whTotals = {};
-            inventoryCache.forEach(item => {
-                whTotals[item.warehouse] = (whTotals[item.warehouse] || 0) + item.qty;
-            });
-            const whLabels = Object.keys(whTotals);
-            const whData = Object.values(whTotals);
-
-            const ctxWh = document.getElementById('warehouseChart');
-            if (ctxWh) {
-                if (warehouseChartInstance) warehouseChartInstance.destroy();
-                warehouseChartInstance = new Chart(ctxWh.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: whLabels.length ? whLabels : ['Sin datos'],
-                        datasets: [{ data: whData.length ? whData : [1], backgroundColor: ['#7a1c32', '#f59e0b', '#10b981', '#6366f1'], borderWidth: 1 }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-                });
-            }
-
-            const deptTotals = {};
-            inventoryCache.forEach(item => {
-                deptTotals[item.dept] = (deptTotals[item.dept] || 0) + item.qty;
-            });
-            const deptLabels = Object.keys(deptTotals);
-            const deptData = Object.values(deptTotals);
-
-            const ctxDept = document.getElementById('deptChart');
-            if (ctxDept) {
-                if (deptChartInstance) deptChartInstance.destroy();
-                deptChartInstance = new Chart(ctxDept.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: deptLabels.length ? deptLabels : ['Sin datos'],
-                        datasets: [{ label: 'Stock en Almacén', data: deptData.length ? deptData : [0], backgroundColor: '#10b981', borderRadius: 6 }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-                });
-            }
-
-            const valesDept = {};
-            voucherCache.forEach(v => {
-                const dept = v.dept || 'Desconocido';
-                let totalQtyInVoucher = 0;
-                if (v.items && Array.isArray(v.items)) {
-                    totalQtyInVoucher = v.items.reduce((sum, item) => sum + (item.qty || 0), 0);
-                } else {
-                    totalQtyInVoucher = v.qty || 0;
-                }
-                valesDept[dept] = (valesDept[dept] || 0) + totalQtyInVoucher;
-            });
-            const vDeptLabels = Object.keys(valesDept);
-            const vDeptData = Object.values(valesDept);
-
-            const ctxValesDept = document.getElementById('chartValesDept');
-            if (ctxValesDept) {
-                if (valesDeptChartInstance) valesDeptChartInstance.destroy();
-                valesDeptChartInstance = new Chart(ctxValesDept.getContext('2d'), {
-                    type: 'pie',
-                    data: {
-                        labels: vDeptLabels.length ? vDeptLabels : ['Sin datos'],
-                        datasets: [{ label: 'Unidades Salientes', data: vDeptData.length ? vDeptData : [1], backgroundColor: ['#7a1c32', '#f59e0b', '#6366f1', '#10b981'] }]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        plugins: { 
-                            legend: { position: 'bottom' },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        let value = context.raw || 0;
-                                        return `${label}: ${value} unidades entregadas`;
-                                    }
-                                }
-                            }
-                        } 
-                    }
-                });
-            }
-        }
-
-        let currentFilteredVouchers = [];
-
-        function renderHistory() {
-            const tbody = document.getElementById('historyTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            
-            if (voucherCache.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray-600); padding: 20px;">No hay vales emitidos en la base de datos.</td></tr>`;
-                currentFilteredVouchers = [];
-                renderHistoryPagination(0);
-                return;
-            }
-
-            const searchInput = document.getElementById('historySearchInput');
-            const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-
-            currentFilteredVouchers = voucherCache.filter(v => {
-                if (!searchTerm) return true;
-
-                const folioMatch = (v.folio || '').toLowerCase().includes(searchTerm);
-                const dateMatch = (v.date || '').toLowerCase().includes(searchTerm);
-                const deptMatch = (v.dept || '').toLowerCase().includes(searchTerm);
-                const beneficiaryMatch = (v.beneficiary || '').toLowerCase().includes(searchTerm);
-                const observationMatch = (v.observation || '').toLowerCase().includes(searchTerm);
-                const creatorMatch = (v.createdBy || '').toLowerCase().includes(searchTerm);
-
-                let itemsMatch = false;
-                if (v.items && Array.isArray(v.items)) {
-                    itemsMatch = v.items.some(i => 
-                        (i.productName || '').toLowerCase().includes(searchTerm) || 
-                        (i.code || '').toLowerCase().includes(searchTerm) ||
-                        (i.warehouse || '').toLowerCase().includes(searchTerm)
-                    );
-                }
-
-                return folioMatch || dateMatch || deptMatch || beneficiaryMatch || observationMatch || creatorMatch || itemsMatch;
-            });
-
-            if (currentFilteredVouchers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray-600); padding: 20px;">No se encontraron registros que coincidan con la búsqueda.</td></tr>`;
-                renderHistoryPagination(0);
-                return;
-            }
-
-            const totalRows = currentFilteredVouchers.length;
-            const totalPages = Math.ceil(totalRows / histRowsPerPage) || 1;
-            if (histCurrentPage > totalPages) histCurrentPage = totalPages;
-
-            const start = (histCurrentPage - 1) * histRowsPerPage;
-            const end = start + histRowsPerPage;
-            const paginatedVouchers = currentFilteredVouchers.slice(start, end);
-
-            const userData = systemUsers[usuarioActivoActual];
-            const isAdmin = (userData && userData.dep === 'GLOBAL');
-
-            paginatedVouchers.forEach((v) => {
-                let productNames = '';
-                let productQtys = '';
-
-                if (v.items && Array.isArray(v.items)) {
-                    productNames = v.items.map(i => `${i.productName} <small style="color: var(--gray-500);">(${i.code} - ${i.warehouse})</small>`).join('<br>');
-                    productQtys = v.items.map(i => `<strong>${i.qty}</strong>`).join('<br>');
-                } else {
-                    productNames = `${v.productName || 'N/A'} <small style="color: var(--gray-500);">(${v.code || ''})</small>`;
-                    productQtys = `<strong>${v.qty || 0}</strong>`;
-                }
-
-                const creatorBadge = v.createdBy ? `<br><small style="color: var(--gray-500);"><i class="fa-solid fa-user"></i> ${v.createdBy}</small>` : '';
-
-                const tr = document.createElement('tr');
-                tr.style.fontSize = '0.85rem';
-                tr.innerHTML = `
-                    <td style="white-space: nowrap;"><strong>${v.folio}</strong></td>
-                    <td style="white-space: nowrap; color: var(--gray-600);">${v.date}</td>
-                    <td><span style="background: var(--gray-100); padding: 2px 6px; border-radius: 4px; font-weight: 500;">${v.dept}</span></td>
-                    <td style="min-width: 180px; line-height: 1.4;">${productNames}</td>
-                    <td style="text-align: center; vertical-align: middle; line-height: 1.4;">${productQtys}</td>
-                    <td>${v.beneficiary}</td>
-                    <td style="color: var(--gray-700); max-width: 200px; word-break: break-word;">${v.observation || '<span style="color: var(--gray-400); font-style: italic;">Sin observación</span>'} ${creatorBadge}</td>
-                    <td style="white-space: nowrap; text-align: right;">
-                        <div style="display: flex; gap: 4px; justify-content: flex-end; align-items: center;">
-                            <button class="btn-print" data-folio="${v.folio}" title="Reimprimir Vale" style="padding: 4px 8px; font-size: 0.75rem;"><i class="fa-solid fa-print"></i></button>
-                            ${isAdmin ? `<button class="btn-delete-voucher" data-id="${v.id}" data-folio="${v.folio}" title="Eliminar y Devolver" style="padding: 4px 8px; font-size: 0.75rem; background: #fee2e2; color: #dc2626;"><i class="fa-solid fa-trash"></i></button>` : ''}
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            tbody.querySelectorAll('.btn-print').forEach(btn => {
-                btn.addEventListener('click', () => reprintVoucher(btn.getAttribute('data-folio')));
-            });
-
-            if (isAdmin) {
-                tbody.querySelectorAll('.btn-delete-voucher').forEach(btn => {
-                    btn.addEventListener('click', () => deleteVoucherMulti(btn.getAttribute('data-id')));
-                });
-            }
-
-            renderHistoryPagination(totalPages);
-        }
-
-        document.addEventListener('input', (e) => {
-            if (e.target && e.target.id === 'historySearchInput') {
-                histCurrentPage = 1;
-                renderHistory();
-            }
+            tbody.appendChild(tr);
         });
 
-        function renderHistoryPagination(totalPages) {
-            const container = document.getElementById('historyPaginationContainer');
-            if (!container) return;
+        if (isAdmin) {
+            tbody.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
+            });
+            tbody.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', () => deleteItem(btn.getAttribute('data-id'), btn.getAttribute('data-name')));
+            });
+        }
 
-            const btnStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-300, #cbd5e1); background: #fff; color: var(--gray-700); cursor: pointer; transition: all 0.2s;';
-            const btnDisabledStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-200, #e2e8f0); background: var(--gray-100, #f1f5f9); color: var(--gray-400, #94a3b8); cursor: not-allowed; opacity: 0.7;';
+        renderInventoryPagination(totalPages, filteredInventory.length);
+    }
 
-            container.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; font-size: 0.85rem; color: var(--gray-700); border-top: 1px solid var(--gray-200, #e2e8f0); margin-top: 8px;">
-                    <span>Mostrando página <strong>${histCurrentPage}</strong> de <strong>${totalPages || 1}</strong> (Total: ${currentFilteredVouchers.length} filtrados de ${voucherCache.length})</span>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" id="histPrevBtn" style="${histCurrentPage === 1 ? btnDisabledStyle : btnStyle}">Anterior</button>
-                        <button type="button" id="histNextBtn" style="${histCurrentPage >= totalPages ? btnDisabledStyle : btnStyle}">Siguiente</button>
-                    </div>
+    document.addEventListener('input', (e) => {
+        if (e.target && e.target.id === 'inventorySearchInput') {
+            invCurrentPage = 1;
+            renderInventory();
+        }
+    });
+
+    function renderInventoryPagination(totalPages, totalRecords) {
+        const container = document.getElementById('inventoryPaginationContainer');
+        if (!container) return;
+
+        const btnStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-300, #cbd5e1); background: #fff; color: var(--gray-700); cursor: pointer; transition: all 0.2s;';
+        const btnDisabledStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-200, #e2e8f0); background: var(--gray-100, #f1f5f9); color: var(--gray-400, #94a3b8); cursor: not-allowed; opacity: 0.7;';
+
+        container.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; font-size: 0.85rem; color: var(--gray-700); border-top: 1px solid var(--gray-200, #e2e8f0); margin-top: 8px;">
+                <span>Mostrando página <strong>${invCurrentPage}</strong> de <strong>${totalPages || 1}</strong> (Total: ${totalRecords} registros)</span>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" id="invPrevBtn" style="${invCurrentPage <= 1 ? btnDisabledStyle : btnStyle}">Anterior</button>
+                    <button type="button" id="invNextBtn" style="${invCurrentPage >= totalPages ? btnDisabledStyle : btnStyle}">Siguiente</button>
                 </div>
+            </div>
+        `;
+
+        const prevBtn = document.getElementById('invPrevBtn');
+        const nextBtn = document.getElementById('invNextBtn');
+
+        if (prevBtn) prevBtn.onclick = () => { if (invCurrentPage > 1) { invCurrentPage--; renderInventory(); } };
+        if (nextBtn) nextBtn.onclick = () => { if (invCurrentPage < totalPages) { invCurrentPage++; renderInventory(); } };
+    }
+
+    function renderStockAlerts() {
+        const container = document.getElementById('lowStockAlertsContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        const lowStockItems = inventoryCache.filter(item => item.qty <= 5);
+
+        if (lowStockItems.length === 0) {
+            container.innerHTML = `<p style="color: var(--success); font-size: 0.9rem; font-weight: 500;"><i class="fa-solid fa-circle-check"></i> Todos los niveles de stock se encuentran óptimos (por encima de 5 unidades).</p>`;
+            return;
+        }
+
+        lowStockItems.forEach(item => {
+            const banner = document.createElement('div');
+            banner.className = 'alert-banner';
+            banner.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div><strong>${item.name}</strong> (${item.code}) en <strong>${item.warehouse}</strong> (${item.dept}) tiene un stock crítico de <strong>${item.qty} unidades</strong>.</div>
+                </div>
+                <span class="badge-stock-low">Atención Requerida</span>
             `;
+            container.appendChild(banner);
+        });
+    }
 
-            const prevBtn = document.getElementById('histPrevBtn');
-            const nextBtn = document.getElementById('histNextBtn');
-
-            if (prevBtn) prevBtn.onclick = () => { if (histCurrentPage > 1) { histCurrentPage--; renderHistory(); } };
-            if (nextBtn) nextBtn.onclick = () => { if (histCurrentPage < totalPages) { histCurrentPage++; renderHistory(); } };
-        }
-
-        async function deleteVoucherMulti(voucherId) {
-            const v = voucherCache.find(item => item.id === voucherId);
-            if (!v) return;
-
-            if (confirm(`¿Está seguro de eliminar el vale ${v.folio}?\nSe devolverán las unidades de todos sus artículos al inventario.`)) {
-                try {
-                    const itemsToReturn = v.items || [{ inventoryId: v.inventoryId, code: v.code, qty: v.qty, productName: v.productName }];
-
-                    for (const item of itemsToReturn) {
-                        let targetInvId = item.inventoryId;
-                        let invItem = inventoryCache.find(i => i.id === targetInvId);
-
-                        if (!invItem && item.code) {
-                            invItem = inventoryCache.find(i => i.code === item.code);
-                            if (invItem) targetInvId = invItem.id;
-                        }
-
-                        if (invItem && targetInvId) {
-                            const newQty = invItem.qty + (item.qty || 0);
-                            await updateDoc(doc(db, 'inventario', targetInvId), { qty: newQty });
-                        }
-                    }
-
-                    await deleteDoc(doc(db, 'vales', voucherId));
-                    showToast('Vale Eliminado', 'Se eliminó el vale y se restableció el stock en el inventario.', 'success');
-                } catch (error) {
-                    console.error("Error al eliminar vale múltiple:", error);
-                    showToast('Error', 'No se pudo procesar la devolución del inventario.', 'error');
-                }
-            }
-        }
-
-        // =========================================================================
-        // EMISIÓN DE VALES CON TRANSACCIÓN CORREGIDA (LECTURAS PRIMERO, LUEGO ESCRITURAS)
-        // =========================================================================
-        const voucherForm = document.getElementById('voucherForm');
-        if (voucherForm) {
-            voucherForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                if (currentVoucherItems.length === 0) {
-                    showToast('Advertencia', 'Debe agregar al menos un artículo a la lista del vale antes de generarlo.', 'warning');
-                    return;
-                }
-
-                const deptSelect = document.getElementById('valeDeptSelect');
-                const dept = deptSelect ? deptSelect.value : '';
-                
-                const beneficiaryInput = document.getElementById('valeBeneficiary');
-                const beneficiary = beneficiaryInput ? beneficiaryInput.value.trim() : (usuarioActivoActual || 'Atención Ciudadana');
-                
-                const destinationTypeEl = document.getElementById('valeDestinationType');
-                const destinationType = destinationTypeEl ? destinationTypeEl.value : 'salida_final';
-                
-                const observationEl = document.getElementById('valeObservation');
-                const observationInput = observationEl ? observationEl.value.trim() : '';
-                
-                const observation = destinationType === 'resguardo_direccion' 
-                    ? `[Enviado a DIF Dirección] ${observationInput}` 
-                    : `[Salida Final] ${observationInput}`;
-
-                const btnSubmit = voucherForm.querySelector('button[type="submit"]');
-                if (btnSubmit) {
-                    btnSubmit.disabled = true;
-                    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
-                }
-
-                try {
-                    const currentLoggedUser = usuarioActivoActual || 'Administrador';
-                    const currentDate = new Date().toLocaleDateString('es-MX', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric'
-                    });
-
-                    // Ejecución atómica garantizando estrictamente LECTURAS primero y ESCRITURAS después
-                    await runTransaction(db, async (transaction) => {
-                        // -------------------------------------------------------------
-                        // FASE 1: TODAS LAS LECTURAS (READS)
-                        // -------------------------------------------------------------
-                        const itemSnapshots = [];
-                        for (const item of currentVoucherItems) {
-                            const invRef = doc(db, 'inventario', item.inventoryId);
-                            const invSnap = await transaction.get(invRef);
-
-                            if (!invSnap.exists()) {
-                                throw new Error(`El artículo "${item.productName}" ya no existe en el inventario.`);
-                            }
-
-                            const stockActual = invSnap.data().qty || 0;
-                            if (stockActual < item.qty) {
-                                throw new Error(`Stock insuficiente para "${item.productName}". Disponible: ${stockActual}`);
-                            }
-
-                            itemSnapshots.push({
-                                ref: invRef,
-                                currentStock: stockActual,
-                                itemData: item
-                            });
-                        }
-
-                        // Si el destino es "resguardo_direccion", leemos el ítem de destino también antes de escribir
-                        const direcReadOperations = [];
-                        if (destinationType === 'resguardo_direccion') {
-                            for (const item of currentVoucherItems) {
-                                const existingDirecItem = inventoryCache.find(i => 
-                                    i.name.toLowerCase().trim() === item.productName.toLowerCase().trim() && 
-                                    i.warehouse && i.warehouse.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === "dif direccion"
-                                );
-
-                                if (existingDirecItem) {
-                                    const direcRef = doc(db, 'inventario', existingDirecItem.id);
-                                    const direcSnap = await transaction.get(direcRef);
-                                    direcReadOperations.push({
-                                        exists: true,
-                                        ref: direcRef,
-                                        currentQty: direcSnap.exists() ? (direcSnap.data().qty || 0) : 0,
-                                        itemData: item
-                                    });
-                                } else {
-                                    direcReadOperations.push({
-                                        exists: false,
-                                        itemData: item
-                                    });
-                                }
-                            }
-                        }
-
-                        // -------------------------------------------------------------
-                        // FASE 2: TODAS LAS ESCRITURAS (WRITES)
-                        // -------------------------------------------------------------
-                        // 1. Descontar stock de los artículos de origen
-                        for (const readData of itemSnapshots) {
-                            transaction.update(readData.ref, { 
-                                qty: readData.currentStock - readData.itemData.qty 
-                            });
-                        }
-
-                        // 2. Incrementar o crear stock en DIF Dirección
-                        if (destinationType === 'resguardo_direccion') {
-                            for (const direcData of direcReadOperations) {
-                                if (direcData.exists) {
-                                    transaction.update(direcData.ref, { 
-                                        qty: direcData.currentQty + Number(direcData.itemData.qty),
-                                        lastUpdatedBy: currentLoggedUser 
-                                    });
-                                } else {
-                                    const newDirecRef = doc(collection(db, 'inventario'));
-                                    const newDirecCode = generateSmartCode(dept, 'DIF Dirección', direcData.itemData.productName);
-                                    transaction.set(newDirecRef, {
-                                        code: newDirecCode,
-                                        name: direcData.itemData.productName,
-                                        warehouse: 'DIF Dirección',
-                                        qty: Number(direcData.itemData.qty),
-                                        dept: dept || 'Trabajo Social',
-                                        createdBy: currentLoggedUser
-                                    });
-                                }
-                            }
-                        }
-                    });
-
-                    // Generar folio e insertar documento del Vale
-                    const folioNum = voucherCache.length + 1;
-                    const folio = `VALE-DIF-2026-${String(folioNum).padStart(4, '0')}`;
-
-                    const voucherData = {
-                        folio,
-                        date: currentDate,
-                        dept: dept || 'Trabajo Social',
-                        items: currentVoucherItems,
-                        beneficiary,
-                        observation,
-                        destinationType,
-                        createdBy: currentLoggedUser,
-                        timestamp: serverTimestamp()
-                    };
-
-                    const docRef = await addDoc(collection(db, 'vales'), voucherData);
-                    voucherData.id = docRef.id;
-
-                    currentVoucherItems = [];
-                    renderVoucherItemsTable();
-                    voucherForm.reset();
-
-                    if (usuarioActivoActual) {
-                        const inputBeneficiario = document.getElementById('valeBeneficiary');
-                        if (inputBeneficiario) inputBeneficiario.value = usuarioActivoActual;
-
-                        const inputObs = document.getElementById('valeObservation');
-                        if (inputObs) inputObs.value = "Envío de stock para resguardo en oficinas del DIF";
-
-                        const userObj = systemUsers[usuarioActivoActual];
-                        if (userObj && userObj.dep !== "GLOBAL") {
-                            if (inputBeneficiario) inputBeneficiario.readOnly = true;
-                            if (deptSelect) {
-                                deptSelect.value = userObj.dep === 'SOCIAL' ? 'Trabajo Social' : 'Población Vulnerable';
-                                deptSelect.disabled = true;
-                            }
-                        }
-                    }
-                    filterProductsByDept();
-
-                    if (typeof renderDireccionInventory === 'function') {
-                        renderDireccionInventory();
-                    }
-
-                    const successMessage = destinationType === 'resguardo_direccion' 
-                        ? `Folio ${folio} emitido. Artículos trasladados a DIF Dirección.` 
-                        : `Folio ${folio} emitido con éxito y stock descontado.`;
-
-                    showToast('Vale Generado', successMessage, 'success');
-                    displayVoucherModal(voucherData);
-
-                } catch (error) {
-                    console.error("Error al emitir el vale:", error);
-                    showToast('Error', error.message || 'No se pudo procesar la salida de almacén.', 'error');
-                } finally {
-                    if (btnSubmit) {
-                        btnSubmit.disabled = false;
-                        btnSubmit.innerHTML = 'Generar Vale y Enviar a Stock / Dirección';
-                    }
-                }
-            });
-        }
-
-        const addItemForm = document.getElementById('addItemForm');
-        if (addItemForm) {
-            addItemForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const name = document.getElementById('prodName').value.trim();
-                const warehouse = document.getElementById('prodWarehouse').value;
-                const qty = parseInt(document.getElementById('prodQty').value);
-                const dept = document.getElementById('prodDept').value;
-                const code = generateSmartCode(dept, warehouse, name);
-
-                try {
-                    await addDoc(collection(db, 'inventario'), { code, name, warehouse, qty, dept });
-                    addItemForm.reset();
-                    switchTab('tab-inventario');
-                    showToast('Guardado en BD', `Artículo registrado con código: ${code}`);
-                } catch (error) {
-                    showToast('Error', 'No se pudo guardar el artículo.', 'error');
-                }
-            });
-        }
-
-        function openEditModal(id) {
-            const item = inventoryCache.find(i => i.id === id);
-            if (!item) return;
-            document.getElementById('editDocId').value = item.id;
-            document.getElementById('editName').value = item.name;
-            document.getElementById('editWarehouse').value = item.warehouse;
-            document.getElementById('editQty').value = item.qty;
-            document.getElementById('editDept').value = item.dept;
-            document.getElementById('editModal').classList.remove('hidden');
-        }
-
-        const closeEditBtn = document.getElementById('closeEditBtn');
-        if (closeEditBtn) {
-            closeEditBtn.addEventListener('click', () => {
-                document.getElementById('editModal').classList.add('hidden');
-            });
-        }
-
-        const editForm = document.getElementById('editForm');
-        if (editForm) {
-            editForm.onsubmit = async (e) => {
-                e.preventDefault();
-                const submitBtn = e.target.querySelector('button[type="submit"]');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
-
-                const id = document.getElementById('editDocId').value;
-                const name = document.getElementById('editName').value.trim();
-                const warehouse = document.getElementById('editWarehouse').value;
-                const qty = parseInt(document.getElementById('editQty').value);
-                const dept = document.getElementById('editDept').value;
-                const code = generateSmartCode(dept, warehouse, name);
-
-                try {
-                    await updateDoc(doc(db, 'inventario', id), { name, warehouse, qty, dept, code });
-                    
-                    document.getElementById('editModal').classList.add('hidden');
-                    showToast('Actualizado', 'Los cambios se guardaron en la base de datos.');
-
-                    if (typeof renderDireccionInventory === 'function') {
-                        renderDireccionInventory();
-                    }
-
-                    const searchInput = document.getElementById('inventorySearchInput');
-                    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-                    if (typeof renderInventoryFiltered === 'function') {
-                        renderInventoryFiltered(searchTerm);
-                    } else if (typeof renderInventory === 'function') {
-                        renderInventory();
-                    }
-
-                    if (typeof renderCharts === 'function') {
-                        renderCharts();
-                    }
-
-                } catch (error) {
-                    console.error("Error al actualizar:", error);
-                    showToast('Error', 'No se pudo actualizar el registro.', 'error');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Guardar Cambios';
-                }
-            };
-        }
-
-        async function deleteItem(id, name) {
-            if (confirm(`¿Está seguro de eliminar "${name}" de la base de datos?`)) {
-                try {
-                    await deleteDoc(doc(db, 'inventario', id));
-                    showToast('Eliminado', `Se eliminó "${name}" de la BD.`, 'warning');
-                    
-                    if (typeof renderDireccionInventory === 'function') {
-                        renderDireccionInventory();
-                    }
-                } catch (error) {
-                    console.error("Error al eliminar:", error);
-                    showToast('Error', 'No se pudo eliminar el registro.', 'error');
-                }
-            }
-        }
-
-        function filterProductsByDept() {
-            const deptSelect = document.getElementById('valeDeptSelect');
-            const productSelect = document.getElementById('valeProductSelect');
-            if (!deptSelect || !productSelect) return;
-
-            const selectedDept = deptSelect.value;
-            productSelect.innerHTML = '<option value="">-- Seleccione un artículo --</option>';
-
-            const filtered = inventoryCache.filter(item => item.dept === selectedDept && item.qty > 0);
-            if (filtered.length === 0) {
-                productSelect.innerHTML = '<option value="">No hay stock disponible en este departamento</option>';
-                return;
-            }
-
-            filtered.forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item.id;
-                opt.textContent = `${item.name} [Código: ${item.code}] (Stock: ${item.qty} - Ubicación: ${item.warehouse})`;
-                productSelect.appendChild(opt);
-            });
-        }
-
-        const valeDeptSelect = document.getElementById('valeDeptSelect');
-        if (valeDeptSelect) {
-            valeDeptSelect.addEventListener('change', filterProductsByDept);
-        }
-
-        function displayVoucherModal(v) {
-            if (!v) return;
-
-            let itemsToPrint = [];
-            if (v.items && Array.isArray(v.items) && v.items.length > 0) {
-                itemsToPrint = v.items;
+    function renderCharts() {
+        const productDemands = {};
+        voucherCache.forEach(v => {
+            if (v.items && Array.isArray(v.items)) {
+                v.items.forEach(i => {
+                    const prod = i.productName || 'Desconocido';
+                    productDemands[prod] = (productDemands[prod] || 0) + (i.qty || 0);
+                });
             } else {
-                itemsToPrint = [{
-                    code: v.code || 'N/A',
-                    productName: v.productName || 'N/A',
-                    warehouse: v.warehouse || 'Bodega DIF',
-                    qty: v.qty || 0
-                }];
-            }
-
-            let itemsRowsHTML = '';
-            itemsToPrint.forEach(i => {
-                itemsRowsHTML += `
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 5px; text-align: center;">${i.code || 'N/A'}</td>
-                        <td style="border: 1px solid #ccc; padding: 5px;">${i.productName || 'N/A'} <br><small style="color: #666;">(Origen en stock: ${i.warehouse || 'Bodega DIF'})</small></td>
-                        <td style="border: 1px solid #ccc; padding: 5px; text-align: center;"><strong>${i.qty || 0}</strong></td>
-                    </tr>
-                `;
-            });
-
-            const voucherHTMLTemplate = `
-                <div class="voucher-copy">
-                    <div class="voucher-copy-header">
-                        <h3>SISTEMA DIF MUNICIPAL SAN ANDRÉS TUXTLA</h3>
-                        <span>ORIGINAL - ARCHIVO / COMPROBANTE</span>
-                    </div>
-                    <img src="${headerLogoUrl}" alt="Logotipo DIF" class="voucher-header-img" onerror="this.style.display='none'">
-                    <div style="text-align: center; margin-bottom: 6px;">
-                        <strong style="font-size: 0.95rem; color: var(--primary);">VALE DE SALIDA Y DESTINO DE APARATO FUNCIONAL (${v.folio || ''})</strong>
-                    </div>
-                    <div style="background: #fdf2f4; border: 1px solid #fbcfe8; padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; font-size: 0.82rem;">
-                        <i class="fa-solid fa-building-shield" style="color: var(--primary);"></i> <strong>Carácter del Movimiento:</strong> Destinado para resguardo y control operativo en Oficinas del DIF Municipal.
-                    </div>
-                    <div class="voucher-grid" style="margin-bottom: 10px;">
-                        <div><strong>Fecha:</strong> ${v.date || ''}</div>
-                        <div><strong>Departamento:</strong> ${v.dept || ''}</div>
-                        <div><strong>Emitido por:</strong> ${v.beneficiary || ''}</div>
-                        <div style="grid-column: span 3;"><strong>Destino / Observación Específica:</strong> <span style="background: #fffbeb; padding: 2px 6px; border-radius: 4px; border: 1px solid #fef3c7;">${v.observation || 'Sin observaciones'}</span></div>
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-bottom: 15px;">
-                        <thead>
-                            <tr style="background: #f3f4f6;">
-                                <th style="border: 1px solid #ccc; padding: 5px;">Código</th>
-                                <th style="border: 1px solid #ccc; padding: 5px;">Descripción del Aparato Funcional</th>
-                                <th style="border: 1px solid #ccc; padding: 5px;">Cant.</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${itemsRowsHTML}
-                        </tbody>
-                    </table>
-                    <img src="${footerLogoUrl}" alt="Slogan Institucional" class="voucher-footer-img" onerror="this.style.display='none'">
-                    <div class="voucher-signatures">
-                        <div class="signature-line">Entrega / Control Almacén</div>
-                        <div class="signature-line">Recibe (Resguardo Oficinas DIF)</div>
-                    </div>
-                </div>
-            `;
-
-            const container = document.getElementById('voucherContentArea');
-            if (container) {
-                container.innerHTML = voucherHTMLTemplate + `<div style="margin: 20px 0; border-top: 2px dashed #9ca3af;"></div>` + voucherHTMLTemplate.replace('ORIGINAL - ARCHIVO / COMPROBANTE', 'COPIA - CONTROL DEPARTAMENTAL');
-            }
-
-            const modal = document.getElementById('printableVoucherModal');
-            if (modal) {
-                modal.classList.remove('hidden');
-            }
-        }
-
-        function reprintVoucher(folio) {
-            const v = voucherCache.find(item => item.folio === folio);
-            if (v) displayVoucherModal(v);
-        }
-
-        const printModalBtn = document.getElementById('printModalBtn');
-        if (printModalBtn) {
-            printModalBtn.addEventListener('click', () => window.print());
-        }
-
-        const closeVoucherBtn = document.getElementById('closeVoucherBtn');
-        if (closeVoucherBtn) {
-            closeVoucherBtn.addEventListener('click', () => {
-                document.getElementById('printableVoucherModal').classList.add('hidden');
-                switchTab('tab-historial');
-            });
-        }
-
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const userInput = document.getElementById('username').value.trim().toLowerCase();
-                const passInput = document.getElementById('password').value;
-
-                if (systemUsers[userInput] && systemUsers[userInput].p === passInput) {
-                    const userData = systemUsers[userInput];
-                    sessionStorage.setItem('usuario', userInput);
-                    sessionStorage.setItem('departamento', userData.dep);
-
-                    document.getElementById('loginModal').classList.add('hidden');
-                    document.getElementById('userBadge').style.display = 'flex';
-                    document.getElementById('logoutBtn').style.display = 'flex';
-                    document.getElementById('userNameDisplay').innerText = userInput;
-                    document.getElementById('userDeptDisplay').innerText = `Rol: ${userData.dep}`;
-                    document.getElementById('userAvatar').innerText = userInput.charAt(0).toUpperCase();
-
-                    aplicarRestriccionesUsuario(userInput, userData);
-
-                    if (userData.dep === 'SOCIAL') {
-                        const deptSelect = document.getElementById('valeDeptSelect');
-                        if (deptSelect) {
-                            deptSelect.value = 'Trabajo Social';
-                            filterProductsByDept();
-                        }
-                    } else if (userData.dep === 'VULNERABLE') {
-                        const deptSelect = document.getElementById('valeDeptSelect');
-                        if (deptSelect) {
-                            deptSelect.value = 'Población Vulnerable';
-                            filterProductsByDept();
-                        }
-                    }
-
-                    switchTab('tab-inventario');
-                    showToast('Sesión Iniciada', `Bienvenido al sistema DIF, ${userInput}.`);
-                } else {
-                    showToast('Error de Acceso', 'Usuario o contraseña incorrectos.', 'error');
-                }
-            });
-        }
-
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                sessionStorage.clear();
-                location.reload(); 
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initFirestoreListeners();
-            
-            const savedUser = sessionStorage.getItem('usuario');
-            if (savedUser && systemUsers[savedUser]) {
-                const userData = systemUsers[savedUser];
-                const loginModal = document.getElementById('loginModal');
-                if (loginModal) loginModal.classList.add('hidden');
-                
-                const userBadge = document.getElementById('userBadge');
-                if (userBadge) userBadge.style.display = 'flex';
-
-                const logoutBtnEl = document.getElementById('logoutBtn');
-                if (logoutBtnEl) logoutBtnEl.style.display = 'flex';
-
-                const userNameDisplay = document.getElementById('userNameDisplay');
-                if (userNameDisplay) userNameDisplay.innerText = savedUser;
-
-                const userDeptDisplay = document.getElementById('userDeptDisplay');
-                if (userDeptDisplay) userDeptDisplay.innerText = `Rol: ${userData.dep}`;
-
-                const userAvatar = document.getElementById('userAvatar');
-                if (userAvatar) userAvatar.innerText = savedUser.charAt(0).toUpperCase();
-
-                aplicarRestriccionesUsuario(savedUser, userData);
-
-                if (userData.dep === 'SOCIAL') {
-                    const deptSelect = document.getElementById('valeDeptSelect');
-                    if (deptSelect) {
-                        deptSelect.value = 'Trabajo Social';
-                        filterProductsByDept();
-                    }
-                } else if (userData.dep === 'VULNERABLE') {
-                    const deptSelect = document.getElementById('valeDeptSelect');
-                    if (deptSelect) {
-                        deptSelect.value = 'Población Vulnerable';
-                        filterProductsByDept();
-                    }
-                }
+                const prod = v.productName || 'Desconocido';
+                productDemands[prod] = (productDemands[prod] || 0) + (v.qty || 0);
             }
         });
+        const sortedProducts = Object.entries(productDemands).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        const prodLabels = sortedProducts.map(p => p[0]);
+        const prodData = sortedProducts.map(p => p[1]);
 
-        const addVoucherItemBtn = document.getElementById('addVoucherItemBtn');
-        if (addVoucherItemBtn) {
-            addVoucherItemBtn.addEventListener('click', () => {
-                const prodId = document.getElementById('valeProductSelect').value;
-                const qtyRequested = parseInt(document.getElementById('valeQty').value) || 0;
-
-                if (!prodId) {
-                    showToast('Advertencia', 'Seleccione un artículo válido.', 'warning');
-                    return;
-                }
-
-                if (qtyRequested <= 0) {
-                    showToast('Advertencia', 'Ingrese una cantidad válida mayor a 0.', 'warning');
-                    return;
-                }
-
-                const invItem = inventoryCache.find(i => i.id === prodId);
-                if (!invItem) {
-                    showToast('Error', 'El artículo seleccionado ya no existe.', 'error');
-                    return;
-                }
-
-                const existingInCart = currentVoucherItems.filter(i => i.inventoryId === prodId).reduce((sum, i) => sum + i.qty, 0);
-                const totalRequested = qtyRequested + existingInCart;
-
-                if (totalRequested > invItem.qty) {
-                    showToast('Stock Insuficiente', `Stock disponible: ${invItem.qty}. Ya agregaste ${existingInCart} en este vale.`, 'error');
-                    return;
-                }
-
-                currentVoucherItems.push({
-                    inventoryId: invItem.id,
-                    code: invItem.code,
-                    productName: invItem.name,
-                    warehouse: invItem.warehouse,
-                    qty: qtyRequested
-                });
-
-                renderVoucherItemsTable();
-                document.getElementById('valeQty').value = 1;
-                showToast('Artículo Agregado', `${invItem.name} añadido al vale temporal.`, 'success');
+        const ctxMasEntregados = document.getElementById('chartMasEntregados');
+        if (ctxMasEntregados) {
+            if (masEntregadosChartInstance) masEntregadosChartInstance.destroy();
+            masEntregadosChartInstance = new Chart(ctxMasEntregados.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: prodLabels.length ? prodLabels : ['Sin registros'],
+                    datasets: [{ label: 'Unidades Entregadas', data: prodData.length ? prodData : [0], backgroundColor: '#7a1c32', borderRadius: 6 }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
             });
         }
 
-        function renderVoucherItemsTable() {
-            const tbody = document.getElementById('voucherItemsTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
+        const whTotals = {};
+        inventoryCache.forEach(item => {
+            whTotals[item.warehouse] = (whTotals[item.warehouse] || 0) + item.qty;
+        });
+        const whLabels = Object.keys(whTotals);
+        const whData = Object.values(whTotals);
 
+        const ctxWh = document.getElementById('warehouseChart');
+        if (ctxWh) {
+            if (warehouseChartInstance) warehouseChartInstance.destroy();
+            warehouseChartInstance = new Chart(ctxWh.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: whLabels.length ? whLabels : ['Sin datos'],
+                    datasets: [{ data: whData.length ? whData : [1], backgroundColor: ['#7a1c32', '#f59e0b', '#10b981', '#6366f1'], borderWidth: 1 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        const deptTotals = {};
+        inventoryCache.forEach(item => {
+            deptTotals[item.dept] = (deptTotals[item.dept] || 0) + item.qty;
+        });
+        const deptLabels = Object.keys(deptTotals);
+        const deptData = Object.values(deptTotals);
+
+        const ctxDept = document.getElementById('deptChart');
+        if (ctxDept) {
+            if (deptChartInstance) deptChartInstance.destroy();
+            deptChartInstance = new Chart(ctxDept.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: deptLabels.length ? deptLabels : ['Sin datos'],
+                    datasets: [{ label: 'Stock en Almacén', data: deptData.length ? deptData : [0], backgroundColor: '#10b981', borderRadius: 6 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        const valesDept = {};
+        voucherCache.forEach(v => {
+            const dept = v.dept || 'Desconocido';
+            let totalQtyInVoucher = 0;
+            if (v.items && Array.isArray(v.items)) {
+                totalQtyInVoucher = v.items.reduce((sum, item) => sum + (item.qty || 0), 0);
+            } else {
+                totalQtyInVoucher = v.qty || 0;
+            }
+            valesDept[dept] = (valesDept[dept] || 0) + totalQtyInVoucher;
+        });
+        const vDeptLabels = Object.keys(valesDept);
+        const vDeptData = Object.values(valesDept);
+
+        const ctxValesDept = document.getElementById('chartValesDept');
+        if (ctxValesDept) {
+            if (valesDeptChartInstance) valesDeptChartInstance.destroy();
+            valesDeptChartInstance = new Chart(ctxValesDept.getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: vDeptLabels.length ? vDeptLabels : ['Sin datos'],
+                    datasets: [{ label: 'Unidades Salientes', data: vDeptData.length ? vDeptData : [1], backgroundColor: ['#7a1c32', '#f59e0b', '#6366f1', '#10b981'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+    }
+
+    let currentFilteredVouchers = [];
+
+    function renderHistory() {
+        const tbody = document.getElementById('historyTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        
+        if (voucherCache.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray-600); padding: 20px;">No hay vales emitidos en la base de datos.</td></tr>`;
+            currentFilteredVouchers = [];
+            renderHistoryPagination(0);
+            return;
+        }
+
+        const searchInput = document.getElementById('historySearchInput');
+        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        currentFilteredVouchers = voucherCache.filter(v => {
+            if (!searchTerm) return true;
+            return (v.folio || '').toLowerCase().includes(searchTerm) ||
+                   (v.date || '').toLowerCase().includes(searchTerm) ||
+                   (v.dept || '').toLowerCase().includes(searchTerm) ||
+                   (v.beneficiary || '').toLowerCase().includes(searchTerm) ||
+                   (v.observation || '').toLowerCase().includes(searchTerm);
+        });
+
+        if (currentFilteredVouchers.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray-600); padding: 20px;">No se encontraron registros que coincidan con la búsqueda.</td></tr>`;
+            renderHistoryPagination(0);
+            return;
+        }
+
+        const totalRows = currentFilteredVouchers.length;
+        const totalPages = Math.ceil(totalRows / histRowsPerPage) || 1;
+        if (histCurrentPage > totalPages) histCurrentPage = totalPages;
+
+        const start = (histCurrentPage - 1) * histRowsPerPage;
+        const end = start + histRowsPerPage;
+        const paginatedVouchers = currentFilteredVouchers.slice(start, end);
+
+        const userData = systemUsers[usuarioActivoActual];
+        const isAdmin = (userData && userData.dep === 'GLOBAL');
+
+        paginatedVouchers.forEach((v) => {
+            let productNames = '';
+            let productQtys = '';
+
+            if (v.items && Array.isArray(v.items)) {
+                productNames = v.items.map(i => `${i.productName} <small style="color: var(--gray-500);">(${i.code})</small>`).join('<br>');
+                productQtys = v.items.map(i => `<strong>${i.qty}</strong>`).join('<br>');
+            } else {
+                productNames = `${v.productName || 'N/A'} <small style="color: var(--gray-500);">(${v.code || ''})</small>`;
+                productQtys = `<strong>${v.qty || 0}</strong>`;
+            }
+
+            const tr = document.createElement('tr');
+            tr.style.fontSize = '0.85rem';
+            tr.innerHTML = `
+                <td style="white-space: nowrap;"><strong>${v.folio}</strong></td>
+                <td style="white-space: nowrap; color: var(--gray-600);">${v.date}</td>
+                <td><span style="background: var(--gray-100); padding: 2px 6px; border-radius: 4px;">${v.dept}</span></td>
+                <td style="line-height: 1.4;">${productNames}</td>
+                <td style="text-align: center;">${productQtys}</td>
+                <td>${v.beneficiary}</td>
+                <td style="color: var(--gray-700);">${v.observation || 'Sin observación'}</td>
+                <td style="white-space: nowrap; text-align: right;">
+                    <button class="btn-print" data-folio="${v.folio}" title="Reimprimir Vale"><i class="fa-solid fa-print"></i></button>
+                    ${isAdmin ? `<button class="btn-delete-voucher" data-id="${v.id}" style="background: #fee2e2; color: #dc2626;"><i class="fa-solid fa-trash"></i></button>` : ''}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        tbody.querySelectorAll('.btn-print').forEach(btn => {
+            btn.addEventListener('click', () => reprintVoucher(btn.getAttribute('data-folio')));
+        });
+
+        if (isAdmin) {
+            tbody.querySelectorAll('.btn-delete-voucher').forEach(btn => {
+                btn.addEventListener('click', () => deleteVoucherMulti(btn.getAttribute('data-id')));
+            });
+        }
+
+        renderHistoryPagination(totalPages);
+    }
+
+    function renderHistoryPagination(totalPages) {
+        const container = document.getElementById('historyPaginationContainer');
+        if (!container) return;
+
+        const btnStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-300); background: #fff; color: var(--gray-700); cursor: pointer;';
+        const btnDisabledStyle = 'padding: 6px 12px; font-size: 0.82rem; font-weight: 500; border-radius: 6px; border: 1px solid var(--gray-200); background: var(--gray-100); color: var(--gray-400); cursor: not-allowed;';
+
+        container.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 4px; font-size: 0.85rem; border-top: 1px solid var(--gray-200); margin-top: 8px;">
+                <span>Página <strong>${histCurrentPage}</strong> de <strong>${totalPages || 1}</strong> (${currentFilteredVouchers.length} registros)</span>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" id="histPrevBtn" style="${histCurrentPage <= 1 ? btnDisabledStyle : btnStyle}">Anterior</button>
+                    <button type="button" id="histNextBtn" style="${histCurrentPage >= totalPages ? btnDisabledStyle : btnStyle}">Siguiente</button>
+                </div>
+            </div>
+        `;
+
+        const prevBtn = document.getElementById('histPrevBtn');
+        const nextBtn = document.getElementById('histNextBtn');
+
+        if (prevBtn) prevBtn.onclick = () => { if (histCurrentPage > 1) { histCurrentPage--; renderHistory(); } };
+        if (nextBtn) nextBtn.onclick = () => { if (histCurrentPage < totalPages) { histCurrentPage++; renderHistory(); } };
+    }
+
+    async function deleteVoucherMulti(voucherId) {
+        const v = voucherCache.find(item => item.id === voucherId);
+        if (!v) return;
+
+        if (confirm(`¿Está seguro de eliminar el vale ${v.folio}?\nSe devolverá el stock asignado.`)) {
+            try {
+                const itemsToReturn = v.items || [{ inventoryId: v.inventoryId, qty: v.qty }];
+
+                for (const item of itemsToReturn) {
+                    const invItem = inventoryCache.find(i => i.id === item.inventoryId || i.code === item.code);
+                    if (invItem) {
+                        await updateDoc(doc(db, 'inventario', invItem.id), { qty: invItem.qty + (item.qty || 0) });
+                    }
+                }
+
+                await deleteDoc(doc(db, 'vales', voucherId));
+                showToast('Vale Eliminado', 'Se devolvió el stock al inventario.', 'success');
+            } catch (error) {
+                showToast('Error', 'No se pudo procesar la eliminación.', 'error');
+            }
+        }
+    }
+
+    // REGISTRO Y EMISIÓN DE VALES DESDE ALMACÉN
+    const voucherForm = document.getElementById('voucherForm');
+    if (voucherForm) {
+        voucherForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
             if (currentVoucherItems.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-600);">No se han agregado artículos al vale</td></tr>`;
+                showToast('Advertencia', 'Agregue al menos un artículo a la lista.', 'warning');
                 return;
             }
 
-            currentVoucherItems.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${item.code}</strong></td>
-                    <td>${item.productName}</td>
-                    <td>${item.warehouse}</td>
-                    <td><strong>${item.qty}</strong></td>
-                    <td>
-                        <button type="button" class="btn-delete" onclick="removeVoucherItem(${index})" style="padding: 4px 8px; font-size: 0.8rem;">
-                            <i class="fa-solid fa-trash"></i> Quitar
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+            const deptSelect = document.getElementById('valeDeptSelect');
+            const dept = deptSelect ? deptSelect.value : '';
+            const beneficiary = document.getElementById('valeBeneficiary').value.trim();
+            const destinationType = document.getElementById('valeDestinationType').value;
+            const observationInput = document.getElementById('valeObservation').value.trim();
+            const observation = destinationType === 'resguardo_direccion' ? `[Resguardo Dirección] ${observationInput}` : `[Entrega Final] ${observationInput}`;
 
-        window.removeVoucherItem = function(index) {
-            currentVoucherItems.splice(index, 1);
-            renderVoucherItemsTable();
-        };
+            const btnSubmit = voucherForm.querySelector('button[type="submit"]');
+            if (btnSubmit) btnSubmit.disabled = true;
 
-        const invRowsSelect = document.getElementById('inventoryRowsSelect');
-        if (invRowsSelect) {
-            invRowsSelect.addEventListener('change', (e) => {
-                invRowsPerPage = parseInt(e.target.value);
-                invCurrentPage = 1;
-                renderInventory();
-            });
-        }
+            try {
+                const currentLoggedUser = usuarioActivoActual || 'Administrador';
+                const formattedDate = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-        const histRowsSelect = document.getElementById('historyRowsSelect');
-        if (histRowsSelect) {
-            histRowsSelect.addEventListener('change', (e) => {
-                histRowsPerPage = parseInt(e.target.value);
-                histCurrentPage = 1;
-                renderHistory();
-            });
-        }
+                await runTransaction(db, async (transaction) => {
+                    const itemSnapshots = [];
+                    for (const item of currentVoucherItems) {
+                        const invRef = doc(db, 'inventario', item.inventoryId);
+                        const invSnap = await transaction.get(invRef);
 
-        function renderDireccionInventory() {
-            const tbody = document.getElementById('direcInventoryTableBody');
-            if (!tbody) return;
+                        if (!invSnap.exists()) throw new Error(`El artículo "${item.productName}" no existe.`);
+                        const stockActual = invSnap.data().qty || 0;
+                        if (stockActual < item.qty) throw new Error(`Stock insuficiente para "${item.productName}".`);
 
-            tbody.innerHTML = '';
-            
-            const direcItems = inventoryCache.filter(item => {
-                if (!item.warehouse || item.qty <= 0) return false;
-                const normalizedWarehouse = item.warehouse.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                return normalizedWarehouse.includes("dif direccion");
-            });
+                        itemSnapshots.push({ ref: invRef, currentStock: stockActual, itemData: item });
+                    }
 
-            if (direcItems.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-600);">No hay artículos en resguardo en DIF Dirección</td></tr>`;
-                return;
-            }
-
-            const userData = systemUsers[usuarioActivoActual];
-            const isAdmin = (userData && userData.dep === 'GLOBAL');
-
-            direcItems.forEach(item => {
-                const tr = document.createElement('tr');
-                const userCreator = item.createdBy || item.lastUpdatedBy || 'Institucional';
-
-                const actionsHtml = !isAdmin 
-                    ? `<button type="button" class="btn btn-primary btn-open-delivery" data-id="${item.id}" style="padding: 6px 12px; font-size: 0.85rem; background: #0284c7; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                        <i class="fa-solid fa-file-export"></i> Entregar y Dar de Baja
-                       </button>`
-                    : `<div style="display: flex; gap: 6px; justify-content: center;">
-                        <button type="button" class="btn-edit btn-edit-direc" data-id="${item.id}" style="padding: 6px 10px; font-size: 0.82rem;">
-                            <i class="fa-solid fa-pen"></i> Editar
-                        </button>
-                        <button type="button" class="btn btn-primary btn-open-delivery" data-id="${item.id}" style="padding: 6px 12px; font-size: 0.85rem; background: #0284c7; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                            <i class="fa-solid fa-file-export"></i> Entregar
-                        </button>
-                       </div>`;
-
-                tr.innerHTML = `
-                    <td><strong>${item.code || 'S/C'}</strong></td>
-                    <td>${item.name}</td>
-                    <td><span class="badge" style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold;">${item.qty} unids.</span></td>
-                    <td>${item.dept || 'General'}</td>
-                    <td><span style="font-size: 0.82rem; color: var(--gray-700); background: #f1f5f9; padding: 3px 8px; border-radius: 12px;"><i class="fa-solid fa-user-shield"></i> ${userCreator}</span></td>
-                    <td style="text-align: center;">${actionsHtml}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            if (isAdmin) {
-                tbody.querySelectorAll('.btn-edit-direc').forEach(btn => {
-                    btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
+                    for (const readData of itemSnapshots) {
+                        transaction.update(readData.ref, { qty: readData.currentStock - readData.itemData.qty });
+                    }
                 });
-            }
-        }
 
-        window.openDeliveryModal = function(inventoryId) {
-            const item = inventoryCache.find(i => i.id === inventoryId);
-            if (!item) return;
+                const folio = `VALE-DIF-2026-${String(voucherCache.length + 1).padStart(4, '0')}`;
+                const voucherData = {
+                    folio,
+                    date: formattedDate,
+                    dept: dept || 'Trabajo Social',
+                    items: currentVoucherItems,
+                    beneficiary,
+                    observation,
+                    destinationType,
+                    createdBy: currentLoggedUser,
+                    timestamp: serverTimestamp()
+                };
 
-            document.getElementById('modalInventoryId').value = item.id;
-            document.getElementById('modalItemName').textContent = `${item.name} (Código: ${item.code})`;
-            document.getElementById('modalDeliverQty').value = 1;
-            document.getElementById('modalDeliverQty').max = item.qty;
-            document.getElementById('modalMaxHelp').textContent = `Máximo disponible para entregar: ${item.qty}`;
-            document.getElementById('modalBeneficiary').value = '';
-            
-            document.getElementById('deliveryModal').style.display = 'flex';
-        };
+                const docRef = await addDoc(collection(db, 'vales'), voucherData);
+                voucherData.id = docRef.id;
 
-        window.closeDeliveryModal = function() {
-            document.getElementById('deliveryModal').style.display = 'none';
-        };
+                currentVoucherItems = [];
+                renderVoucherItemsTable();
+                voucherForm.reset();
+                filterProductsByDept();
 
-        const direcCheckoutForm = document.getElementById('direcCheckoutForm');
-        if (direcCheckoutForm) {
-            direcCheckoutForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const inventoryId = document.getElementById('modalInventoryId')?.value;
-                const beneficiary = document.getElementById('modalBeneficiary')?.value.trim() || '';
-                const deliverQty = parseInt(document.getElementById('modalDeliverQty')?.value) || 0;
-                const observation = document.getElementById('modalObservation')?.value.trim() || '';
+                showToast('Vale Emitido', `Folio ${folio} registrado con éxito.`);
+                displayVoucherModal(voucherData);
 
-                const item = inventoryCache.find(i => i.id === inventoryId);
-                if (!item) {
-                    showToast('Error', 'El artículo ya no existe en el inventario.', 'error');
-                    return;
-                }
-
-                if (deliverQty <= 0 || deliverQty > item.qty) {
-                    showToast('Cantidad inválida', `La cantidad debe ser entre 1 y ${item.qty}.`, 'warning');
-                    return;
-                }
-
-                const submitBtn = e.target.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
-                }
-
-                try {
-                    const newQty = item.qty - deliverQty;
-                    await updateDoc(doc(db, 'inventario', inventoryId), { qty: newQty });
-                    item.qty = newQty;
-
-                    const folioNum = typeof voucherCache !== 'undefined' ? voucherCache.length + 1 : 1;
-                    const folio = `SAL-DIR-2026-${String(folioNum).padStart(4, '0')}`;
-                    const currentDate = new Date().toLocaleDateString('es-MX', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric'
-                    });
-
-                    const exitVoucher = {
-                        folio: folio,
-                        date: currentDate,
-                        dept: item.dept || 'DIF Dirección',
-                        items: [{
-                            inventoryId: item.id || '',
-                            code: item.code || 'S/C',
-                            productName: item.name || 'Sin descripción',
-                            warehouse: item.warehouse || 'DIF Dirección',
-                            qty: deliverQty
-                        }],
-                        beneficiary: beneficiary || 'Atención Ciudadana',
-                        observation: observation ? `Salida de stock y baja desde DIF Dirección: ${observation}` : 'Salida de stock desde DIF Dirección',
-                        timestamp: serverTimestamp()
-                    };
-
-                    const docRef = await addDoc(collection(db, 'vales'), exitVoucher);
-                    exitVoucher.id = docRef.id;
-
-                    if (typeof voucherCache !== 'undefined') {
-                        voucherCache.unshift(exitVoucher);
-                    }
-
-                    closeDeliveryModal();
-                    if (typeof renderDireccionInventory === 'function') renderDireccionInventory();
-                    if (typeof renderInventory === 'function') renderInventory();
-
-                    showToast('Salida Exitosa', `Folio ${folio} generado. Se descontaron ${deliverQty} piezas de DIF Dirección.`, 'success');
-                    
-                    if (typeof displayVoucherModal === 'function') {
-                        displayVoucherModal(exitVoucher);
-                    }
-
-                } catch (error) {
-                    console.error("Error al procesar la salida y baja:", error);
-                    showToast('Error', 'No se pudo procesar la baja de stock.', 'error');
-                } finally {
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = 'Entregar y Dar de Baja';
-                    }
-                }
-            });
-        }
-
-        document.addEventListener('click', (e) => {
-            const btn = e.target.closest('.btn-open-delivery');
-            if (btn) {
-                const inventoryId = btn.getAttribute('data-id');
-                const item = inventoryCache.find(i => i.id === inventoryId);
-                
-                if (item) {
-                    const modalInvId = document.getElementById('modalInventoryId');
-                    const modalItemName = document.getElementById('modalItemName');
-                    const modalDeliverQty = document.getElementById('modalDeliverQty');
-                    const modalMaxHelp = document.getElementById('modalMaxHelp');
-                    const modalBeneficiary = document.getElementById('modalBeneficiary');
-
-                    if (modalInvId) modalInvId.value = item.id;
-                    if (modalItemName) modalItemName.textContent = `${item.name} (Código: ${item.code})`;
-                    if (modalDeliverQty) {
-                        modalDeliverQty.value = 1;
-                        modalDeliverQty.max = item.qty;
-                    }
-                    if (modalMaxHelp) modalMaxHelp.textContent = `Máximo disponible para entregar: ${item.qty}`;
-                    if (modalBeneficiary) modalBeneficiary.value = '';
-                    
-                    const deliveryModal = document.getElementById('deliveryModal');
-                    if (deliveryModal) {
-                        deliveryModal.classList.remove('hidden');
-                        deliveryModal.style.display = 'flex';
-                    }
-                }
+            } catch (error) {
+                showToast('Error', error.message || 'Error al emitir vale.', 'error');
+            } finally {
+                if (btnSubmit) btnSubmit.disabled = false;
             }
         });
+    }
 
-        window.closeDeliveryModal = function() {
-            const deliveryModal = document.getElementById('deliveryModal');
-            if (deliveryModal) {
-                deliveryModal.classList.add('hidden');
-                deliveryModal.style.display = 'none';
+    const addItemForm = document.getElementById('addItemForm');
+    if (addItemForm) {
+        addItemForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('prodName').value.trim();
+            const warehouse = document.getElementById('prodWarehouse').value;
+            const qty = parseInt(document.getElementById('prodQty').value);
+            const dept = document.getElementById('prodDept').value;
+            const code = generateSmartCode(dept, warehouse, name);
+
+            try {
+                await addDoc(collection(db, 'inventario'), { code, name, warehouse, qty, dept });
+                addItemForm.reset();
+                switchTab('tab-inventario');
+                showToast('Guardado', `Artículo registrado con código: ${code}`);
+            } catch (error) {
+                showToast('Error', 'No se pudo guardar el artículo.', 'error');
+            }
+        });
+    }
+
+    function openEditModal(id) {
+        const item = inventoryCache.find(i => i.id === id);
+        if (!item) return;
+        document.getElementById('editDocId').value = item.id;
+        document.getElementById('editName').value = item.name;
+        document.getElementById('editWarehouse').value = item.warehouse;
+        document.getElementById('editQty').value = item.qty;
+        document.getElementById('editDept').value = item.dept;
+        document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    document.getElementById('closeEditBtn')?.addEventListener('click', () => {
+        document.getElementById('editModal').classList.add('hidden');
+    });
+
+    const editForm = document.getElementById('editForm');
+    if (editForm) {
+        editForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editDocId').value;
+            const name = document.getElementById('editName').value.trim();
+            const warehouse = document.getElementById('editWarehouse').value;
+            const qty = parseInt(document.getElementById('editQty').value);
+            const dept = document.getElementById('editDept').value;
+            const code = generateSmartCode(dept, warehouse, name);
+
+            try {
+                await updateDoc(doc(db, 'inventario', id), { name, warehouse, qty, dept, code });
+                document.getElementById('editModal').classList.add('hidden');
+                showToast('Actualizado', 'Registro actualizado en la base de datos.');
+            } catch (error) {
+                showToast('Error', 'No se pudo actualizar.', 'error');
             }
         };
+    }
 
-        const closeDeliveryBtn = document.getElementById('closeDeliveryModalBtn');
-        if (closeDeliveryBtn) {
-            closeDeliveryBtn.addEventListener('click', closeDeliveryModal);
+    async function deleteItem(id, name) {
+        if (confirm(`¿Está seguro de eliminar "${name}"?`)) {
+            try {
+                await deleteDoc(doc(db, 'inventario', id));
+                showToast('Eliminado', `Artículo eliminado.`, 'warning');
+            } catch (error) {
+                showToast('Error', 'No se pudo eliminar.', 'error');
+            }
+        }
+    }
+
+    function filterProductsByDept() {
+        const deptSelect = document.getElementById('valeDeptSelect');
+        const productSelect = document.getElementById('valeProductSelect');
+        if (!deptSelect || !productSelect) return;
+
+        const selectedDept = deptSelect.value;
+        productSelect.innerHTML = '<option value="">-- Seleccione un artículo --</option>';
+
+        const filtered = inventoryCache.filter(item => item.dept === selectedDept && item.qty > 0);
+        if (filtered.length === 0) {
+            productSelect.innerHTML = '<option value="">Sin stock disponible en este departamento</option>';
+            return;
         }
 
-        document.addEventListener('input', (e) => {
-            if (e.target && e.target.id === 'globalSearchInput') {
-                const term = e.target.value.toLowerCase().trim();
-                const activeSection = document.querySelector('main.main-content section.tab-content.active');
-                if (!activeSection) return;
-                
-                const activeTabId = activeSection.id;
-
-                if (activeTabId === 'tab-inventario') {
-                    const rows = document.querySelectorAll('#inventoryTableBody tr');
-                    rows.forEach(row => {
-                        row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
-                    });
-                } 
-                else if (activeTabId === 'tab-dif-direccion') {
-                    const rows = document.querySelectorAll('#direcInventoryTableBody tr');
-                    rows.forEach(row => {
-                        row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
-                    });
-                } 
-                else if (activeTabId === 'tab-historial') {
-                    if (typeof histCurrentPage !== 'undefined' && typeof renderHistory === 'function') {
-                        histCurrentPage = 1;
-                        renderHistory();
-                    } else {
-                        const rows = document.querySelectorAll('#historyTableBody tr');
-                        rows.forEach(row => {
-                            row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
-                        });
-                    }
-                }
-            }
+        filtered.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.id;
+            opt.textContent = `${item.name} [${item.code}] (Stock: ${item.qty})`;
+            productSelect.appendChild(opt);
         });
+    }
 
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const globalInput = document.getElementById('globalSearchInput');
-                if (globalInput) {
-                    globalInput.value = '';
-                    document.querySelectorAll('#inventoryTableBody tr, #direcInventoryTableBody tr, #historyTableBody tr').forEach(r => r.style.display = '');
-                }
-            });
-        });
+    document.getElementById('valeDeptSelect')?.addEventListener('change', filterProductsByDept);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const inventorySearchInput = document.getElementById('inventorySearchInput');
-            
-            if (inventorySearchInput) {
-                inventorySearchInput.addEventListener('input', (e) => {
-                    const searchTerm = e.target.value.toLowerCase().trim();
-                    
-                    const activeSection = document.querySelector('main.main-content section.tab-content.active');
-                    if (!activeSection) return;
+    function displayVoucherModal(v) {
+        if (!v) return;
+        const itemsToPrint = v.items || [{ code: v.code || 'N/A', productName: v.productName || 'N/A', warehouse: v.warehouse || 'Bodega DIF', qty: v.qty || 0 }];
 
-                    if (activeSection.id === 'tab-inventario') {
-                        invCurrentPage = 1;
-                        renderInventoryFiltered(searchTerm);
-                    } else if (activeSection.id === 'tab-dif-direccion') {
-                        filterTableRows('direcInventoryTableBody', searchTerm);
-                    } else if (activeSection.id === 'tab-historial') {
-                        histCurrentPage = 1;
-                        renderHistory();
-                    }
-                });
-            }
-
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (inventorySearchInput) {
-                        inventorySearchInput.value = '';
-                        renderInventory();
-                        document.querySelectorAll('#direcInventoryTableBody tr').forEach(r => r.style.display = '');
-                    }
-                });
-            });
-        });
-
-        function renderInventoryFiltered(searchTerm) {
-            const tbody = document.getElementById('inventoryTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            
-            const filteredItems = inventoryCache.filter(item => {
-                if (!searchTerm) return true;
-                const codeMatch = (item.code || '').toLowerCase().includes(searchTerm);
-                const nameMatch = (item.name || '').toLowerCase().includes(searchTerm);
-                const warehouseMatch = (item.warehouse || '').toLowerCase().includes(searchTerm);
-                const deptMatch = (item.dept || '').toLowerCase().includes(searchTerm);
-                return codeMatch || nameMatch || warehouseMatch || deptMatch;
-            });
-
-            if (filteredItems.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray-600);">No se encontraron artículos que coincidan con la búsqueda.</td></tr>`;
-                renderInventoryPagination(0);
-                return;
-            }
-
-            const totalRows = filteredItems.length;
-            const totalPages = Math.ceil(totalRows / invRowsPerPage) || 1;
-            if (invCurrentPage > totalPages) invCurrentPage = totalPages;
-
-            const start = (invCurrentPage - 1) * invRowsPerPage;
-            const end = start + invRowsPerPage;
-            const paginatedItems = filteredItems.slice(start, end);
-
-            const userData = systemUsers[usuarioActivoActual];
-            const isAdmin = (userData && userData.dep === 'GLOBAL');
-
-            paginatedItems.forEach((item) => {
-                let badgeClass = 'badge-dif';
-                if (item.warehouse === 'Bodega Corona') badgeClass = 'badge-corona';
-                else if (item.warehouse === 'Oficina DIF (Resguardo)') badgeClass = 'badge-oficina';
-
-                const isLow = item.qty <= 5;
-                const stockBadge = isLow 
-                    ? `<span class="badge-stock-low"><i class="fa-solid fa-triangle-exclamation"></i> ${item.qty} (Bajo)</span>` 
-                    : `<span class="badge-stock-ok">${item.qty}</span>`;
-
-                const actionsHtml = !isAdmin 
-                    ? `<span style="color: var(--gray-400); font-style: italic; font-size: 0.8rem;">Solo lectura</span>`
-                    : `
-                        <button class="btn-edit" data-id="${item.id}"><i class="fa-solid fa-pen"></i> Editar</button>
-                        <button class="btn-delete" data-id="${item.id}" data-name="${item.name}"><i class="fa-solid fa-trash"></i> Eliminar</button>
-                    `;
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${item.code}</strong></td>
-                    <td>${item.name}</td>
-                    <td><span class="badge-bodega ${badgeClass}">${item.warehouse}</span></td>
-                    <td>${stockBadge}</td>
-                    <td>${item.dept}</td>
-                    <td>${actionsHtml}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            if (isAdmin) {
-                tbody.querySelectorAll('.btn-edit').forEach(btn => {
-                    btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
-                });
-                tbody.querySelectorAll('.btn-delete').forEach(btn => {
-                    btn.addEventListener('click', () => deleteItem(btn.getAttribute('data-id'), btn.getAttribute('data-name')));
-                });
-            }
-
-            renderInventoryPagination(totalPages);
-        }
-
-        function filterTableRows(tbodyId, searchTerm) {
-            const rows = document.querySelectorAll(`#${tbodyId} tr`);
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        }
-
-        function printFilteredInventory() {
-            const searchInput = document.getElementById('inventorySearchInput');
-            const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-            
-            const itemsToPrint = inventoryCache.filter(item => {
-                if (!searchTerm) return true;
-                const codeMatch = (item.code || '').toLowerCase().includes(searchTerm);
-                const nameMatch = (item.name || '').toLowerCase().includes(searchTerm);
-                const warehouseMatch = (item.warehouse || '').toLowerCase().includes(searchTerm);
-                const deptMatch = (item.dept || '').toLowerCase().includes(searchTerm);
-                return codeMatch || nameMatch || warehouseMatch || deptMatch;
-            });
-
-            if (itemsToPrint.length === 0) {
-                if (typeof showToast === 'function') {
-                    showToast('Advertencia', 'No hay registros filtrados para imprimir.', 'warning');
-                } else {
-                    alert('No hay registros filtrados para imprimir.');
-                }
-                return;
-            }
-
-            let rowsHTML = '';
-            itemsToPrint.forEach(item => {
-                rowsHTML += `
-                    <tr>
-                        <td><strong>${item.code || ''}</strong></td>
-                        <td>${item.name || ''}</td>
-                        <td>${item.warehouse || ''}</td>
-                        <td style="text-align: center;">${item.qty || 0}</td>
-                        <td>${item.dept || ''}</td>
-                    </tr>
-                `;
-            });
-
-            let printWindow = window.open('', '_blank', 'width=800,height=600');
-            if (!printWindow) {
-                alert('Por favor, permita las ventanas emergentes (pop-ups) para poder imprimir el reporte.');
-                return;
-            }
-
-            let htmlContent = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Reporte de Inventario Filtrado - DIF Municipal</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
-                        h2 { text-align: center; color: #7a1c32; margin-bottom: 5px; font-size: 1.2rem; }
-                        p { text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 20px; }
-                        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-                        th { background: #f3f4f6; border: 1px solid #cbd5e1; padding: 8px; text-align: left; color: #334155; }
-                        td { border: 1px solid #cbd5e1; padding: 6px; }
-                    </style>
-                </head>
-                <body>
-                    2.0 — REPORTE DE INVENTARIO FILTRADO</h2>
-                    <p>Criterio de búsqueda: "<strong>${searchTerm || 'Todos los registros'}</strong>" — Fecha: ${new Date().toLocaleDateString('es-MX')}</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Artículo / Descripción</th>
-                                <th>Bodega</th>
-                                <th style="text-align: center;">Stock</th>
-                                <th>Departamento</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rowsHTML}
-                        </tbody>
-                    </table>
-                    <script>
-                        window.onload = function() {
-                            window.print();
-                            setTimeout(() => window.close(), 500);
-                        }
-                    <\/script>
-                </body>
-                </html>
+        let itemsRowsHTML = '';
+        itemsToPrint.forEach(i => {
+            itemsRowsHTML += `
+                <tr>
+                    <td style="border: 1px solid #ccc; padding: 5px; text-align: center;">${i.code || 'N/A'}</td>
+                    <td style="border: 1px solid #ccc; padding: 5px;">${i.productName || 'N/A'}</td>
+                    <td style="border: 1px solid #ccc; padding: 5px; text-align: center;"><strong>${i.qty || 0}</strong></td>
+                </tr>
             `;
+        });
 
-            printWindow.document.open();
-            printWindow.document.write(htmlContent);
-            printWindow.document.close();
+        const imageEvidenceHTML = v.evidenciaFoto ? `
+            <div style="margin-top: 15px; text-align: center;">
+                <strong style="font-size: 0.8rem; color: var(--gray-700);">Evidencia Fotográfica de Entrega:</strong><br>
+                <img src="${v.evidenciaFoto}" style="max-height: 140px; border-radius: 6px; margin-top: 6px; border: 1px solid #ccc;" alt="Evidencia">
+            </div>
+        ` : '';
+
+// Dentro de la función que genera el Vale de Salida / Baja de Dirección:
+const voucherHTMLTemplate = `
+    <div class="voucher-copy" style="padding: 20px; background: #fff;">
+        
+        <!-- 1. ENCABEZADO CON LOGO -->
+        <div style="text-align: center; margin-bottom: 15px;">
+            <img src="Logo-header.png" alt="Logo DIF" style="max-width: 100%; height: auto; max-height: 85px; object-fit: contain;">
+        </div>
+
+        <div class="voucher-copy-header" style="text-align: center; margin-bottom: 10px;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: #1e293b;">SISTEMA MUNICIPAL PARA EL DESARROLLO INTEGRAL DE LA FAMILIA</h3>
+            <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">SAN ANDRÉS TUXTLA | COMPROBANTE DE ENTREGA Y BAJA (DIRECCIÓN)</span>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 15px; background: #f1f5f9; padding: 6px; border-radius: 4px;">
+            <strong style="font-size: 0.95rem; color: #0f172a;">VALE DE SALIDA DEFINITIVO (${v.folio || 'S/F'})</strong>
+        </div>
+
+        <!-- DATOS DE LA ENTREGA -->
+        <div class="voucher-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem; margin-bottom: 15px;">
+            <div><strong>Fecha:</strong> ${v.date || new Date().toLocaleDateString('es-MX')}</div>
+            <div><strong>Departamento origen:</strong> ${v.dept || 'Trabajo Social / Dirección'}</div>
+            <div><strong>Solicitante / Beneficiario:</strong> ${v.beneficiary || 'N/A'}</div>
+            <div><strong>Observación:</strong> ${v.observation || 'Entrega final a ciudadano'}</div>
+        </div>
+
+        <!-- TABLA DE ARTÍCULOS DADOS DE BAJA -->
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 15px;">
+            <thead>
+                <tr style="background: #e2e8f0; color: #1e293b;">
+                    <th style="border: 1px solid #cbd5e1; padding: 6px; text-align: center;">Código Inteligente</th>
+                    <th style="border: 1px solid #cbd5e1; padding: 6px; text-align: left;">Artículo / Descripción</th>
+                    <th style="border: 1px solid #cbd5e1; padding: 6px; text-align: center;">Cant.</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${itemsRowsHTML}
+            </tbody>
+        </table>
+
+        ${imageEvidenceHTML}
+
+        <!-- SECCIÓN DE FIRMAS -->
+        <div class="voucher-signatures" style="display: flex; justify-content: space-around; margin-top: 30px; margin-bottom: 20px;">
+            <div style="border-top: 1px solid #000; width: 40%; text-align: center; font-size: 0.8rem; padding-top: 4px;">
+                Entrega (Dirección / Almacén)
+            </div>
+            <div style="border-top: 1px solid #000; width: 40%; text-align: center; font-size: 0.8rem; padding-top: 4px;">
+                Recibe Conformidad
+            </div>
+        </div>
+
+        <!-- 2. PIE DE PÁGINA CON SLOGAN -->
+        <div style="text-align: center; margin-top: 20px; border-top: 1px dashed #cbd5e1; padding-top: 12px;">
+            <img src="slogan.png" alt="Slogan Institucional" style="max-width: 100%; height: auto; max-height: 55px; object-fit: contain;">
+        </div>
+
+    </div>
+`;
+
+
+        const container = document.getElementById('voucherContentArea');
+        if (container) container.innerHTML = voucherHTMLTemplate;
+
+        document.getElementById('printableVoucherModal')?.classList.remove('hidden');
+    }
+
+    function reprintVoucher(folio) {
+        const v = voucherCache.find(item => item.folio === folio);
+        if (v) displayVoucherModal(v);
+    }
+
+    document.getElementById('printModalBtn')?.addEventListener('click', () => window.print());
+    document.getElementById('closeVoucherBtn')?.addEventListener('click', () => {
+        document.getElementById('printableVoucherModal').classList.add('hidden');
+    });
+
+    // AUTENTICACIÓN
+    document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const userInput = document.getElementById('username').value.trim().toLowerCase();
+        const passInput = document.getElementById('password').value;
+
+        if (systemUsers[userInput] && systemUsers[userInput].p === passInput) {
+            const userData = systemUsers[userInput];
+            sessionStorage.setItem('usuario', userInput);
+            sessionStorage.setItem('departamento', userData.dep);
+
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('userBadge').style.display = 'flex';
+            document.getElementById('logoutBtn').style.display = 'flex';
+            document.getElementById('userNameDisplay').innerText = userInput;
+            document.getElementById('userDeptDisplay').innerText = `Rol: ${userData.dep}`;
+
+            aplicarRestriccionesUsuario(userInput, userData);
+            switchTab('tab-inventario');
+            showToast('Sesión Iniciada', `Bienvenido, ${userInput}.`);
+        } else {
+            showToast('Error de Acceso', 'Credenciales incorrectas.', 'error');
+        }
+    });
+
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        sessionStorage.clear();
+        location.reload(); 
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initFirestoreListeners();
+        const savedUser = sessionStorage.getItem('usuario');
+        if (savedUser && systemUsers[savedUser]) {
+            const userData = systemUsers[savedUser];
+            document.getElementById('loginModal')?.classList.add('hidden');
+            document.getElementById('userBadge').style.display = 'flex';
+            document.getElementById('logoutBtn').style.display = 'flex';
+            document.getElementById('userNameDisplay').innerText = savedUser;
+            document.getElementById('userDeptDisplay').innerText = `Rol: ${userData.dep}`;
+            aplicarRestriccionesUsuario(savedUser, userData);
+        }
+    });
+
+    // LISTA TEMPORAL EN VALES
+    document.getElementById('addVoucherItemBtn')?.addEventListener('click', () => {
+        const prodId = document.getElementById('valeProductSelect').value;
+        const qtyRequested = parseInt(document.getElementById('valeQty').value) || 0;
+
+        if (!prodId || qtyRequested <= 0) {
+            showToast('Advertencia', 'Seleccione un artículo y una cantidad válida.', 'warning');
+            return;
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const printFilteredBtn = document.getElementById('printFilteredBtn');
-            if (printFilteredBtn) {
-                printFilteredBtn.addEventListener('click', printFilteredInventory);
-            }
+        const invItem = inventoryCache.find(i => i.id === prodId);
+        if (!invItem) return;
+
+        const existingInCart = currentVoucherItems.filter(i => i.inventoryId === prodId).reduce((sum, i) => sum + i.qty, 0);
+        if (qtyRequested + existingInCart > invItem.qty) {
+            showToast('Stock Insuficiente', `Disponible: ${invItem.qty}.`, 'error');
+            return;
+        }
+
+        currentVoucherItems.push({
+            inventoryId: invItem.id,
+            code: invItem.code,
+            productName: invItem.name,
+            warehouse: invItem.warehouse,
+            qty: qtyRequested
         });
-    </script>
+
+        renderVoucherItemsTable();
+        showToast('Agregado', `${invItem.name} añadido a la lista.`);
+    });
+
+    function renderVoucherItemsTable() {
+        const tbody = document.getElementById('voucherItemsTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (currentVoucherItems.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-600);">No hay artículos seleccionados</td></tr>`;
+            return;
+        }
+
+        currentVoucherItems.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${item.code}</strong></td>
+                <td>${item.productName}</td>
+                <td>${item.warehouse}</td>
+                <td><strong>${item.qty}</strong></td>
+                <td><button type="button" class="btn-delete" onclick="removeVoucherItem(${index})"><i class="fa-solid fa-trash"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    window.removeVoucherItem = function(index) {
+        currentVoucherItems.splice(index, 1);
+        renderVoucherItemsTable();
+    };
+
+    // LÓGICA DE RESGUARDO DIF DIRECCIÓN
+    function renderDireccionInventory() {
+        const tbody = document.getElementById('direcInventoryTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        
+        const direcItems = inventoryCache.filter(item => item.warehouse === 'DIF Dirección' && item.qty > 0);
+
+        if (direcItems.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray-600);">No hay artículos en resguardo en Dirección.</td></tr>`;
+            return;
+        }
+
+        direcItems.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${item.code}</strong></td>
+                <td>${item.name}</td>
+                <td><span class="badge-stock-ok">${item.qty} unids.</span></td>
+                <td>${item.dept}</td>
+                <td style="text-align: center;">
+                    <button type="button" class="btn-action btn-open-delivery" data-id="${item.id}" style="padding: 4px 10px; font-size: 0.8rem; background: #0284c7;">
+                        <i class="fa-solid fa-file-export"></i> Entregar / Dar de Baja
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        tbody.querySelectorAll('.btn-open-delivery').forEach(btn => {
+            btn.addEventListener('click', () => openDeliveryModal(btn.getAttribute('data-id')));
+        });
+    }
+
+    // Previsualización y gestión de imagen de evidencia
+    window.previewImagen = function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("imagePreview").src = e.target.result;
+                document.getElementById("uploadContent").style.display = "none";
+                document.getElementById("imagePreviewContainer").style.display = "flex";
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    window.quitarImagen = function(event) {
+        if (event) event.stopPropagation();
+        const input = document.getElementById("evidenciaFoto");
+        if (input) input.value = "";
+        const preview = document.getElementById("imagePreview");
+        if (preview) preview.src = "";
+        const container = document.getElementById("imagePreviewContainer");
+        if (container) container.style.display = "none";
+        const uploadContent = document.getElementById("uploadContent");
+        if (uploadContent) uploadContent.style.display = "flex";
+    };
+
+    function openDeliveryModal(inventoryId) {
+        const item = inventoryCache.find(i => i.id === inventoryId);
+        if (!item) return;
+
+        document.getElementById('modalInventoryId').value = item.id;
+        document.getElementById('modalItemName').textContent = `${item.name} (${item.code})`;
+        document.getElementById('modalDeliverQty').value = 1;
+        document.getElementById('modalDeliverQty').max = item.qty;
+        document.getElementById('modalMaxHelp').textContent = `Máximo disponible: ${item.qty}`;
+        
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('modalFechaEntrega').value = today;
+
+        if (typeof window.quitarImagen === 'function') {
+            window.quitarImagen(null);
+        }
+
+        document.getElementById('deliveryModal').classList.remove('hidden');
+    }
+
+    window.closeDeliveryModal = function() {
+        document.getElementById('deliveryModal').classList.add('hidden');
+    };
+
+    // ÚNICO EVENT LISTENER PARA EL FORMULARIO DE DIRECCIÓN (Evita entregas dobles)
+    let guardandoEntrega = false;
+    const direcCheckoutForm = document.getElementById('direcCheckoutForm');
+
+    if (direcCheckoutForm) {
+        direcCheckoutForm.onsubmit = async function(e) {
+            e.preventDefault();
+
+            if (guardandoEntrega) return false;
+            guardandoEntrega = true;
+
+            const submitBtn = direcCheckoutForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
+            }
+
+            try {
+                const invId = document.getElementById('modalInventoryId').value;
+                const beneficiary = document.getElementById('modalBeneficiary').value.trim();
+                const deliverQty = parseInt(document.getElementById('modalDeliverQty').value);
+                const obs = document.getElementById('modalObservation').value.trim();
+                const rawDate = document.getElementById('modalFechaEntrega').value;
+                const fotoInput = document.getElementById('evidenciaFoto');
+
+                let formattedDate = rawDate;
+                if (rawDate && rawDate.includes('-')) {
+                    const [yyyy, mm, dd] = rawDate.split('-');
+                    formattedDate = `${dd}/${mm}/${yyyy}`;
+                }
+
+                const invItem = inventoryCache.find(i => i.id === invId);
+                if (!invItem || deliverQty <= 0 || deliverQty > invItem.qty) {
+                    showToast('Error', 'Cantidad no válida o stock insuficiente.', 'error');
+                    return false;
+                }
+
+                let evidenciaBase64 = null;
+                if (fotoInput && fotoInput.files && fotoInput.files[0]) {
+                    evidenciaBase64 = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(fotoInput.files[0]);
+                    });
+                }
+
+                // Descontar inventario
+                await updateDoc(doc(db, 'inventario', invId), { qty: invItem.qty - deliverQty });
+
+                // Crear el vale de salida
+                const folio = `VALE-DIR-2026-${String(voucherCache.length + 1).padStart(4, '0')}`;
+                const voucherData = {
+                    folio,
+                    date: formattedDate,
+                    dept: invItem.dept,
+                    items: [{ code: invItem.code, productName: invItem.name, warehouse: invItem.warehouse, qty: deliverQty }],
+                    beneficiary,
+                    observation: `[Entrega desde Dirección] ${obs}`,
+                    evidenciaFoto: evidenciaBase64 || null,
+                    createdBy: usuarioActivoActual || 'Dirección',
+                    timestamp: serverTimestamp()
+                };
+
+                await addDoc(collection(db, 'vales'), voucherData);
+
+                closeDeliveryModal();
+                showToast('Entrega Exitosa', `Vale ${folio} registrado con fecha ${formattedDate}.`);
+                displayVoucherModal(voucherData);
+
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'No se pudo registrar la entrega.', 'error');
+            } finally {
+                guardandoEntrega = false;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Generar Vale y Dar de Baja';
+                }
+            }
+        };
+    }
+</script>
     </body>
     </html>
