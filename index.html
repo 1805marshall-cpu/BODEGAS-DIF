@@ -10,6 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js para Estadísticas y Gráficas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome para los íconos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Chart.js para las gráficas -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
 <style>
 :root{--primary:#7a1c32;--primary-hover:#5e1325;--primary-light:#fdf2f4;--success:#10b981;--success-hover:#059669;--error:#ef4444;--error-hover:#dc2626;--warning:#f59e0b;--dark:#1e1e24;--gray-100:#f8fafc;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-500:#64748b;--gray-600:#475569;--gray-800:#1e293b;--border-radius:12px;--shadow-sm:0 2px 4px rgba(0,0,0,.04);--shadow-md:0 10px 20px -5px rgba(0,0,0,.08);--shadow-lg:0 20px 30px -10px rgba(0,0,0,.15);--transition:all .25s cubic-bezier(.4,0,.2,1)}*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',system-ui,-apple-system,sans-serif}body{background-color:#f1f5f9;color:var(--gray-800);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}#toastContainer{position:fixed;top:24px;right:24px;z-index:10000;display:flex;flex-direction:column;gap:12px;pointer-events:none;max-width:420px;width:calc(100% - 48px)}.toast{pointer-events:auto;display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:#fff;border-radius:12px;box-shadow:var(--shadow-md);border-left:5px solid var(--primary);animation:toastSlideIn .4s cubic-bezier(.175,.885,.32,1.275) forwards;transition:var(--transition)}.toast.toast-exiting{animation:toastSlideOut .3s ease forwards}@keyframes toastSlideIn{from{opacity:0;transform:translateX(100%) scale(.95)}to{opacity:1;transform:translateX(0) scale(1)}}@keyframes toastSlideOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(100%)}}.toast-icon{font-size:1.3rem;margin-top:2px}.toast-content{flex-grow:1}.toast-title{font-weight:600;font-size:.95rem;color:var(--dark);margin-bottom:2px}.toast-message{font-size:.85rem;color:var(--gray-600)}.toast.success{border-left-color:var(--success)}.toast.success .toast-icon{color:var(--success)}.toast.error{border-left-color:var(--error)}.toast.error .toast-icon{color:var(--error)}.toast.warning{border-left-color:var(--warning)}.toast.warning .toast-icon{color:var(--warning)}.login-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(30,30,36,.75);backdrop-filter:blur(12px) brightness(.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;transition:var(--transition)}.login-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}.login-card{background:#fff;width:100%;max-width:420px;border-radius:20px;padding:36px 32px;box-shadow:var(--shadow-lg);position:relative;animation:modalPop .35s ease-out}.login-header{text-align:center;margin-bottom:28px}.login-icon-badge{width:60px;height:60px;background:var(--primary-light);color:var(--primary);border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:16px}.login-title{font-size:1.4rem;font-weight:700;color:var(--dark);margin-bottom:6px}.login-subtitle{font-size:.88rem;color:var(--gray-600)}.form-group{margin-bottom:20px;text-align:left}.form-label{display:block;font-size:.85rem;font-weight:600;color:var(--gray-800);margin-bottom:8px}.input-wrapper{position:relative;display:flex;align-items:center}.input-icon{position:absolute;left:14px;color:var(--gray-600);font-size:.95rem}.form-control{width:100%;padding:12px 14px 12px 42px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:.95rem;color:var(--dark);background:var(--gray-100);outline:0;transition:var(--transition)}.form-control:focus{background:#fff;border-color:var(--primary);box-shadow:0 0 0 4px rgba(122,28,50,.12)}select.form-control{padding-left:14px}.btn-submit{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-weight:600;font-size:.95rem;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}.btn-submit:hover{background:var(--primary-hover);transform:translateY(-1px);box-shadow:0 4px 12px rgba(122,28,50,.25)}.btn-submit:active{transform:translateY(0)}.app-header{background:#fff;border-bottom:1px solid var(--gray-200);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:12px}.brand-logo-img{max-height:48px;object-fit:contain}.brand-text{display:flex;flex-direction:column}.brand-title{font-size:.88rem;font-weight:700;color:var(--dark);line-height:1.2}.brand-subtitle{font-size:.72rem;color:var(--gray-600)}.user-nav{display:flex;align-items:center;gap:16px}.user-badge{display:flex;align-items:center;gap:10px;background:var(--gray-100);padding:6px 14px 6px 8px;border-radius:30px;border:1px solid var(--gray-200)}.avatar{width:32px;height:32px;background:var(--primary-light);color:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem}.user-info span{display:block;font-size:.85rem;font-weight:600}.user-info small{font-size:.72rem;color:var(--gray-600);text-transform:uppercase}.btn-logout{background:#fee2e2;color:var(--error);border:none;padding:8px 14px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:var(--transition)}.btn-logout:hover{background:#fca5a5;transform:translateY(-1px)}.tabs-nav-container{background:#fff;border-bottom:1px solid var(--gray-200);padding:0 32px;overflow-x:auto;-webkit-overflow-scrolling:touch}.tabs-wrapper{display:flex;gap:8px;max-width:1200px;margin:0 auto;white-space:nowrap}.tab-btn{padding:16px 20px;border:none;background:transparent;color:var(--gray-600);font-size:.92rem;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;transition:var(--transition);display:inline-flex;align-items:center;gap:8px}.tab-btn:hover{color:var(--primary);background:rgba(122,28,50,.04)}.tab-btn.active{color:var(--primary);font-weight:600;border-bottom-color:var(--primary);background:var(--primary-light)}.main-content{flex-grow:1;padding:32px;max-width:1200px;width:100%;margin:0 auto}.tab-content{display:none;animation:fadeIn .3s ease-in-out}.tab-content.active{display:block}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}.content-card{background:#fff;border-radius:var(--border-radius);padding:28px;border:1px solid var(--gray-200);box-shadow:var(--shadow-sm);margin-bottom:24px;transition:var(--transition)}.content-card:hover{box-shadow:var(--shadow-md)}.card-title{font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:10px}.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:16px}.btn-action{padding:10px 18px;border:none;border-radius:8px;font-weight:600;font-size:.88rem;cursor:pointer;background:var(--primary);color:#fff;display:inline-flex;align-items:center;gap:8px;transition:var(--transition);box-shadow:var(--shadow-sm)}.btn-action:hover{background:var(--primary-hover);transform:translateY(-1px);box-shadow:0 4px 10px rgba(122,28,50,.2)}.btn-edit,.btn-print{background:var(--primary-light);color:var(--primary);padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-weight:600;font-size:.8rem;transition:var(--transition)}.btn-edit:hover,.btn-print:hover{background:#fce7ec;transform:scale(1.02)}.btn-delete,.btn-delete-voucher{background:#fee2e2;color:#991b1b;padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-weight:600;font-size:.8rem;margin-left:6px;transition:var(--transition)}.btn-delete:hover,.btn-delete-voucher:hover{background:#fca5a5;transform:scale(1.02)}.data-table{width:100%;border-collapse:collapse;margin-top:16px;text-align:left;font-size:.9rem}.data-table th,.data-table td{padding:12px 16px;border-bottom:1px solid var(--gray-200);vertical-align:middle}.data-table th{background:var(--gray-100);font-weight:600;color:var(--dark)}.data-table tbody tr{transition:var(--transition)}.data-table tbody tr:hover{background-color:rgba(248,250,252,.8)}.badge-bodega{padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600}.badge-dif{background:var(--primary-light);color:var(--primary)}.badge-corona{background:#fef3c7;color:#92400e}.badge-stock-low{background:#fee2e2;color:#991b1b;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;display:inline-flex;align-items:center;gap:4px}.badge-stock-ok{background:#d1fae5;color:#065f46;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600}.table-actions-container{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%}.btn-table-action{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;font-size:.82rem;font-weight:600;border-radius:8px;border:1px solid transparent;cursor:pointer;transition:var(--transition);white-space:nowrap;outline:0;box-shadow:0 2px 4px rgba(0,0,0,.05)}.btn-table-action i{font-size:.85rem;transition:transform .2s ease}.btn-table-action:hover i{transform:scale(1.15)}.btn-table-action:active{transform:scale(.95)}.btn-deliver{background-color:var(--success);color:#fff}.btn-deliver:hover{background-color:var(--success-hover);box-shadow:0 4px 12px rgba(16,185,129,.3);transform:translateY(-1px)}.btn-drop{background-color:#fee2e2;color:var(--error);border-color:#fca5a5}.btn-drop:hover{background-color:var(--error);color:#fff;border-color:var(--error);box-shadow:0 4px 12px rgba(239,68,68,.3);transform:translateY(-1px)}.btn-table-action:disabled{background-color:#e5e7eb;color:#9ca3af;border-color:#d1d5db;cursor:not-allowed;transform:none!important;box-shadow:none!important}.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:24px}.kpi-card{background:#fff;border-radius:12px;padding:20px;border:1px solid var(--gray-200);border-left:5px solid var(--primary);box-shadow:var(--shadow-sm);transition:var(--transition)}.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}.kpi-title{font-size:.82rem;font-weight:600;color:var(--gray-600);text-transform:uppercase;margin-bottom:6px}.kpi-value{font-size:1.6rem;font-weight:700;color:var(--dark)}.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-top:16px}.chart-container{background:#fafafa;border:1px solid var(--gray-200);border-radius:12px;padding:20px;position:relative;height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center}.alert-box-container{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}.alert-banner{background:#fff5f5;border-left:4px solid var(--error);padding:14px 18px;border-radius:8px;display:flex;align-items:center;justify-content:space-between;font-size:.9rem;color:#7f1d1d}.alert-banner i{font-size:1.2rem;color:var(--error)}.voucher-modal-container{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(30,30,36,.75);backdrop-filter:blur(8px);z-index:10001;display:flex;align-items:center;justify-content:center;padding:20px;transition:var(--transition)}.voucher-modal-container.hidden{opacity:0;visibility:hidden;pointer-events:none}.voucher-box{background:#fff;width:100%;max-width:800px;border-radius:16px;padding:32px;box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;animation:modalPop .3s ease-out}@keyframes modalPop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}.voucher-print-layout{display:flex;flex-direction:column;gap:20px}.voucher-copy{border:2px dashed var(--gray-300);padding:18px;border-radius:10px;position:relative;background:#fafafa}.voucher-copy-header{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--primary);padding-bottom:8px;margin-bottom:10px}.voucher-copy-header h3{font-size:.95rem;color:var(--dark);font-weight:700}.voucher-copy-header span{font-size:.75rem;background:var(--primary-light);color:var(--primary);padding:3px 8px;border-radius:6px;font-weight:600}.voucher-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:.82rem;margin-bottom:12px}.voucher-grid div strong{color:var(--gray-600)}.voucher-signatures{display:flex;justify-content:space-between;margin-top:20px;text-align:center;font-size:.78rem}.upload-area{border:2px dashed var(--gray-300);border-radius:8px;padding:16px;text-align:center;background-color:var(--gray-100);cursor:pointer;transition:var(--transition);position:relative}.upload-area:hover{border-color:var(--primary);background-color:var(--primary-light)}.upload-content{display:flex;flex-direction:column;align-items:center}.upload-text{font-size:.85rem;color:var(--gray-800);margin:4px 0}.upload-hint{font-size:.75rem;color:var(--gray-500)}.preview-container{position:relative;display:inline-block;max-width:100%}.preview-container img{max-height:160px;border-radius:6px;border:1px solid var(--gray-300);object-fit:cover}.remove-btn{position:absolute;top:-8px;right:-8px;background:var(--error);color:#fff;border:none;border-radius:50%;width:24px;height:24px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:var(--transition)}.remove-btn:hover{background:var(--error-hover);transform:scale(1.1)}@media (max-width:992px){.charts-grid{grid-template-columns:1fr}}@media (max-width:768px){.app-header{padding:14px 16px;flex-direction:column;align-items:flex-start;gap:12px}.user-nav{width:100%;justify-content:space-between}.tabs-nav-container{padding:0 16px}.main-content{padding:16px}.content-card{padding:18px}.voucher-grid{grid-template-columns:1fr}.voucher-signatures{flex-direction:column;gap:24px}.table-actions-container{flex-direction:column;gap:6px}.btn-table-action{width:100%}}@media (max-width:480px){.login-card{padding:24px 18px}.btn-action{width:100%;justify-content:center}.data-table th,.data-table td{padding:8px 10px;font-size:.82rem}}@media print{body *{visibility:hidden}#printableVoucherModal,#printableVoucherModal *{visibility:visible}#printableVoucherModal{position:absolute;left:0;top:0;width:100%;background:#fff;padding:0}.voucher-box{box-shadow:none;max-height:none;padding:10px;width:100%;max-width:100%}.no-print{display:none!important}}
@@ -471,10 +477,18 @@
                     <p id="modalItemName" style="margin: 5px 0; font-weight: 600; color: var(--dark);"></p>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="modalBeneficiary">Nombre del Beneficiario Final (Ciudadano)</label>
-                    <input type="text" id="modalBeneficiary" class="form-control" style="padding-left: 14px;" placeholder="Nombre completo" required>
-                </div>
+            <!-- Campo para el Encargado (Usuario conectado) -->
+<!-- Campo para el Encargado (Usuario conectado) -->
+            <div class="form-group mb-3">
+                <label class="form-label" for="inputEncargado">Encargado que atiende</label>
+                <input type="text" id="inputEncargado" class="form-control" style="padding-left: 14px;" readonly />
+            </div>
+
+            <!-- Campo para el Ciudadano que recibe el apoyo -->
+            <div class="form-group mb-3">
+            <label for="inputBeneficiarioFinal">Nombre del Beneficiario Final (Ciudadano):</label>
+            <input type="text" id="inputBeneficiarioFinal" class="form-control" placeholder="Ingrese el nombre completo del ciudadano" required />
+            </div>
 
                 <div class="form-group">
                     <label class="form-label" for="modalDeliverQty">Cantidad a Entregar</label>
@@ -530,8 +544,55 @@
             <div class="voucher-print-layout" id="voucherContentArea"></div>
         </div>
     </div>
+   <!-- MODAL PARA EDICIÓN COMPLETA DEL REGISTRO -->
+<div id="modalEditarHistorial" class="modal hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 9999;">
+    <div style="background: #fff; padding: 24px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: #1e293b;"><i class="fa-solid fa-pen-to-square" style="color: #7a1c32;"></i> Editar Registro del Historial</h3>
+            <button type="button" onclick="cerrarModalEditarHistorial()" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;">&times;</button>
+        </div>
 
-<!-- SCRIPT FIREBASE MODULAR Y LÓGICA DEL SISTEMA -->
+        <form id="formEditarHistorial">
+            <input type="hidden" id="editHistorialDocId">
+
+            <div style="margin-bottom: 12px;">
+                <label for="editHistorialFolio" style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px;">Folio</label>
+                <input type="text" id="editHistorialFolio" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;" required>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label for="editHistorialDate" style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px;">Fecha</label>
+                <input type="text" id="editHistorialDate" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;" placeholder="DD/MM/AAAA" required>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label for="editHistorialProducto" style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px;">Artículo / Producto</label>
+                <input type="text" id="editHistorialProducto" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;" required>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label for="editHistorialCantidad" style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px;">Cantidad</label>
+                <input type="number" id="editHistorialCantidad" min="1" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;" required>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+                <label for="editHistorialBeneficiario" style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px;">Beneficiario</label>
+                <input type="text" id="editHistorialBeneficiario" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;" required>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label for="editHistorialObservacion" style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 4px;">Observaciones</label>
+                <textarea id="editHistorialObservacion" rows="3" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-family: inherit;"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" onclick="cerrarModalEditarHistorial()" style="padding: 8px 16px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; cursor: pointer; color: #475569;">Cancelar</button>
+                <button type="submit" style="padding: 8px 16px; background: #7a1c32; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -639,6 +700,11 @@
         return `${deptCode}-${whCode}-${cleanName}-${randomNum}`;
     }
 
+    function esUsuarioAdmin() {
+        const userData = systemUsers[usuarioActivoActual];
+        return userData && userData.dep === 'GLOBAL';
+    }
+
     // --- MANEJO DE PERMISOS Y ROLES DE USUARIO ---
 
     function aplicarRestriccionesUsuario(username, userData) {
@@ -686,7 +752,7 @@
                 }
             }
 
-            showToast('Perfil Operativo', `Usuario: ${username} (${departamento}). Habilitado para emitir vales y entregar apoyos en Dirección.`, 'success');
+            showToast('Perfil Operativo', `Usuario: ${username} (${departamento}). Habilitado para emitir vales y entregar apoyos.`, 'success');
         } else {
             if (tabRegistrarBtn) {
                 tabRegistrarBtn.style.display = 'inline-block';
@@ -702,10 +768,85 @@
                     <option value="Población Vulnerable">Población Vulnerable</option>
                 `;
             }
+            showToast('Perfil Administrador', `Usuario: ${username} (GLOBAL). Permiso total de edición y eliminación habilitado.`, 'success');
         }
     }
 
     // --- MÓDULO DE RESGUARDO Y ENTREGAS DESDE "DIF DIRECCIÓN" ---
+
+    // Abre el modal de entrega e inicializa el encargado activo
+    window.abrirModalEntrega = function() {
+        const inputEncargado = document.getElementById('inputEncargado');
+        if (inputEncargado) {
+            inputEncargado.value = usuarioActivoActual || '';
+        }
+        
+        const inputBeneficiario = document.getElementById('inputBeneficiarioFinal');
+        if (inputBeneficiario) {
+            inputBeneficiario.value = '';
+        }
+
+        const modalEntrega = document.getElementById('modalEntrega');
+        if (modalEntrega) {
+            modalEntrega.classList.remove('hidden');
+        }
+    };
+
+    // Guarda el registro de la entrega final en Firestore
+    window.registrarEntregaFinal = async function(datosApoyo) {
+        const inputBeneficiario = document.getElementById('inputBeneficiarioFinal');
+        const beneficiarioCiudadano = inputBeneficiario ? inputBeneficiario.value.trim() : '';
+
+        if (!beneficiarioCiudadano) {
+            alert("Por favor, ingrese el nombre del beneficiario final.");
+            return;
+        }
+
+        const registroData = {
+            folio: datosApoyo.folio,
+            fechaEntrega: new Date().toLocaleDateString('es-MX'),
+            articulo: datosApoyo.articulo || 'N/A',
+            cantidad: datosApoyo.cantidad || 1,
+            beneficiario: beneficiarioCiudadano,
+            encargadoAtendio: usuarioActivoActual || 'Dirección',
+            observacion: "[Entrega desde Dirección] Entrega final a ciudadano desde DIF Dirección",
+            tipoRegistro: "ENTREGA_FINAL",
+            evidenciaUrl: datosApoyo.evidenciaUrl || "Sin Foto",
+            timestamp: serverTimestamp()
+        };
+
+        try {
+            await addDoc(collection(db, 'historial_entregas'), registroData);
+            
+            const modalEntrega = document.getElementById('modalEntrega');
+            if (modalEntrega) modalEntrega.classList.add('hidden');
+
+            showToast('Éxito', 'Entrega registrada correctamente.');
+            cargarHistorialEntregasFinales();
+        } catch (error) {
+            console.error("Error al registrar la entrega final:", error);
+            showToast('Error', 'No se pudo registrar la entrega.', 'error');
+        }
+    };
+
+    // Abre un prompt interactivo para actualizar el beneficiario de un documento de entrega
+    window.abrirModalEditar = async function(idRegistro, beneficiarioActual) {
+        const nuevoBeneficiario = prompt("Editar nombre del beneficiario ciudadano:", beneficiarioActual);
+
+        if (nuevoBeneficiario && nuevoBeneficiario.trim() !== beneficiarioActual) {
+            try {
+                await updateDoc(doc(db, 'historial_entregas', idRegistro), {
+                    beneficiario: nuevoBeneficiario.trim()
+                });
+                
+                alert("Registro actualizado correctamente.");
+                cargarHistorialEntregasFinales();
+            } catch (error) {
+                console.error("Error al actualizar el registro:", error);
+                alert("Ocurrió un error al intentar actualizar el registro.");
+            }
+        }
+    };
 
     function renderDireccionInventory(data) {
         const tbody = document.getElementById('direcInventoryTableBody');
@@ -719,24 +860,314 @@
             return;
         }
 
+        const isAdmin = esUsuarioAdmin();
+
         listado.forEach(item => {
             const tr = document.createElement('tr');
-            const accionEntregaHtml = `
+            
+            let accionesHtml = `
                 <button type="button" class="btn btn-sm btn-outline-success" onclick="openDeliveryModal('${item.id}')">
                     <i class="fa-solid fa-box-open me-1"></i> Entregar y Dar de Baja
                 </button>
             `;
+
+            if (isAdmin) {
+                accionesHtml += `
+                    <button class="btn-edit ms-1" data-id="${item.id}"><i class="fa-solid fa-pen"></i> Editar</button>
+                    <button class="btn-delete ms-1" data-id="${item.id}" data-name="${item.name}"><i class="fa-solid fa-trash"></i> Eliminar</button>
+                `;
+            }
 
             tr.innerHTML = `
                 <td><strong>${item.code || '-'}</strong></td>
                 <td>${item.name || '-'}</td>
                 <td><span class="badge style-badge-stock">${item.qty || 0} unids.</span></td>
                 <td>${item.dept || '-'}</td>
-                <td style="text-align: center;">${accionEntregaHtml}</td>
+                <td style="text-align: center;">${accionesHtml}</td>
             `;
             tbody.appendChild(tr);
         });
+
+        if (isAdmin) {
+            tbody.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
+            });
+            tbody.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', () => deleteItem(btn.getAttribute('data-id'), btn.getAttribute('data-name')));
+            });
+        }
     }
+
+    // TABLA 2 DE DIRECCIÓN: SOLO REGISTROS DE BAJAS/SALIDAS EFECTUADAS DESDE DIRECCIÓN
+    async function renderDireccionBajasHistory() {
+        await cargarHistorialEntregasFinales();
+    }
+
+// 1. Cargar la tabla de entregas a beneficiarios
+async function cargarHistorialEntregasFinales() {
+    const esAngelVidal = usuarioActivoActual && usuarioActivoActual.includes('angel.vidal');
+    const esAdmin = esUsuarioAdmin();
+    
+    const tablaBody = document.getElementById('direcBajasTableBody') || document.getElementById('tablaHistorialBody');
+    if (!tablaBody) return;
+    tablaBody.innerHTML = '';
+
+    const searchInput = document.getElementById('direcBajasSearchInput');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+    const bajasDireccion = voucherCache.filter(v => 
+        v.destinationType === '[Entrega desde Dirección]' || 
+        (v.observation && v.observation.includes('[Entrega desde Dirección]'))
+    );
+
+    const filtered = bajasDireccion.filter(v => {
+        if (!searchTerm) return true;
+        return (v.folio || '').toLowerCase().includes(searchTerm) ||
+               (v.beneficiary || '').toLowerCase().includes(searchTerm) ||
+               (v.observation || '').toLowerCase().includes(searchTerm);
+    });
+
+    if (filtered.length === 0) {
+        tablaBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--gray-500); padding: 15px;">No hay registros de entrega a beneficiarios.</td></tr>`;
+        if (typeof renderDirecBajasPagination === 'function') renderDirecBajasPagination(0);
+        return;
+    }
+
+    const totalPages = Math.ceil(filtered.length / direcBajasRowsPerPage) || 1;
+    if (direcBajasCurrentPage > totalPages) direcBajasCurrentPage = totalPages;
+
+    const start = (direcBajasCurrentPage - 1) * direcBajasRowsPerPage;
+    const end = start + direcBajasRowsPerPage;
+    const paginated = filtered.slice(start, end);
+
+    paginated.forEach(v => {
+        const tr = document.createElement('tr');
+        
+        const primerItem = (v.items && v.items[0]) ? v.items[0] : {};
+        const producto = primerItem.productName || v.productName || v.articulo || 'N/A';
+        const cantidad = primerItem.qty || v.qty || v.cantidad || 1;
+        const beneficiario = v.beneficiary || v.beneficiario || 'Sin beneficiario';
+        const observacion = v.observation || v.observaciones || '';
+
+        // Miniatura con estilos inline y apertura al hacer clic
+        const fotoBtn = v.evidenciaFoto 
+            ? `<img src="${v.evidenciaFoto}" 
+                    alt="Evidencia" 
+                    onclick="abrirFotoEnGrande('${v.evidenciaFoto}')" 
+                    style="width: 38px; height: 38px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid var(--gray-300, #ccc); transition: transform 0.15s ease;" 
+                    onmouseover="this.style.transform='scale(1.1)'" 
+                    onmouseout="this.style.transform='scale(1)'" 
+                    title="Clic para ampliar foto" />` 
+            : '<span style="color:var(--gray-500); font-size: 0.8rem;">Sin Foto</span>';
+
+        const permiteEditar = esAngelVidal || esAdmin;
+
+        tr.innerHTML = `
+            <td><strong>${v.folio || 'S/F'}</strong></td>
+            <td>${v.date || v.fecha || ''}</td>
+            <td><strong>${producto}</strong></td>
+            <td style="text-align: center;"><strong>${cantidad}</strong></td>
+            <td><strong>${beneficiario}</strong></td>
+            <td style="color: var(--gray-700);">${observacion}</td>
+            <td style="text-align:center; vertical-align: middle;">${fotoBtn}</td>
+            <td style="text-align:center; white-space: nowrap; vertical-align: middle;">
+                <button class="btn-print" onclick="reprintVoucher('${v.folio}')" title="Imprimir Comprobante">
+                    🖨️
+                </button>
+                ${permiteEditar ? `
+                    <button class="btn btn-sm btn-outline-warning ms-1" onclick="editarRegistroHistorial('${v.id}')" title="Editar Registro y Foto">
+                        ✏️
+                    </button>
+                    <button class="btn-delete-voucher ms-1" onclick="eliminarRegistroHistorial('${v.id}')" title="Eliminar Registro">
+                        🗑️
+                    </button>
+                ` : ''}
+            </td>
+        `;
+        tablaBody.appendChild(tr);
+    });
+
+    if (typeof renderDirecBajasPagination === 'function') renderDirecBajasPagination(totalPages);
+}
+
+
+// 2. Abrir Modal de Edición
+window.editarRegistroHistorial = async function(id) {
+    const registro = voucherCache.find(v => v.id === id);
+    if (!registro) {
+        alert("No se encontró el registro seleccionado.");
+        return;
+    }
+
+    const primerItem = (registro.items && registro.items[0]) ? registro.items[0] : {};
+    const productoActual = primerItem.productName || registro.productName || registro.articulo || '';
+    const cantidadActual = primerItem.qty || registro.qty || registro.cantidad || 1;
+
+    const modalHTML = `
+        <div class="modal fade show" id="modalEditarEntrega" tabindex="-1" style="display:block; background:rgba(0,0,0,0.6); z-index: 1050;" aria-modal="true" role="dialog">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">✏️ Editar Entrega a Beneficiario</h5>
+                        <button type="button" class="btn-close" onclick="cerrarModalEditarEntrega()"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formEditarEntrega" onsubmit="event.preventDefault();">
+                            <div class="mb-3">
+                                <label class="form-label">Beneficiario / Ciudadano:</label>
+                                <input type="text" id="editBeneficiario" class="form-control" value="${registro.beneficiary || registro.beneficiario || ''}" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-8 mb-3">
+                                    <label class="form-label">Artículo / Apoyo:</label>
+                                    <input type="text" id="editProducto" class="form-control" value="${productoActual}" required>
+                                </div>
+                                <div class="col-4 mb-3">
+                                    <label class="form-label">Cantidad:</label>
+                                    <input type="number" id="editCantidad" class="form-control" value="${cantidadActual}" min="1" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Observación / Nota:</label>
+                                <textarea id="editObservacion" class="form-control" rows="2">${registro.observation || registro.observaciones || ''}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Cargar / Cambiar Foto de Evidencia:</label>
+                                <input type="file" id="editFotoInput" class="form-control" accept="image/*">
+                                <small class="text-muted">Si seleccionas una nueva foto, reemplazará la anterior.</small>
+                            </div>
+                            ${registro.evidenciaFoto ? `
+                                <div class="mb-2 text-center">
+                                    <small class="d-block text-muted mb-1">Foto Actual:</small>
+                                    <img src="${registro.evidenciaFoto}" style="max-height: 100px; border-radius: 6px; border: 1px solid #ccc;">
+                                </div>
+                            ` : ''}
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="cerrarModalEditarEntrega()">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btnGuardarCambiosHistorial" onclick="guardarEdicionEntrega('${registro.id}')">
+                            💾 Guardar Cambios
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    cerrarModalEditarEntrega();
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+};
+
+window.cerrarModalEditarEntrega = function() {
+    const modal = document.getElementById('modalEditarEntrega');
+    if (modal) modal.remove();
+};
+
+// 3. Procesar y guardar la actualización junto con la imagen
+window.guardarEdicionEntrega = async function(id) {
+    const btnGuardar = document.getElementById('btnGuardarCambiosHistorial');
+    if (btnGuardar) {
+        btnGuardar.disabled = true;
+        btnGuardar.innerHTML = '⏳ Guardando...';
+    }
+
+    const beneficiario = document.getElementById('editBeneficiario').value.trim();
+    const producto = document.getElementById('editProducto').value.trim();
+    const cantidad = parseInt(document.getElementById('editCantidad').value, 10) || 1;
+    const observacion = document.getElementById('editObservacion').value.trim();
+    const fotoFileInput = document.getElementById('editFotoInput');
+
+    let nuevaFotoBase64 = null;
+
+    // Redimensionar y convertir la foto subida
+    if (fotoFileInput && fotoFileInput.files.length > 0) {
+        try {
+            nuevaFotoBase64 = await procesarEImagenBase64(fotoFileInput.files[0]);
+        } catch (e) {
+            console.error("Error al procesar la imagen:", e);
+            alert("No se pudo procesar la imagen seleccionada.");
+            if (btnGuardar) {
+                btnGuardar.disabled = false;
+                btnGuardar.innerHTML = '💾 Guardar Cambios';
+            }
+            return;
+        }
+    }
+
+    try {
+        const updateData = {
+            beneficiary: beneficiario,
+            beneficiario: beneficiario,
+            productName: producto,
+            articulo: producto,
+            qty: cantidad,
+            cantidad: cantidad,
+            observation: observacion,
+            items: [{ productName: producto, qty: cantidad }]
+        };
+
+        if (nuevaFotoBase64) {
+            updateData.evidenciaFoto = nuevaFotoBase64;
+        }
+
+        // Actualizar en Firestore
+        await db.collection('vouchers').doc(id).update(updateData);
+
+        // Actualizar en la memoria local
+        const index = voucherCache.findIndex(v => v.id === id);
+        if (index !== -1) {
+            voucherCache[index] = { ...voucherCache[index], ...updateData };
+        }
+
+        cerrarModalEditarEntrega();
+        cargarHistorialEntregasFinales();
+        alert("¡Registro y fotografía actualizados exitosamente!");
+    } catch (error) {
+        console.error("Error al guardar la entrega:", error);
+        alert("Ocurrió un error al intentar guardar los cambios en Firestore.");
+    } finally {
+        if (btnGuardar) {
+            btnGuardar.disabled = false;
+            btnGuardar.innerHTML = '💾 Guardar Cambios';
+        }
+    }
+};
+
+// Función auxiliar para optimizar la imagen recibida
+function procesarEImagenBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > MAX_WIDTH) {
+                    height = Math.round((height * MAX_WIDTH) / width);
+                    width = MAX_WIDTH;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Compresión a JPEG
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+
 
     // --- CONEXIÓN FIRESTORE Y OBTENCIÓN EN TIEMPO REAL ---
 
@@ -761,8 +1192,8 @@
         const valesRef = collection(db, 'vales');
         onSnapshot(valesRef, (snapshot) => {
             voucherCache = [];
-            snapshot.forEach((doc) => {
-                voucherCache.push({ id: doc.id, ...doc.data() });
+            snapshot.forEach((docSnap) => {
+                voucherCache.push({ id: docSnap.id, ...docSnap.data() });
             });
             renderHistory();
             renderDireccionBajasHistory();
@@ -832,8 +1263,7 @@
         const end = start + invRowsPerPage;
         const paginatedItems = filteredInventory.slice(start, end);
 
-        const userData = systemUsers[usuarioActivoActual];
-        const isAdmin = (userData && userData.dep === 'GLOBAL');
+        const isAdmin = esUsuarioAdmin();
 
         paginatedItems.forEach((item) => {
             let badgeClass = 'badge-dif';
@@ -1052,7 +1482,7 @@
         }
     }
 
-    // --- HISTORIAL DE VALES Y PAGINACIÓN ---
+    // --- HISTORIAL GENERAL DE SALIDAS / VALES Y PAGINACIÓN ---
 
     function renderHistory() {
         const tbody = document.getElementById('historyTableBody');
@@ -1092,8 +1522,7 @@
         const end = start + histRowsPerPage;
         const paginatedVouchers = currentFilteredVouchers.slice(start, end);
 
-        const userData = systemUsers[usuarioActivoActual];
-        const isAdmin = (userData && userData.dep === 'GLOBAL');
+        const isAdmin = esUsuarioAdmin();
 
         paginatedVouchers.forEach((v) => {
             let productNames = '';
@@ -1119,7 +1548,7 @@
                 <td style="color: var(--gray-700);">${v.observation || 'Sin observación'}</td>
                 <td style="white-space: nowrap; text-align: right;">
                     <button class="btn-print" data-folio="${v.folio}" title="Reimprimir Vale"><i class="fa-solid fa-print"></i></button>
-                    ${isAdmin ? `<button class="btn-delete-voucher" data-id="${v.id}" style="background: #fee2e2; color: #dc2626;"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    ${isAdmin ? `<button class="btn-delete-voucher ms-1" data-id="${v.id}" title="Eliminar Registro de Salida" style="background: #fee2e2; color: #dc2626; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>` : ''}
                 </td>
             `;
             tbody.appendChild(tr);
@@ -1190,12 +1619,17 @@
     }
 
     async function deleteVoucherMulti(voucherId) {
+        if (!esUsuarioAdmin()) {
+            showToast('Permiso Denegado', 'Solo administradores pueden eliminar registros.', 'error');
+            return;
+        }
+
         const v = voucherCache.find(item => item.id === voucherId);
         if (!v) return;
 
-        if (confirm(`¿Está seguro de eliminar el vale ${v.folio}?\nSe devolverá el stock asignado.`)) {
+        if (confirm(`¿Está seguro de eliminar el registro/vale ${v.folio}?\nEsta acción devolverá el stock asignado a las bodegas.`)) {
             try {
-                const itemsToReturn = v.items || [{ inventoryId: v.inventoryId, qty: v.qty }];
+                const itemsToReturn = v.items || [{ inventoryId: v.inventoryId, qty: v.qty, code: v.code }];
 
                 for (const item of itemsToReturn) {
                     const invItem = inventoryCache.find(i => i.id === item.inventoryId || i.code === item.code);
@@ -1205,7 +1639,7 @@
                 }
 
                 await deleteDoc(doc(db, 'vales', voucherId));
-                showToast('Vale Eliminado', 'Se devolvió el stock al inventario.', 'success');
+                showToast('Registro Eliminado', 'Se reintegró el stock correspondiente.', 'success');
             } catch (error) {
                 showToast('Error', 'No se pudo procesar la eliminación.', 'error');
             }
@@ -1339,6 +1773,10 @@
     }
 
     function openEditModal(id) {
+        if (!esUsuarioAdmin()) {
+            showToast('Acceso Denegado', 'No posee permisos de edición.', 'error');
+            return;
+        }
         const item = inventoryCache.find(i => i.id === id);
         if (!item) return;
         document.getElementById('editDocId').value = item.id;
@@ -1348,6 +1786,7 @@
         document.getElementById('editDept').value = item.dept;
         document.getElementById('editModal').classList.remove('hidden');
     }
+    window.openEditModal = openEditModal;
 
     document.getElementById('closeEditBtn')?.addEventListener('click', () => {
         document.getElementById('editModal').classList.add('hidden');
@@ -1375,6 +1814,11 @@
     }
 
     async function deleteItem(id, name) {
+        if (!esUsuarioAdmin()) {
+            showToast('Acceso Denegado', 'No posee permisos para eliminar.', 'error');
+            return;
+        }
+
         if (confirm(`¿Está seguro de eliminar "${name}"?`)) {
             try {
                 await deleteDoc(doc(db, 'inventario', id));
@@ -1384,6 +1828,7 @@
             }
         }
     }
+    window.deleteItem = deleteItem;
 
     function filterProductsByDept() {
         const deptSelect = document.getElementById('valeDeptSelect');
@@ -1495,6 +1940,7 @@
         const v = voucherCache.find(item => item.folio === folio);
         if (v) displayVoucherModal(v);
     }
+    window.reprintVoucher = reprintVoucher;
 
     document.getElementById('printModalBtn')?.addEventListener('click', () => window.print());
     document.getElementById('closeVoucherBtn')?.addEventListener('click', () => {
@@ -1521,7 +1967,6 @@
 
             aplicarRestriccionesUsuario(userInput, userData);
             switchTab('tab-inventario');
-            showToast('Sesión Iniciada', `Bienvenido, ${userInput}.`);
         } else {
             showToast('Error de Acceso', 'Credenciales incorrectas.', 'error');
         }
@@ -1637,201 +2082,330 @@
         if (uploadContent) uploadContent.style.display = "flex";
     };
 
-    window.openDeliveryModal = function(inventoryId) {
-        const item = inventoryCache.find(i => i.id === inventoryId);
-        if (!item) return;
+window.openDeliveryModal = function(inventoryId) {
+    const item = inventoryCache.find(i => i.id === inventoryId);
+    if (!item) return;
 
-        document.getElementById('modalInventoryId').value = item.id;
-        document.getElementById('modalItemName').textContent = `${item.name} (${item.code})`;
-        document.getElementById('modalDeliverQty').value = 1;
-        document.getElementById('modalDeliverQty').max = item.qty;
-        document.getElementById('modalMaxHelp').textContent = `Máximo disponible: ${item.qty}`;
-        
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('modalFechaEntrega').value = today;
+    // 1. Asignar datos del artículo
+    document.getElementById('modalInventoryId').value = item.id;
+    document.getElementById('modalItemName').textContent = `${item.name} (${item.code})`;
+    document.getElementById('modalDeliverQty').value = 1;
+    document.getElementById('modalDeliverQty').max = item.qty;
+    document.getElementById('modalMaxHelp').textContent = `Máximo disponible: ${item.qty}`;
+    
+    // 2. Cargar el usuario conectado en el Encargado que atiende
+    const inputEncargado = document.getElementById('inputEncargado');
+    if (inputEncargado) {
+        inputEncargado.value = usuarioActivoActual || sessionStorage.getItem('usuario') || '';
+    }
 
-        if (typeof window.quitarImagen === 'function') {
-            window.quitarImagen(null);
+    // 3. Limpiar el campo del Beneficiario para que el usuario escriba el nombre del ciudadano
+    const inputBeneficiario = document.getElementById('inputBeneficiarioFinal');
+    if (inputBeneficiario) {
+        inputBeneficiario.value = '';
+    }
+
+    // 4. Establecer la fecha actual
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('modalFechaEntrega').value = today;
+
+    // 5. Resetear vista de imagen si existe la función
+    if (typeof window.quitarImagen === 'function') {
+        window.quitarImagen(null);
+    }
+
+    // 6. Mostrar el modal
+    document.getElementById('deliveryModal').classList.remove('hidden');
+};
+
+// Abrir y cargar el modal de edición
+window.editarRegistroHistorial = function(docId) {
+    const usuarioActual = usuarioActivoActual || sessionStorage.getItem('usuario');
+    if (usuarioActual !== 'angel.vidal') {
+        showToast('Acceso Denegado', 'Solo el usuario angel.vidal puede modificar registros.', 'error');
+        return;
+    }
+
+    // Buscar en la caché local
+    const registro = (typeof voucherCache !== 'undefined') ? voucherCache.find(item => item.id === docId) : null;
+    
+    if (!registro) {
+        showToast('Error', 'No se encontró la información del registro.', 'error');
+        return;
+    }
+
+    // Extraer valores considerando distintas nomenclaturas comunes
+    const primerItem = (registro.items && registro.items[0]) ? registro.items[0] : {};
+    const productoNombre = primerItem.productName || registro.productName || registro.articulo || registro.producto || '';
+    const cantidadProd = primerItem.qty || registro.qty || registro.cantidad || 1;
+    const beneficiarioNombre = registro.beneficiary || registro.beneficiario || '';
+    const obs = registro.observation || registro.observaciones || registro.observacion || '';
+    const fechaReg = registro.date || registro.fecha || '';
+    const folioReg = registro.folio || '';
+
+    // Asignar valores a los inputs del modal
+    document.getElementById('editHistorialDocId').value = docId;
+    document.getElementById('editHistorialFolio').value = folioReg;
+    document.getElementById('editHistorialDate').value = fechaReg;
+    document.getElementById('editHistorialProducto').value = productoNombre;
+    document.getElementById('editHistorialCantidad').value = cantidadProd;
+    document.getElementById('editHistorialBeneficiario').value = beneficiarioNombre;
+    document.getElementById('editHistorialObservacion').value = obs;
+
+    // Mostrar el modal forzando el display
+    const modal = document.getElementById('modalEditarHistorial');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    }
+};
+
+// Cerrar el modal
+window.cerrarModalEditarHistorial = function() {
+    const modal = document.getElementById('modalEditarHistorial');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
+};
+
+// Guardar los cambios completos en Firestore
+document.getElementById('formEditarHistorial')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const docId = document.getElementById('editHistorialDocId').value;
+    const folio = document.getElementById('editHistorialFolio').value.trim();
+    const date = document.getElementById('editHistorialDate').value.trim();
+    const productName = document.getElementById('editHistorialProducto').value.trim();
+    const qty = parseInt(document.getElementById('editHistorialCantidad').value) || 1;
+    const beneficiary = document.getElementById('editHistorialBeneficiario').value.trim();
+    const observation = document.getElementById('editHistorialObservacion').value.trim();
+
+    try {
+        const registroActual = voucherCache.find(item => item.id === docId);
+        let itemsActualizados = registroActual?.items ? [...registroActual.items] : [];
+
+        if (itemsActualizados.length > 0) {
+            itemsActualizados[0] = {
+                ...itemsActualizados[0],
+                productName: productName,
+                qty: qty
+            };
+        } else {
+            itemsActualizados = [{ productName, qty }];
         }
 
-        document.getElementById('deliveryModal').classList.remove('hidden');
-    };
+        // Actualización general en Firestore
+        await updateDoc(doc(db, 'vales', docId), {
+            folio: folio,
+            date: date,
+            fecha: date,
+            beneficiary: beneficiary,
+            beneficiario: beneficiary,
+            observation: observation,
+            observaciones: observation,
+            items: itemsActualizados
+        });
+
+        showToast('Éxito', 'Registro actualizado correctamente.');
+        cerrarModalEditarHistorial();
+
+        // Recargar vistas del historial
+        if (typeof cargarHistorialDireccion === 'function') cargarHistorialDireccion();
+        if (typeof cargarHistorialEntregasFinales === 'function') cargarHistorialEntregasFinales();
+
+    } catch (error) {
+        console.error("Error al actualizar:", error);
+        showToast('Error', 'No se pudieron guardar los cambios.', 'error');
+    }
+});
+
+
+// Evento submit para guardar los cambios de TODOS los campos en Firestore
+document.getElementById('formEditarHistorial')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const docId = document.getElementById('editHistorialDocId').value;
+    const folio = document.getElementById('editHistorialFolio').value.trim();
+    const date = document.getElementById('editHistorialDate').value.trim();
+    const productName = document.getElementById('editHistorialProducto').value.trim();
+    const qty = parseInt(document.getElementById('editHistorialCantidad').value) || 1;
+    const beneficiary = document.getElementById('editHistorialBeneficiario').value.trim();
+    const observation = document.getElementById('editHistorialObservacion').value.trim();
+
+    try {
+        const registroActual = voucherCache.find(item => item.id === docId);
+        let itemsActualizados = registroActual?.items ? [...registroActual.items] : [];
+
+        if (itemsActualizados.length > 0) {
+            itemsActualizados[0] = {
+                ...itemsActualizados[0],
+                productName: productName,
+                qty: qty
+            };
+        } else {
+            itemsActualizados = [{ productName, qty }];
+        }
+
+        // Guardar todas las actualizaciones en Firestore
+        await updateDoc(doc(db, 'vales', docId), {
+            folio: folio,
+            date: date,
+            beneficiary: beneficiary,
+            observation: observation,
+            items: itemsActualizados
+        });
+
+        showToast('Éxito', 'Registro del historial actualizado completamente.');
+        cerrarModalEditarHistorial();
+
+        // Recargar el historial
+        if (typeof cargarHistorialDireccion === 'function') cargarHistorialDireccion();
+        else if (typeof cargarHistorialEntregasFinales === 'function') cargarHistorialEntregasFinales();
+
+    } catch (error) {
+        console.error("Error al actualizar el registro:", error);
+        showToast('Error', 'No se pudo actualizar el registro.', 'error');
+    }
+});
+
+// Función de eliminación
+window.eliminarRegistroHistorial = async function(docId) {
+    const usuarioActual = usuarioActivoActual || sessionStorage.getItem('usuario');
+    if (usuarioActual !== 'angel.vidal') {
+        showToast('Acceso Denegado', 'Solo el usuario angel.vidal puede eliminar registros.', 'error');
+        return;
+    }
+
+    if (!confirm("¿Estás seguro de que deseas eliminar este registro del historial? Esta acción no se puede deshacer.")) {
+        return;
+    }
+
+    try {
+        await deleteDoc(doc(db, 'vales', docId));
+        showToast('Éxito', 'Registro eliminado correctamente.');
+        if (typeof cargarHistorialDireccion === 'function') cargarHistorialDireccion();
+        else if (typeof cargarHistorialEntregasFinales === 'function') cargarHistorialEntregasFinales();
+    } catch (error) {
+        console.error("Error al eliminar:", error);
+        showToast('Error', 'No se pudo eliminar el registro.', 'error');
+    }
+};
+
+
+window.eliminarRegistroHistorial = async function(docId) {
+    const usuarioActual = usuarioActivoActual || sessionStorage.getItem('usuario');
+    if (usuarioActual !== 'angel.vidal') {
+        showToast('Acceso Denegado', 'Solo el usuario angel.vidal puede eliminar registros.', 'error');
+        return;
+    }
+
+    if (!confirm("¿Estás seguro de que deseas eliminar este registro del historial? Esta acción no se puede deshacer.")) {
+        return;
+    }
+
+    try {
+        await deleteDoc(doc(db, 'vales', docId));
+        showToast('Éxito', 'Registro eliminado correctamente.');
+        if (typeof cargarHistorialDireccion === 'function') cargarHistorialDireccion();
+    } catch (error) {
+        console.error(error);
+        showToast('Error', 'No se pudo eliminar el registro.', 'error');
+    }
+};
+
 
     window.closeDeliveryModal = function() {
         document.getElementById('deliveryModal').classList.add('hidden');
     };
 
     // FORMULARIO DE DIRECCIÓN (BAJA FINAL DESDE RESGUARDO)
-    let guardandoEntrega = false;
-    const direcCheckoutForm = document.getElementById('direcCheckoutForm');
+let guardandoEntrega = false;
+const direcCheckoutForm = document.getElementById('direcCheckoutForm');
 
-    if (direcCheckoutForm) {
-        direcCheckoutForm.onsubmit = async function(e) {
-            e.preventDefault();
+if (direcCheckoutForm) {
+    direcCheckoutForm.onsubmit = async function(e) {
+        e.preventDefault();
 
-            if (guardandoEntrega) return false;
-            guardandoEntrega = true;
+        if (guardandoEntrega) return false;
+        guardandoEntrega = true;
 
-            const submitBtn = direcCheckoutForm.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
-            }
-
-            try {
-                const invId = document.getElementById('modalInventoryId').value;
-                const beneficiary = document.getElementById('modalBeneficiary').value.trim();
-                const deliverQty = parseInt(document.getElementById('modalDeliverQty').value);
-                const obs = document.getElementById('modalObservation').value.trim();
-                const rawDate = document.getElementById('modalFechaEntrega').value;
-                const fotoInput = document.getElementById('evidenciaFoto');
-
-                let formattedDate = rawDate;
-                if (rawDate && rawDate.includes('-')) {
-                    const [yyyy, mm, dd] = rawDate.split('-');
-                    formattedDate = `${dd}/${mm}/${yyyy}`;
-                }
-
-                const invItem = inventoryCache.find(i => i.id === invId);
-                if (!invItem || deliverQty <= 0 || deliverQty > invItem.qty) {
-                    showToast('Error', 'Cantidad no válida o stock insuficiente.', 'error');
-                    return false;
-                }
-
-                let evidenciaBase64 = null;
-                if (fotoInput && fotoInput.files && fotoInput.files[0]) {
-                    evidenciaBase64 = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(reader.result);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(fotoInput.files[0]);
-                    });
-                }
-
-                await updateDoc(doc(db, 'inventario', invId), { qty: invItem.qty - deliverQty });
-
-                const folio = `VALE-DIR-2026-${String(voucherCache.length + 1).padStart(4, '0')}`;
-                const voucherData = {
-                    folio,
-                    date: formattedDate,
-                    dept: invItem.dept,
-                    items: [{ code: invItem.code, productName: invItem.name, warehouse: invItem.warehouse, qty: deliverQty }],
-                    beneficiary,
-                    observation: `[Entrega desde Dirección] ${obs}`,
-                    evidenciaFoto: evidenciaBase64 || null,
-                    createdBy: usuarioActivoActual || 'Dirección',
-                    timestamp: serverTimestamp()
-                };
-
-                await addDoc(collection(db, 'vales'), voucherData);
-
-                closeDeliveryModal();
-                showToast('Entrega Exitosa', `Vale ${folio} registrado con fecha ${formattedDate}.`);
-                displayVoucherModal(voucherData);
-
-            } catch (err) {
-                console.error(err);
-                showToast('Error', 'No se pudo registrar la entrega.', 'error');
-            } finally {
-                guardandoEntrega = false;
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Generar Vale y Dar de Baja';
-                }
-            }
-        };
-    }
-
-    // --- HISTORIAL Y PAGINACIÓN DE BAJAS DE DIRECCIÓN ---
-
-    function renderDireccionBajasHistory(data) {
-        const tbody = document.getElementById('direcBajasTableBody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-
-        const searchInput = document.getElementById('direcBajasSearchInput');
-        const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-
-        const listado = data || voucherCache.filter(v => 
-            v.observation && v.observation.includes('[Entrega desde Dirección]')
-        );
-
-        const filtered = listado.filter(v => {
-            if (!searchTerm) return true;
-            return (v.folio || '').toLowerCase().includes(searchTerm) ||
-                   (v.date || '').toLowerCase().includes(searchTerm) ||
-                   (v.beneficiary || '').toLowerCase().includes(searchTerm) ||
-                   (v.observation || '').toLowerCase().includes(searchTerm);
-        });
-
-        if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--gray-500); padding: 15px;">No hay registros de bajas o entregas registradas.</td></tr>`;
-            renderDirecBajasPagination(0);
-            return;
+        const submitBtn = direcCheckoutForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
         }
 
-        const totalRows = filtered.length;
-        const totalPages = Math.ceil(totalRows / direcBajasRowsPerPage) || 1;
-        if (direcBajasCurrentPage > totalPages) direcBajasCurrentPage = totalPages;
-
-        const start = (direcBajasCurrentPage - 1) * direcBajasRowsPerPage;
-        const end = start + direcBajasRowsPerPage;
-        const paginatedBajas = filtered.slice(start, end);
-
-        const userData = systemUsers[usuarioActivoActual];
-        const isAdmin = (userData && userData.dep === 'GLOBAL');
-
-        paginatedBajas.forEach((item) => {
-            const tr = document.createElement('tr');
+        try {
+            const invId = document.getElementById('modalInventoryId').value;
             
-            let evidenciaHtml = '<span style="color: var(--gray-400); font-size: 0.8rem;">Sin foto</span>';
-            const fotoUrl = item.evidenciaFoto || item.evidencia || item.foto;
+            // 1. Oñerecupera téra id thal cual oĩva HTML-pe
+            const encargado = document.getElementById('inputEncargado').value.trim();
+            const beneficiary = document.getElementById('inputBeneficiarioFinal').value.trim();
+            
+            const deliverQty = parseInt(document.getElementById('modalDeliverQty').value);
+            const obs = document.getElementById('modalObservation').value.trim();
+            const rawDate = document.getElementById('modalFechaEntrega').value;
+            const fotoInput = document.getElementById('evidenciaFoto');
 
-            if (fotoUrl) {
-                evidenciaHtml = `
-                    <div style="text-align: center;">
-                        <img src="${fotoUrl}" 
-                             alt="Evidencia" 
-                             onclick="abrirFotoEnGrande('${fotoUrl}')"
-                             style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid var(--gray-300);"
-                             title="Haz clic para ver la imagen en grande" />
-                    </div>
-                `;
+            let formattedDate = rawDate;
+            if (rawDate && rawDate.includes('-')) {
+                const [yyyy, mm, dd] = rawDate.split('-');
+                formattedDate = `${dd}/${mm}/${yyyy}`;
             }
 
-            let prodName = 'N/A';
-            let prodQty = 1;
-            if (item.items && item.items.length > 0) {
-                prodName = item.items.map(i => i.productName).join(', ');
-                prodQty = item.items.reduce((sum, i) => sum + (i.qty || 0), 0);
-            } else {
-                prodName = item.productName || 'N/A';
-                prodQty = item.qty || 1;
+            const invItem = inventoryCache.find(i => i.id === invId);
+            if (!invItem || deliverQty <= 0 || deliverQty > invItem.qty) {
+                showToast('Error', 'Cantidad no válida o stock insuficiente.', 'error');
+                return false;
             }
 
-            tr.innerHTML = `
-                <td><strong>${item.folio || '-'}</strong></td>
-                <td>${item.date || item.fechaEntrega || '-'}</td>
-                <td>${prodName}</td>
-                <td style="text-align: center;"><strong>${prodQty}</strong></td>
-                <td>${item.beneficiary || '-'}</td>
-                <td>${item.observation || '-'}</td>
-                <td style="text-align: center;">${evidenciaHtml}</td>
-                <td style="text-align: center;">
-                    ${isAdmin ? `
-                        <button class="btn btn-sm btn-outline-danger" onclick="eliminarRegistroBaja('${item.id}')" title="Eliminar Registro">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    ` : `
-                        <span style="color: var(--gray-400); font-size: 0.75rem;"><i class="fa-solid fa-lock"></i></span>
-                    `}
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
+            let evidenciaBase64 = null;
+            if (fotoInput && fotoInput.files && fotoInput.files[0]) {
+                evidenciaBase64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(fotoInput.files[0]);
+                });
+            }
 
-        renderDirecBajasPagination(totalPages);
-    }
+            await updateDoc(doc(db, 'inventario', invId), { qty: invItem.qty - deliverQty });
+
+            const folio = `VALE-DIR-2026-${String(voucherCache.length + 1).padStart(4, '0')}`;
+            const voucherData = {
+                folio,
+                date: formattedDate,
+                dept: invItem.dept,
+                items: [{ code: invItem.code, productName: invItem.name, warehouse: invItem.warehouse, qty: deliverQty }],
+                beneficiary,
+                encargado, // 2. Oñemboguejy ápe mávapa oentrega
+                observation: `[Entrega desde Dirección] ${obs}`,
+                evidenciaFoto: evidenciaBase64 || null,
+                createdBy: encargado || usuarioActivoActual || 'Dirección',
+                timestamp: serverTimestamp()
+            };
+
+            await addDoc(collection(db, 'vales'), voucherData);
+
+            closeDeliveryModal();
+            showToast('Entrega Exitosa', `Vale ${folio} registrado con fecha ${formattedDate}.`);
+            displayVoucherModal(voucherData);
+
+        } catch (err) {
+            console.error(err);
+            showToast('Error', 'No se pudo registrar la entrega.', 'error');
+        } finally {
+            guardandoEntrega = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Generar Vale y Dar de Baja';
+            }
+        }
+    };
+}
+
+    // --- HISTORIAL Y PAGINACIÓN DE BAJAS DE DIRECCIÓN ---
 
     window.abrirFotoEnGrande = function(fotoUrl) {
         if (!fotoUrl) return;
@@ -2067,5 +2641,6 @@
         printWindow.document.close();
     }
 </script>
+
 </body>
 </html>
